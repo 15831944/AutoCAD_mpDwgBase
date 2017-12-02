@@ -1,0 +1,42 @@
+﻿<controls:MetroWindow x:Class="mpDwgBase.Windows.SelectAddingVariant"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      mc:Ignorable="d" ShowMinButton="False" ShowCloseButton="True"
+                      ShowMaxRestoreButton="False" ShowIconOnTitleBar="False"
+                      ShowTitleBar="False" WindowStartupLocation="CenterScreen" PreviewKeyDown="SelectAddingVariant_OnPreviewKeyDown"
+                      Title="Добавить" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" FontSize="16">ДОБАВИТЬ</Label>
+        <TextBlock Grid.Row="1" Margin="5" TextAlignment="Center" Text="Что вы хотите добавить?"
+                   FontSize="16"></TextBlock>
+        <Button Grid.Row="2" Margin="5" Name="BtAddBlock" Width="150"
+                HorizontalAlignment="Center"
+                Content="Добавить блок" 
+                Click="BtAddBlock_OnClick"></Button>
+        <Button Grid.Row="3" Margin="5" Name="BtAddDrawing" Width="150"
+                HorizontalAlignment="Center"
+                Content="Добавить чертеж" 
+                Click="BtAddDrawing_OnClick"></Button>
+    </Grid>
+</controls:MetroWindow>

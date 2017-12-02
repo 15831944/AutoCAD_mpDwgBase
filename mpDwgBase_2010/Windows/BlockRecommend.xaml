@@ -1,0 +1,81 @@
+﻿<controls:MetroWindow x:Class="mpDwgBase.Windows.BlockRecommend"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      mc:Ignorable="d" SizeToContent="WidthAndHeight"
+                      ShowInTaskbar="False" ShowCloseButton="True" ShowIconOnTitleBar="False"
+                      ShowMaxRestoreButton="False" ShowMinButton="False" ShowTitleBar="False"
+                      WindowStartupLocation="CenterScreen" WindowStyle="None" PreviewKeyDown="BlockRecommend_OnPreviewKeyDown">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--Label-->
+        <Label Grid.Row="0" FontSize="16" Margin="2">РЕКОМЕНДАЦИИ К ДОБАВЛЕНИЮ БЛОКОВ</Label>
+        <!--text-->
+        <RichTextBox Grid.Row="1" Margin="2" Width="800" FontSize="14" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    Функцией по умолчанию принимается что добавляемые в локальную (пользовательскую) базу блоки будут в последствии добавлены в глобальную базу, доступную всем пользователям.
+                    <LineBreak></LineBreak>
+                    Поэтому старайтесь соблюдать рекомендации:
+                </Paragraph>
+                <List MarkerStyle="Box">
+                    <ListItem>
+                        <Paragraph>
+                            Добавляемый блок должен быть полезным в работе. Неважно какой профессиональной направленности он будет
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Не используйте в блоках большое разнообразие слоев, если нет в этом необходимости. Лучший вариант – использовать стандартные слои плагина ModPlus
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Если блок динамический, то возможно ему не стоит добавлять атрибуты для спецификации
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Давайте блокам понятные имена и описания, чтобы пользователю не приходилось самому додумывать что это и зачем
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Если Вы взяли блок с какого-то ресурса, то обязательно указывайте источник!
+                        </Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph>
+                            Не ленитесь хорошо продумать путь к блоку в базе
+                        </Paragraph>
+                    </ListItem>
+                </List>
+                <Paragraph>
+                    Также на файлы с блоками накладываются ограничения, а именно – все добавляемые чертежи с блоками должны бить сохранены в версии AutoCAD 2010
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <!--Button-->
+        <Button Grid.Row="2"  Content="Закрыть" Margin="5"
+                Name="BtClose" Click="BtClose_OnClick" HorizontalAlignment="Center"></Button>
+    </Grid>
+</controls:MetroWindow>
+
