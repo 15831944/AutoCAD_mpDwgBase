@@ -1,7 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 
 namespace mpDwgBase.Windows
 {
@@ -10,7 +8,7 @@ namespace mpDwgBase.Windows
         public BlockRecommend()
         {
             InitializeComponent();
-            this.OnWindowStartUp();
+            Title = ModPlusAPI.Language.GetItem("mpDwgBase", "h37");
         }
 
         private void BtClose_OnClick(object sender, RoutedEventArgs e)

@@ -19,19 +19,15 @@ using System.Text.RegularExpressions;
 using System.Windows.Threading;
 using Autodesk.AutoCAD.DatabaseServices;
 using mpDwgBase.Windows;
-using MahApps.Metro.Controls;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 using Visibility = System.Windows.Visibility;
 
 namespace mpDwgBase
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
-    public partial class MpDwgBaseMainWindow : MetroWindow
+    public partial class MpDwgBaseMainWindow
     {
+        private const string LangItem = "mpDwgBase";
         // Путь к файлу, содержащему описание базы
         private string _dwgBaseFileName;
         // Путь к папке с базами dwg плагина
@@ -45,13 +41,12 @@ namespace mpDwgBase
         public MpDwgBaseMainWindow()
         {
             InitializeComponent();
-            this.OnWindowStartUp();
+            Title = ModPlusAPI.Language.GetItem(LangItem, "h9");
             // Zooming and panning image
             MouseWheel += MainWindow_MouseWheel;
             BlkImagePreview.MouseDown += img_MouseDown;
             BlkImagePreview.MouseUp += img_MouseUp;
             BlkImagePreview.MouseMove += image_MouseMove;
-            //////////////////////////////////////////
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -88,69 +83,13 @@ namespace mpDwgBase
             if (!File.Exists(Path.Combine(_dwgBaseFolder, "mpDwgBase.xml")))
             {
                 _dwgBaseFileName = string.Empty;
-                ModPlusAPI.Windows.MessageBox.Show("Не найден файл-указатель базы dwg ModPlus!" + Environment.NewLine
-                              + "Закройте AutoCAD и запустите проверку обновлений модулем автообновления");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg1"));
             }
-            #region
-            //var needToLoadFiles = false; // Нужно ли скачивать файлы
-            //var hasInternet = true;
-            ///* Перед открытием окна нужно выполнить дейстаия:
-            //    1. Проверить наличе файл - если его вообще нет, то скачать
-            //    2. Если файл есть, то проверить версию. Если версия на сайте выше - скачать
-            //    3. Независимо от первых 2 пунктов - проверить наличие файлов dwg и скачать при необходимости
-            //    */
-            //var pdr = ProgressDialog.Execute(this, "Проверка...", () =>
-            //{
-            //    ProgressDialog.Current.Report("Проверка доступа к сайту modplus.org");
-
-            //    if (MpWeb.CheckForInternetConnection())
-            //    {
-            //        ProgressDialog.Current.Report("Проверка файла базы dwg");
-            //        var fileOnServer = "http://modplus.org/Downloads/DwgBase/mpDwgBase.xml";
-            //        if (!File.Exists(_dwgBaseFileName))
-            //        {
-            //            using (var client = new WebClient())
-            //            {
-            //                client.DownloadFile(fileOnServer, _dwgBaseFileName);
-            //            }
-            //            needToLoadFiles = true;
-            //        }
-            //        else
-            //        {
-            //            var xelLocal = XElement.Load(_dwgBaseFileName);
-            //            var xelOnServer = XElement.Load(fileOnServer);
-            //            // versions
-            //            var verFromSite = Version.Parse(xelOnServer.Attribute("version").Value);
-            //            var localVersion = Version.Parse(xelLocal.Attribute("version").Value);
-            //            if (verFromSite > localVersion)
-            //            {
-            //                using (var client = new WebClient())
-            //                {
-            //                    client.DownloadFile(fileOnServer, _dwgBaseFileName);
-            //                }
-            //                needToLoadFiles = true;
-            //            }
-            //        }
-            //        if (needToLoadFiles)
-            //        {
-            //            // Загрузка файлов
-            //        }
-            //    }
-            //    else hasInternet = false;
-            //}, ProgressDialogSettings.WithSubLabelAndCancel);
-            //// Если была ошибка во время асинхронного выполнения, то выводим ее
-            //if (pdr.OperationFailed)
-            //{
-            //    ExceptionBox.Show(pdr.Error, true);
-            //}
-            //if (!hasInternet)
-            //    ModPlusAPI.Windows.MessageBox.Show("Отсутсвует доступ к internet или сайту modplus.org");
-            #endregion
         }
 
         private void FillLayers()
         {
-            CbLayers.Items.Add("Текущий слой");
+            CbLayers.Items.Add(ModPlusAPI.Language.GetItem(LangItem, "msg2"));
             var doc = AcApp.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
             using (var tr = db.TransactionManager.StartTransaction())
@@ -227,7 +166,7 @@ namespace mpDwgBase
                 var hasFile = false;
                 if (!File.Exists(_dwgBaseFileName))
                 {
-                    if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Файл пользовательской базы не создан. Создать?",
+                    if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg3"),
                         MessageBoxIcon.Question))
                     {
                         var newUserFile = new XElement("ArrayOfDwgBaseItem");
@@ -285,13 +224,11 @@ namespace mpDwgBase
         }
         private void LbItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var lb = sender as ListBox;
-            if (lb != null)
+            if (sender is ListBox lb)
             {
                 if (lb.SelectedIndex != -1)
                 {
-                    var selectedItem = lb.SelectedItem as DwgBaseItem;
-                    if (selectedItem == null) return;
+                    if (!(lb.SelectedItem is DwgBaseItem selectedItem)) return;
                     // Get dwg properties
                     DgProperties.ItemsSource = GetProperties(selectedItem);
                     //
@@ -316,7 +253,9 @@ namespace mpDwgBase
                         var imagefile = DwgBaseHelpers.FindImageFile(selectedItem, _dwgBaseFolder);
                         if (string.IsNullOrEmpty(imagefile))
                         {
-                            imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImage.png";
+                            if(ModPlusAPI.Language.RusWebLanguages.Contains(ModPlusAPI.Language.CurrentLanguageName))
+                                imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImage.png";
+                            else imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImageEn.png";
                         }
                         var bi = new BitmapImage();
                         bi.BeginInit();
@@ -351,8 +290,7 @@ namespace mpDwgBase
         {
             if (sender is TreeView)
             {
-                var selectedTreeViewItem = e.NewValue as TreeViewModelItem;
-                if (selectedTreeViewItem != null)
+                if (e.NewValue is TreeViewModelItem selectedTreeViewItem)
                 {
                     var path = selectedTreeViewItem.GetAncestry();
                     // Сначала все очищаем
@@ -431,8 +369,7 @@ namespace mpDwgBase
                     var downloaded = false;
                     if (!File.Exists(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)))
                     {
-                        if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Файл-источник отсутствует! Скачать?",
-                            MessageBoxIcon.Question))
+                        if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg4"), MessageBoxIcon.Question))
                         {
                             var localPath =
                                 new FileInfo(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)).DirectoryName;
@@ -597,7 +534,7 @@ namespace mpDwgBase
                 var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
                 var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
                 // progress text
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Скачивание файла базы: " + sourceFile);
+                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg5") + ": " + sourceFile);
 
                 long remoteSize;
                 string fullLocalPath;
@@ -663,7 +600,7 @@ namespace mpDwgBase
                                         perc = newPerc;
                                         // progress bar
                                         Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
-                                            "Скачивание файла базы: " + sourceFile + " " + perc + "%");
+                                            ModPlusAPI.Language.GetItem(LangItem, "msg5") + ": " + sourceFile + " " + perc + "%");
                                         Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)perc);
 
                                     }
@@ -681,8 +618,7 @@ namespace mpDwgBase
             }
             else
             {
-                ModPlusAPI.Windows.MessageBox.Show("Отсутсвует доступ к сети internet или сайту modplus.org!" + Environment.NewLine +
-                              "Повторите попытку позже");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg6"));
                 return false;
             }
         }
@@ -765,34 +701,34 @@ namespace mpDwgBase
         {
             var properties = new List<DwgProperties>();
             // document
-            properties.Add(new DwgProperties { Name = "Документ", Value = item.Document });
+            properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p1"), Value = item.Document });
             // description
-            properties.Add(new DwgProperties { Name = "Описание", Value = item.Description });
+            properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p2"), Value = item.Description });
             // isblock
             if (item.IsBlock)
             {
-                properties.Add(new DwgProperties { Name = "Тип объекта", Value = "Блок" });
+                properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p3"), Value = ModPlusAPI.Language.GetItem(LangItem, "block") });
                 properties.Add(item.IsAnnotative
-                    ? new DwgProperties { Name = "Аннотативный", Value = "Да" }
-                    : new DwgProperties { Name = "Аннотативный", Value = "Нет" });
+                    ? new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p4"), Value = ModPlusAPI.Language.GetItem(LangItem, "yes") }
+                    : new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p4"), Value = ModPlusAPI.Language.GetItem(LangItem, "no") });
                 properties.Add(item.IsDynamicBlock
-                    ? new DwgProperties { Name = "Динамический", Value = "Да" }
-                    : new DwgProperties { Name = "Динамический", Value = "Нет" });
+                    ? new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p5"), Value = ModPlusAPI.Language.GetItem(LangItem, "yes") }
+                    : new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p5"), Value = ModPlusAPI.Language.GetItem(LangItem, "no") });
                 properties.Add(item.Is3Dblock
-                    ? new DwgProperties { Name = "3D блок", Value = "Да" }
-                    : new DwgProperties { Name = "3D блок", Value = "Нет" });
+                    ? new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p6"), Value = ModPlusAPI.Language.GetItem(LangItem, "yes") }
+                    : new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p6"), Value = ModPlusAPI.Language.GetItem(LangItem, "no") });
                 properties.Add(item.HasAttributesForSpecification
-                    ? new DwgProperties { Name = "Атрибуты для спецификации", Value = "Да" }
-                    : new DwgProperties { Name = "Атрибуты для спецификации", Value = "Нет" });
+                    ? new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p7"), Value = ModPlusAPI.Language.GetItem(LangItem, "yes") }
+                    : new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p7"), Value = ModPlusAPI.Language.GetItem(LangItem, "no") });
             }
             else
             {
-                properties.Add(new DwgProperties { Name = "Тип объекта", Value = "Чертеж" });
+                properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p3"), Value = ModPlusAPI.Language.GetItem(LangItem, "drawing") });
             }
             // author
-            properties.Add(new DwgProperties { Name = "Добавил", Value = item.Author });
+            properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p8"), Value = item.Author });
             // source
-            properties.Add(new DwgProperties { Name = "Источник", Value = item.Source });
+            properties.Add(new DwgProperties { Name = ModPlusAPI.Language.GetItem(LangItem, "p9"), Value = item.Source });
             return properties;
         }
         #endregion
@@ -824,8 +760,7 @@ namespace mpDwgBase
                             Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
                             _dwgBaseFolder, false)
                         {
-                            Title = "Добавить блок в базу",
-                            WindowLabel = {Content = "ДОБАВИТЬ БЛОК В БАЗУ"},
+                            Title = ModPlusAPI.Language.GetItem(LangItem, "h22"),
                             Item = new DwgBaseItem(),
                             Owner = this,
                             CbPath = {ItemsSource = pathes.Where(x => x.Contains("Блоки/"))}
@@ -845,8 +780,7 @@ namespace mpDwgBase
                             Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
                             _dwgBaseFolder, false)
                         {
-                            Title = "Добавить чертеж в базу",
-                            WindowLabel = { Content = "ДОБАВИТЬ ЧЕРТЕЖ В БАЗУ" },
+                            Title = ModPlusAPI.Language.GetItem(LangItem, "h23"),
                             Item = new DwgBaseItem(),
                             Owner = this,
                             CbPath = { ItemsSource = pathes.Where(x => x.Contains("Чертежи/")) }
@@ -926,25 +860,21 @@ namespace mpDwgBase
         private void TvGroups_OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // tree view context menu
-            var cm = TvGroups.Resources["TvContextMenu"] as ContextMenu;
-            if (cm == null) return;
+            if (!(TvGroups.Resources["TvContextMenu"] is ContextMenu cm)) return;
             var miRenameGroup = LogicalTreeHelper.FindLogicalNode(cm, "MiRenameGroup") as MenuItem;
 
-            var selectedItem = TvGroups.SelectedItem as TreeViewModelItem;
-            if (selectedItem == null)
+            if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem))
             {
                 foreach (var cmItem in cm.Items)
                 {
-                    var mi = cmItem as MenuItem;
-                    if (mi != null) mi.IsEnabled = false;
+                    if (cmItem is MenuItem mi) mi.IsEnabled = false;
                 }
             }
             else
             {
                 foreach (var cmItem in cm.Items)
                 {
-                    var mi = cmItem as MenuItem;
-                    if (mi != null) mi.IsEnabled = true;
+                    if (cmItem is MenuItem mi) mi.IsEnabled = true;
                 }
                 if (selectedItem.Name.Equals("Блоки") || selectedItem.Name.Equals("Чертежи"))
                 {
@@ -956,35 +886,31 @@ namespace mpDwgBase
         // on preview items context menu
         private void LbItems_OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            var cm = LbItems.Resources["LbContextMenu"] as ContextMenu;
-            if (cm == null) return;
-            var selectedItem = LbItems.SelectedItem as DwgBaseItem;
-            if (selectedItem == null)
+            if (!(LbItems.Resources["LbContextMenu"] is ContextMenu cm)) return;
+            if (!(LbItems.SelectedItem is DwgBaseItem))
             {
                 foreach (var cmItem in cm.Items)
                 {
-                    var mi = cmItem as MenuItem;
-                    if (mi != null) mi.IsEnabled = false;
+                    if (cmItem is MenuItem mi) mi.IsEnabled = false;
                 }
             }
             else
             {
                 foreach (var cmItem in cm.Items)
                 {
-                    var mi = cmItem as MenuItem;
-                    if (mi != null) mi.IsEnabled = true;
+                    if (cmItem is MenuItem mi) mi.IsEnabled = true;
                 }
             }
         }
         // delete group
         private void TreeViewContextMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
-            var selectedItem = TvGroups.SelectedItem as TreeViewModelItem;
-            if (selectedItem == null) return;
+            if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem)) return;
 
-            if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Будет удалена вся группа " + selectedItem.Name + " и все подгруппы!"
-                              + Environment.NewLine + "При этом dwg-файлы останутся" + Environment.NewLine +
-                              "Удалить группу " + selectedItem.Name + "?", MessageBoxIcon.Question))
+            if (ModPlusAPI.Windows.MessageBox.ShowYesNo(
+                ModPlusAPI.Language.GetItem(LangItem, "msg7") + ": " + selectedItem.Name + " " + ModPlusAPI.Language.GetItem(LangItem, "msg8") + "!"
+                + Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg9") + Environment.NewLine +
+                ModPlusAPI.Language.GetItem(LangItem, "msg9") + ": " + selectedItem.Name + "?", MessageBoxIcon.Question))
             {
                 // Нужно построить полный путь. Для этого нужно построить "начало" через родителей (рекурсия)
                 // которое будет единственным и построить "окончания" через потомков
@@ -1040,8 +966,7 @@ namespace mpDwgBase
         // rename group
         private void TreeViewContextMenuRenameGroup_OnClick(object sender, RoutedEventArgs e)
         {
-            var selectedItem = TvGroups.SelectedItem as TreeViewModelItem;
-            if (selectedItem == null) return;
+            if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem)) return;
             // get window
             var win = new RenameGroup();
             win.TbCurrentName.Text = win.TbNewName.Text = selectedItem.Name;
@@ -1157,9 +1082,10 @@ namespace mpDwgBase
             var selectedTvItem = TvGroups.SelectedItem as TreeViewModelItem;
             if (selectedItem == null) return;
             if (selectedTvItem == null) return;
-            if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Выбранный элемент будет удален из базы" + Environment.NewLine +
-                              "При этом dwg-файл останется" + Environment.NewLine + "Удалить элемент: " +
-                              selectedItem.Name + "?", MessageBoxIcon.Question))
+            if (ModPlusAPI.Windows.MessageBox.ShowYesNo(
+                ModPlusAPI.Language.GetItem(LangItem, "msg11") + Environment.NewLine +
+                ModPlusAPI.Language.GetItem(LangItem, "msg9") + Environment.NewLine +
+                ModPlusAPI.Language.GetItem(LangItem, "msg12") + ": " + selectedItem.Name + "?", MessageBoxIcon.Question))
             {
                 // deleting
                 _dwgBaseItems.Remove(selectedItem);
@@ -1219,8 +1145,7 @@ namespace mpDwgBase
                             Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
                             _dwgBaseFolder, true)
                 {
-                    Title = "Изменить данные о блоке",
-                    WindowLabel = { Content = "ИЗМЕНИТЬ ДАННЫЕ О БЛОКЕ" },
+                    Title = ModPlusAPI.Language.GetItem(LangItem, "h24"),
                     Item = selectedItem,
                     Owner = this,
                     CbPath = { ItemsSource = pathes.Where(x => x.StartsWith("Блоки/")) }
@@ -1265,8 +1190,7 @@ namespace mpDwgBase
                             Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
                             _dwgBaseFolder, true)
                 {
-                    Title = "Изменить данные о чертеже",
-                    WindowLabel = { Content = "ИЗМЕНИТЬ ДАННЫЕ О ЧЕРТЕЖЕ" },
+                    Title = ModPlusAPI.Language.GetItem(LangItem, "h25"),
                     Item = selectedItem,
                     Owner = this,
                     CbPath = { ItemsSource = pathes.Where(x => x.StartsWith("Чертежи/")) }
@@ -1393,10 +1317,7 @@ namespace mpDwgBase
         {
             if (_dwgBaseItems.Any())
             {
-                var win = new BaseUploading(
-                    Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                    Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                    _dwgBaseFolder, _dwgBaseItems);
+                var win = new BaseUploading(_dwgBaseFolder, _dwgBaseItems);
                 win.ShowDialog();
             }
         }
@@ -1419,8 +1340,7 @@ namespace mpDwgBase
         private void TbSearchTxt_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             // Пусть работает от трех символов и выше
-            var textbox = sender as TextBox;
-            if (textbox != null)
+            if (sender is TextBox textbox)
             {
                 if (textbox.Text.Length >= 3)
                     SearchItemsInBases(textbox.Text);
@@ -1455,8 +1375,7 @@ namespace mpDwgBase
         private void LbSearchResults_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var lb = sender as ListBox;
-            var selectedItem = lb?.SelectedItem as DwgBaseItem;
-            if (selectedItem == null) return;
+            if (!(lb?.SelectedItem is DwgBaseItem selectedItem)) return;
 
             var splittedPath = selectedItem.Path.Split('/').ToList();
             if (splittedPath.Any())
@@ -1468,8 +1387,7 @@ namespace mpDwgBase
             if (LbItems.Items.Count > 0)
                 foreach (var lbItemsItem in LbItems.Items)
                 {
-                    var baseItem = lbItemsItem as DwgBaseItem;
-                    if (baseItem != null && baseItem.Name.Equals(selectedItem.Name))
+                    if (lbItemsItem is DwgBaseItem baseItem && baseItem.Name.Equals(selectedItem.Name))
                     {
                         LbItems.SelectedIndex = LbItems.Items.IndexOf(lbItemsItem);
                         break;
@@ -1493,8 +1411,7 @@ namespace mpDwgBase
                 if (LbItems.Items.Count > 0)
                     foreach (var lbItemsItem in LbItems.Items)
                     {
-                        var baseItem = lbItemsItem as DwgBaseItem;
-                        if (baseItem != null && baseItem.Name.Equals(selectedName))
+                        if (lbItemsItem is DwgBaseItem baseItem && baseItem.Name.Equals(selectedName))
                         {
                             LbItems.SelectedIndex = LbItems.Items.IndexOf(lbItemsItem);
                             break;
@@ -1549,6 +1466,5 @@ namespace mpDwgBase
         {
             if (e.Key == Key.Escape) Close();
         }
-        
     }
 }

@@ -5,7 +5,6 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 #endif
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,16 +12,15 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using TextBox = System.Windows.Controls.TextBox;
 using Visibility = System.Windows.Visibility;
 
 namespace mpDwgBase.Windows
 {
     public partial class DrawingWindow
     {
-        private readonly bool IsEdit;
+        private const string LangItem = "mpDwgBase";
+
+        private readonly bool _isEdit;
         public DwgBaseItem Item;
         private readonly string _mpDwgBaseFile;
         private readonly string _userDwgBaseFile;
@@ -32,11 +30,10 @@ namespace mpDwgBase.Windows
         public DrawingWindow(string mpDwgBaseFile, string userDwgBaseFile, string dwgBaseFolder, bool isEdit)
         {
             InitializeComponent();
-            this.OnWindowStartUp();
             _mpDwgBaseFile = mpDwgBaseFile;
             _userDwgBaseFile = userDwgBaseFile;
             _dwgBaseFolder = dwgBaseFolder;
-            IsEdit = isEdit;
+            _isEdit = isEdit;
             //
             FillHelpImagesToPopUp();
         }
@@ -47,7 +44,7 @@ namespace mpDwgBase.Windows
         }
         private void DrawingWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 // visibility of button to load last data
                 BtLoadLastInteredData.Visibility = CheckFileWithLastDataExists()
@@ -59,11 +56,7 @@ namespace mpDwgBase.Windows
                 GridDrawingDetails.DataContext = Item;
             }
         }
-
-        private void DrawingWindow_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
+        
         private void TbPath_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var cb = sender as ComboBox;
@@ -78,8 +71,7 @@ namespace mpDwgBase.Windows
         private void TbPath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             var cb = sender as ComboBox;
-            var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && !tb.Text.StartsWith("Чертежи/"))
+            if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Чертежи/"))
             {
                 Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
             }
@@ -88,8 +80,7 @@ namespace mpDwgBase.Windows
         private void TbPath_OnTextInput(object sender, TextCompositionEventArgs e)
         {
             var cb = sender as ComboBox;
-            var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && !tb.Text.StartsWith("Чертежи/"))
+            if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Чертежи/"))
             {
                 Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
             }
@@ -99,7 +90,7 @@ namespace mpDwgBase.Windows
         {
             try
             {
-                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog("Выбор чертежа для добавления в базу", _dwgBaseFolder, "dwg", "name",
+                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog(ModPlusAPI.Language.GetItem(LangItem, "msg59"), _dwgBaseFolder, "dwg", "name",
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoFtpSites |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoShellExtensions |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoUrls |
@@ -125,14 +116,13 @@ namespace mpDwgBase.Windows
                                     needLoop = false;
                                 }
                                 else
-                                    ModPlusAPI.Windows.MessageBox.Show("Выбранный файл содержит proxy-объекты и не может быть добавлен в базу!" + Environment.NewLine
-                                        + "Удалите все proxy-объекты и повторите попытку");
+                                    ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg60"));
                             }
                             else
-                                ModPlusAPI.Windows.MessageBox.Show("Выбранный файл должен быть сохранен в версии AutoCAD 2010!");
+                                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg48"));
                         }
                         else
-                            ModPlusAPI.Windows.MessageBox.Show("Указанный файл должен находиться в подпапке папки " + _dwgBaseFolder);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
                     }
                     else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
                     else needLoop = false;
@@ -156,7 +146,7 @@ namespace mpDwgBase.Windows
                 var selectedPath = string.Empty;
                 var copiedFile = string.Empty;
                 // Сначала нужно выбрать файл, проверив версию его
-                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog("Выбор чертежа для добавления в базу", _dwgBaseFolder, "dwg", "name",
+                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog(ModPlusAPI.Language.GetItem(LangItem, "msg59"), _dwgBaseFolder, "dwg", "name",
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoFtpSites |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoShellExtensions |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoUrls |
@@ -175,12 +165,10 @@ namespace mpDwgBase.Windows
                             if (!DwgBaseHelpers.HasProxyEntities(selectedFile))
                                 needLoop = false;
                             else
-                                ModPlusAPI.Windows.MessageBox.Show("Выбранный файл содержит proxy-объекты и не может быть добавлен в базу!" +
-                                              Environment.NewLine
-                                              + "Удалите все proxy-примитивы и повторите попытку");
+                                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg60"));
                         }
                         else
-                            ModPlusAPI.Windows.MessageBox.Show("Выбранный файл должен быть сохранен в версии AutoCAD 2010!");
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg48"));
                     }
                     else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
                     else needLoop = false;
@@ -188,7 +176,7 @@ namespace mpDwgBase.Windows
                 // Теперь нужно указать папку для расположения файла
                 var fbd = new System.Windows.Forms.FolderBrowserDialog
                 {
-                    Description = @"Укажите папку для копирования выбранного файла",
+                    Description = ModPlusAPI.Language.GetItem(LangItem, "msg61"),
                     SelectedPath = _dwgBaseFolder,
                     ShowNewFolderButton = true
                 };
@@ -208,17 +196,19 @@ namespace mpDwgBase.Windows
                                 if (File.Exists(copiedFile))
                                 {
                                     needLoop =
-                                        !ModPlusAPI.Windows.MessageBox.ShowYesNo("В указанной папке уже есть файл " + fi.Name +
-                                                       Environment.NewLine + "Заменить?", MessageBoxIcon.Question);
+                                        !ModPlusAPI.Windows.MessageBox.ShowYesNo(
+                                            ModPlusAPI.Language.GetItem(LangItem, "msg62") + " " + fi.Name +
+                                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg63"), MessageBoxIcon.Question);
                                 }
                                 else needLoop = false;
                             }
                             else
-                                ModPlusAPI.Windows.MessageBox.Show("Не стоит выбирать папку " + _dwgBaseFolder + Environment.NewLine +
-                                              "Создайте подкаталог");
+                                ModPlusAPI.Windows.MessageBox.Show(
+                                    ModPlusAPI.Language.GetItem(LangItem, "msg64") + " " + _dwgBaseFolder + Environment.NewLine +
+                                    ModPlusAPI.Language.GetItem(LangItem, "msg52"));
                         }
                         else
-                            ModPlusAPI.Windows.MessageBox.Show("Выбранная папка должна находиться в подпапке папки " + _dwgBaseFolder);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg65") + " " + _dwgBaseFolder);
                     }
                     else if (fbdResult == System.Windows.Forms.DialogResult.Cancel) return;
                     else needLoop = true;
@@ -248,12 +238,12 @@ namespace mpDwgBase.Windows
         private void BtAccept_OnClick(object sender, RoutedEventArgs e)
         {
             if (!CheckEmptyData()) return;
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 var allGood = true;
                 if (CheckInteredItemData())
                 {
-                    allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo("Добавить чертеж с такими данными?", MessageBoxIcon.Question);
+                    allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg66"), MessageBoxIcon.Question);
                 }
                 if (allGood)
                 {
@@ -286,42 +276,42 @@ namespace mpDwgBase.Windows
         {
             var hasSame = false;
             #region Проверяем по базе плагина
-            List<DwgBaseItem> mpDwgBaseItems;
-            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out mpDwgBaseItems))
+
+            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
             {
                 foreach (var mpDwgBaseItem in mpDwgBaseItems)
                 {
                     if (!mpDwgBaseItem.IsBlock)
                         if (mpDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("База dwg плагина содержит чертеж с именем " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg67") + " " + Item.Name);
                             hasSame = true;
                         }
                 }
             }
             else
             {
-                ModPlusAPI.Windows.MessageBox.Show("Ошибка парсинга файла базы dwg плагина!");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg36"));
                 return false;
             }
             #endregion
             #region Проверяем по базе пользователя
-            List<DwgBaseItem> userDwgBaseItems;
-            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out userDwgBaseItems))
+
+            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out var userDwgBaseItems))
             {
                 foreach (var userDwgBaseItem in userDwgBaseItems)
                 {
                     if (!userDwgBaseItem.IsBlock)
                         if (userDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Пользовательская база dwg содержит чертеж с именем " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg68") + " " + Item.Name);
                             hasSame = true;
                         }
                 }
             }
             else
             {
-                ModPlusAPI.Windows.MessageBox.Show("Ошибка парсинга файла пользовательской базы dwg!");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg38"));
                 return false;
             }
             #endregion
@@ -335,17 +325,17 @@ namespace mpDwgBase.Windows
         {
             if (string.IsNullOrEmpty(Item.Name))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Укажите отображаемое имя чертежа (Название)");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg69"));
                 TbName.Focus();
                 return false;
             }
             if (Item.Path.Equals("Чертежи/"))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Укажите путь в каталоге");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg40"));
                 CbPath.Focus();
                 return false;
             }
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 var db = AcApp.DocumentManager.MdiActiveDocument.Database;
                 if (ChkIsCurrentDwgFile.IsChecked != null && ChkIsCurrentDwgFile.IsChecked.Value)
@@ -355,15 +345,15 @@ namespace mpDwgBase.Windows
                         var fi = new FileInfo(db.Filename);
                         if (File.Exists(db.Filename))
                             ModPlusAPI.Windows.MessageBox.Show(
-                                "Установлена галочка \"Текущий файл\" для dwg-файла, однако текущий файл не расположен в каталоге dwg-базы!" +
-                                Environment.NewLine + "Каталог dwg-базы - " + _dwgBaseFolder + Environment.NewLine +
-                                "Каталог текущего файла - " + fi.DirectoryName +
-                                Environment.NewLine + "Возможно текущий файл еще не сохранен!"
+                                ModPlusAPI.Language.GetItem(LangItem, "msg41") + Environment.NewLine +
+                                ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
+                                ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
                         else
                             ModPlusAPI.Windows.MessageBox.Show(
-                                "Установлена галочка \"Текущий\" для dwg-файла, однако не удалось распознать каталог расположения текущего файла" +
-                                Environment.NewLine + "Возможно текущий файл не сохранен!"
+                                ModPlusAPI.Language.GetItem(LangItem, "msg45") +
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
 
                         return false;
@@ -373,7 +363,7 @@ namespace mpDwgBase.Windows
                 {
                     if (string.IsNullOrEmpty(Item.SourceFile))
                     {
-                        ModPlusAPI.Windows.MessageBox.Show("Укажите dwg-файл чертежа");
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg70"));
                         return false;
                     }
                 }
@@ -415,15 +405,15 @@ namespace mpDwgBase.Windows
                     var fi = new FileInfo(db.Filename);
                     if (File.Exists(db.Filename))
                         ModPlusAPI.Windows.MessageBox.Show(
-                            "Текущий файл не расположен в каталоге dwg-базы!" +
-                            Environment.NewLine + "Каталог dwg-базы - " + _dwgBaseFolder + Environment.NewLine +
-                            "Каталог текущего файла - " + fi.DirectoryName +
-                            Environment.NewLine + "Возможно текущий файл еще не сохранен!"
+                            ModPlusAPI.Language.GetItem(LangItem, "msg55") + Environment.NewLine +
+                            ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
+                            ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
                     else
                         ModPlusAPI.Windows.MessageBox.Show(
-                            "Не удалось распознать каталог расположения текущего файла" +
-                            Environment.NewLine + "Возможно текущий файл не сохранен!"
+                            ModPlusAPI.Language.GetItem(LangItem, "msg56") +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
 
                     ChkIsCurrentDwgFile.IsChecked = false;
@@ -434,16 +424,14 @@ namespace mpDwgBase.Windows
                     {
                         if (db.LastSavedAsVersion != DwgVersion.AC1024)
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Версия текущего файла не соответствует версии AutoCAD 2010!" +
-                                          Environment.NewLine + "Так как плагин ModPlus работает с версии AutoCAD 2010 и выше," +
-                                          Environment.NewLine + "файл нужно сохранить в версию AutoCAD 2010");
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg57"));
                             ChkIsCurrentDwgFile.IsChecked = false;
                         }
                     }
                     else
                     {
-                        ModPlusAPI.Windows.MessageBox.Show("Не удалось распознать каталог расположения текущего файла" +
-                            Environment.NewLine + "Возможно текущий файл не сохранен!");
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg56") +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
                         ChkIsCurrentDwgFile.IsChecked = false;
                     }
                 }
@@ -459,7 +447,7 @@ namespace mpDwgBase.Windows
 
         private void SaveInteredData()
         {
-            var file = System.IO.Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
+            var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
             var xEl = new XElement("LastData");
             // Name
             xEl.SetAttributeValue("Name", TbName.Text);
@@ -483,7 +471,7 @@ namespace mpDwgBase.Windows
         }
         private void BtLoadLastInteredData_OnClick(object sender, RoutedEventArgs e)
         {
-            var file = System.IO.Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
+            var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
             var xEl = XElement.Load(file);
             // Name 
             TbName.Text = xEl.Attribute("Name")?.Value;
@@ -527,12 +515,11 @@ namespace mpDwgBase.Windows
 
         private void DrawingWindow_OnClosed(object sender, EventArgs e)
         {
-            if (IsEdit) return;
+            if (_isEdit) return;
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
-                if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Сохранить введенные данные как \"Последние введенные данные\"?",
-                    MessageBoxIcon.Question))
+                if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
                     SaveInteredData();
         }
     }

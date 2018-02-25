@@ -1,13 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 
 namespace mpDwgBase.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для SelectAddingVariant.xaml
-    /// </summary>
     public partial class SelectAddingVariant
     {
         public string Variant = "None";
@@ -15,7 +10,7 @@ namespace mpDwgBase.Windows
         public SelectAddingVariant()
         {
             InitializeComponent();
-            this.OnWindowStartUp();
+            Title = ModPlusAPI.Language.GetItem("mpDwgBase", "h66");
         }
 
         private void BtAddBlock_OnClick(object sender, RoutedEventArgs e)

@@ -13,17 +13,15 @@ using System.Windows.Threading;
 using System.Xml;
 using Ionic.Zip;
 using mpDwgBase.Annotations;
-using ModPlus;
 using ModPlusAPI.Web.FTP;
 using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 
 namespace mpDwgBase.Windows
 {
     public partial class BaseUploading
     {
-        private readonly string _mpDwgBaseFile;
-        private readonly string _userDwgBaseFile;
+        private const string LangItem = "mpDwgBase";
+        
         // Путь к папке с базами dwg плагина
         private readonly string _dwgBaseFolder;
         // Список значений 
@@ -35,12 +33,10 @@ namespace mpDwgBase.Windows
         // current archive to upload
         private string _currentFileToUpload;
 
-        public BaseUploading(string mpDwgBaseFile, string userDwgBaseFile, string dwgBaseFolder, List<DwgBaseItem> dwgBaseItems)
+        public BaseUploading(string dwgBaseFolder, List<DwgBaseItem> dwgBaseItems)
         {
             InitializeComponent();
-            this.OnWindowStartUp();
-            _mpDwgBaseFile = mpDwgBaseFile;
-            _userDwgBaseFile = userDwgBaseFile;
+            Title = ModPlusAPI.Language.GetItem(LangItem, "h26");
             _dwgBaseFolder = dwgBaseFolder;
             _dwgBaseItems = dwgBaseItems;
         }
@@ -98,8 +94,7 @@ namespace mpDwgBase.Windows
         private void LvDwgFiles_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var lv = sender as ListView;
-            var selectedFile = lv?.SelectedItem as FileToBind;
-            if (selectedFile == null) return;
+            if (!(lv?.SelectedItem is FileToBind selectedFile)) return;
             LvItemsInFile.ItemsSource = null;
             var lstToBind = new List<ItemToBind>();
             foreach (var dwgBaseItem in _dwgBaseItems)
@@ -137,7 +132,7 @@ namespace mpDwgBase.Windows
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
             if (!_filesToBind.Any(x => x.Selected))
             {
-               ModPlusAPI.Windows.MessageBox.Show("Вы не выбрали ни одного файла для архивации!", MessageBoxIcon.Alert);
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg15"), MessageBoxIcon.Alert);
                 return;
             }
             CreateArchive();
@@ -152,7 +147,7 @@ namespace mpDwgBase.Windows
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
             // progress text
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Создание временной папки");
+            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg16"));
             // create temp folder
             var tmpFolder = Path.Combine(_dwgBaseFolder, "Temp");
             if (!Directory.Exists(tmpFolder))
@@ -171,7 +166,8 @@ namespace mpDwgBase.Windows
             var baseFileToArchive = new List<DwgBaseItem>();
             for (var i = 0; i < _dwgBaseItems.Count; i++)
             {
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Сбор требуемых элементов из базы: " + i + "/" + _dwgBaseItems.Count);
+                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    ModPlusAPI.Language.GetItem(LangItem, "msg17") + ": " + i + "/" + _dwgBaseItems.Count);
                 Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)i);
                 DwgBaseItem dwgBaseItem = _dwgBaseItems[i];
                 if (sourceFiles.Contains(dwgBaseItem.SourceFile))
@@ -183,7 +179,7 @@ namespace mpDwgBase.Windows
             DwgBaseHelpers.SerializerToXml(baseFileToArchive, xmlToArchive);
             if (!File.Exists(xmlToArchive))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Не удалось создать файл-указатель", MessageBoxIcon.Close);
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg18"), MessageBoxIcon.Close);
                 return;
             }
             // comment file
@@ -211,7 +207,7 @@ namespace mpDwgBase.Windows
             BtSeeArchive.Visibility = Visibility.Visible;
             BtDeleteArchive.Visibility = Visibility.Visible;
             BtUploadArchive.Visibility = Visibility.Visible;
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Файл готов к отправке");
+            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg19"));
         }
         // window closed
         private void BaseUploading_OnClosed(object sender, EventArgs e)
@@ -225,8 +221,9 @@ namespace mpDwgBase.Windows
             }
             catch
             {
-                ModPlusAPI.Windows.MessageBox.Show("Не удалось удалить временную папку " + tmpFolder + Environment.NewLine +
-                              "Возможно у вас открыт архив");
+                ModPlusAPI.Windows.MessageBox.Show(
+                   ModPlusAPI.Language.GetItem(LangItem, "msg20") + ": " + tmpFolder + Environment.NewLine +
+                   ModPlusAPI.Language.GetItem(LangItem, "msg21"));
             }
         }
         // open
@@ -234,14 +231,14 @@ namespace mpDwgBase.Windows
         {
             if (File.Exists(_currentFileToUpload))
                 Process.Start(_currentFileToUpload);
-            else ModPlusAPI.Windows.MessageBox.Show("Не удалось найти файл для отправки. Возможно Вы его удалили?");
+            else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
         }
         // upload
         private void BtUploadArchive_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ModPlusAPI.Web.Connection.CheckForInternetConnection())
             {
-                ModPlusAPI.Windows.MessageBox.Show("Отсутсвует доступ к сети internet или сайту modplus.org");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg23"));
                 return;
             }
             if (File.Exists(_currentFileToUpload))
@@ -252,7 +249,7 @@ namespace mpDwgBase.Windows
                     //  to the ProgressBar's SetValue method.
                     var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
                     var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, "Получение данных авторизации");
+                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg24"));
                     // get connect data
                     if (!DwgBaseHelpers.GetConfigFileFromSite(out XmlDocument docFromSite)) return;
                     var ftpClient = new FtpClient
@@ -267,7 +264,7 @@ namespace mpDwgBase.Windows
                     ftpRequest.Credentials = new NetworkCredential(ftpClient.UserName, ftpClient.Password);
                     ftpRequest.EnableSsl = false;
                     ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Загрузка файла на сервер");
+                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg25"));
                     using (var inputStream = File.OpenRead(_currentFileToUpload))
                     {
                         using (var outputStream = ftpRequest.GetRequestStream())
@@ -282,14 +279,18 @@ namespace mpDwgBase.Windows
                             {
                                 outputStream.Write(buffer, 0, readBytesCount);
                                 var progress = (int)((totalReadBytesCount += readBytesCount) / (float)inputStream.Length * 100);
-                                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Загрузка файла на сервер: " + progress + "%");
+                                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                                    ModPlusAPI.Language.GetItem(LangItem, "msg25") + ": " + progress + "%");
                                 Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)progress);
                             }
                         }
                     }
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, "Загрузка файла на сервер завершена");
+                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg26"));
                     Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
-                    ModPlusAPI.Windows.MessageBox.Show("Файл " + _currentFileToUpload + " отправлен на сервер modplus.org" + Environment.NewLine + "Как только файл будет проверен, мы добавим его содержимое в общедоступную базу");
+                    ModPlusAPI.Windows.MessageBox.Show(
+                        ModPlusAPI.Language.GetItem(LangItem, "msg27") + ": " + _currentFileToUpload + " " +
+                        ModPlusAPI.Language.GetItem(LangItem, "msg28") + Environment.NewLine +
+                        ModPlusAPI.Language.GetItem(LangItem, "msg29"));
                     //
                 }
                 catch (Exception exception)
@@ -297,7 +298,7 @@ namespace mpDwgBase.Windows
                     ExceptionBox.Show(exception);
                 }
             }
-            else ModPlusAPI.Windows.MessageBox.Show("Не удалось найти файл для отправки. Возможно Вы его удалили?");
+            else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
         }
         // create comment file
         private string CreateCommentFile(string tmpFolder)
@@ -315,7 +316,7 @@ namespace mpDwgBase.Windows
         {
             if (File.Exists(_currentFileToUpload))
             {
-                if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Удалить созданный архив?", MessageBoxIcon.Question))
+                if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg30"), MessageBoxIcon.Question))
                 {
                     var wasDel = false;
                     try
@@ -325,7 +326,7 @@ namespace mpDwgBase.Windows
                     }
                     catch
                     {
-                        ModPlusAPI.Windows.MessageBox.Show("Не удалось удалить архив! Возможно он открыт в данный момент");
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg31"));
                     }
                     if (wasDel)
                     {
@@ -350,7 +351,8 @@ namespace mpDwgBase.Windows
         public string FullFileName { get; set; }
         public string SourceFile { get; set; }
         private bool _selected;
-        public bool Selected { get { return _selected; } set { _selected = value; OnPropertyChanged(nameof(Selected)); } }
+        public bool Selected { get => _selected;
+            set { _selected = value; OnPropertyChanged(nameof(Selected)); } }
         // Полный путь к директории
         public string FullDirectory { get; set; }
         // Усеченный путь

@@ -1,137 +1,127 @@
-﻿<controls:MetroWindow x:Class="mpDwgBase.Windows.BaseUploading"
+﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.Windows.BaseUploading"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
-                      ShowMaxRestoreButton="False" ShowIconOnTitleBar="False"
-                      ShowMinButton="False" ShowTitleBar="False" SizeToContent="WidthAndHeight"
+                      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
+                      ResizeMode="NoResize" SizeToContent="WidthAndHeight"
                       MouseLeftButtonDown="BaseUploading_OnMouseLeftButtonDown"
                       Loaded="BaseUploading_OnLoaded" Closed="BaseUploading_OnClosed"
                       PreviewKeyDown="BaseUploading_OnPreviewKeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"></ResourceDictionary>
+                <!-- For IntelliSense -->
+                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-        <Label Grid.Row="0" Name="WindowLabel" FontSize="16" Margin="2">ОТПРАВКА БАЗЫ НА СЕРВЕР</Label>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <!--Description-->
-            <TextBlock Text="Укажите один или несколько файлов из вашей базы dwg. Функция соберет в архив эти файлы и создаст файл-указатель элементов, хранимых в этих файлах"
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--Description-->
+        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h27}"
                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" FontSize="14"
-                       Width="804" Margin="2"></TextBlock>
-            <!--Headers-->
-            <TextBlock Grid.Column="0" Grid.Row="1" Margin="2" HorizontalAlignment="Center"
-                       Text="Файлы в пользовательской базе:" FontWeight="SemiBold"></TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Center"
-                       Text="Хранимые в файле элементы:" FontWeight="SemiBold"></TextBlock>
-            <!--ListView files-->
-            <ListView Grid.Row="3" Grid.Column="0" Margin="2" SelectionMode="Single"
+                       MaxWidth="800" Margin="2"></TextBlock>
+        <!--Headers-->
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="2" HorizontalAlignment="Center"
+                       Text="{Binding Source={StaticResource Lang}, XPath=h28}" FontWeight="SemiBold"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Center"
+                       Text="{Binding Source={StaticResource Lang}, XPath=h29}" FontWeight="SemiBold"></TextBlock>
+        <!--ListView files-->
+        <ListView Grid.Row="3" Grid.Column="0" Margin="2" SelectionMode="Single"
                       Name="LvDwgFiles" Width="400" Height="250" BorderThickness="1"
                       BorderBrush="{DynamicResource AccentColorBrush}" SelectionChanged="LvDwgFiles_OnSelectionChanged">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                                       Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center"
                                       IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
-                            <!--FileName-->
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="2,2,2,0" FontSize="14" Text="{Binding FileName}"></TextBlock>
-                            <!--FilePath-->
-                            <TextBlock FontSize="10" Margin="2,0,2,2" Grid.Column="1" Grid.Row="1">
-                                <TextBlock Text="Путь к файлу:"></TextBlock>
+                        <!--FileName-->
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="2,2,2,0" FontSize="14" Text="{Binding FileName}"></TextBlock>
+                        <!--FilePath-->
+                        <TextBlock FontSize="10" Margin="2,0,2,2" Grid.Column="1" Grid.Row="1">
+                                <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h30}"></TextBlock>
                                 <TextBlock Text="{Binding FullFileName}" Margin="5,0,0,0"></TextBlock>
                             </TextBlock>
-                            <!--splitter-->
-                            <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                        <!--splitter-->
+                        <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                           Margin="0" BorderThickness="0,1,0,0"
                                           BorderBrush="{DynamicResource AccentColorBrush}"
                                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></GridSplitter>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <!--ListView items in file-->
-            <ListView Grid.Row="3" Grid.Column="1" Margin="2" Name="LvItemsInFile"
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <!--ListView items in file-->
+        <ListView Grid.Row="3" Grid.Column="1" Margin="2" Name="LvItemsInFile"
                       Width="400" Height="250" BorderThickness="1"
                       BorderBrush="{DynamicResource AccentColorBrush}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <!--Type-->
-                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="2" Text="Блок"
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <!--Type-->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="2" Text="{Binding Source={StaticResource Lang}, XPath=block}"
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Visibility="{Binding IsBlock}" FontSize="16">
-                                <TextBlock.LayoutTransform>
-                                    <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="2" Text="Чертеж"
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="2" Text="{Binding Source={StaticResource Lang}, XPath=drawing}"
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Visibility="{Binding IsDrawing}" FontSize="16" >
-                                <TextBlock.LayoutTransform>
-                                    <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
-                            <!--Name-->
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding Name}" FontSize="14"></TextBlock>
-                            <!--Some properties-->
-                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,2,2,2" FontSize="10">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                        <!--Name-->
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding Name}" FontSize="14"></TextBlock>
+                        <!--Some properties-->
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,2,2,2" FontSize="10">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock>
-                                        <TextBlock Text="Описание:"></TextBlock>
+                                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h6}"></TextBlock>
                                         <TextBlock Text="{Binding Description}" Margin="5,0,0,0"></TextBlock>
                                     </TextBlock>
                                     <TextBlock>
-                                        <TextBlock Text="Автор:"></TextBlock>
+                                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h7}"></TextBlock>
                                         <TextBlock Text="{Binding Author}" Margin="5,0,0,0"></TextBlock>
                                     </TextBlock>
                                     <TextBlock>
-                                        <TextBlock Text="Источник:"></TextBlock>
+                                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h8}"></TextBlock>
                                         <TextBlock Text="{Binding Source}" Margin="5,0,0,0"></TextBlock>
                                     </TextBlock>
                                 </StackPanel>
@@ -144,35 +134,36 @@
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
-            <!--Comment-->
-            <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                <TextBlock Text="Комментарий" Margin="2"></TextBlock>
-                <TextBox Margin="2" Width="804" TextWrapping="Wrap" MaxHeight="150" VerticalScrollBarVisibility="Auto"
-                         Name="TbComment" controls:TextBoxHelper.Watermark="Вы можете оставить свой комментарий к архиву и мы обратим на него внимание"></TextBox>
-            </StackPanel>
-            <!--Buttons-->
-            <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+        </ListView>
+        <!--Comment-->
+        <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h31}" Margin="2"></TextBlock>
+            <TextBox Margin="2" Width="804" TextWrapping="Wrap" MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                         Name="TbComment" mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h32}"></TextBox>
+        </StackPanel>
+        <!--Buttons-->
+        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
-                     Content="Собрать архив"
+                     Content="{Binding Source={StaticResource Lang}, XPath=h33}"
                     Name="BtMakeArchive" Click="BtMakeArchive_OnClick"></Button>
-            <WrapPanel Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center">
-                <Button  Content="Посмотреть архив"
+        <WrapPanel Grid.Row="5" Grid.Column="0" HorizontalAlignment="Center">
+            <Button  Content="{Binding Source ={StaticResource Lang}, XPath=h34}"
                         Width="150" Name="BtSeeArchive" Click="BtSeeArchive_OnClick"></Button>
-                <Button  Content="Удалить архив"
+            <Button  Content="{Binding Source={StaticResource Lang}, XPath=h35}"
                         Width="150" Name="BtDeleteArchive" Click="BtDeleteArchive_OnClick"></Button>
-            </WrapPanel>
-            <Button Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center"
-                     Content="Отправить архив на сервер"
+        </WrapPanel>
+        <Button Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center"
+                     Content="{Binding Source={StaticResource Lang}, XPath=h36}"
                     Name="BtUploadArchive" Click="BtUploadArchive_OnClick"></Button>
-            <!--Progress bar-->
-            <controls:MetroProgressBar Grid.Row="6" Height="20" Name="ProgressBar"
+        <!--Progress bar-->
+        <mah:MetroProgressBar Grid.Row="6" Height="20" Name="ProgressBar"
                                        Grid.Column="0" Grid.ColumnSpan="2"
-                                       Foreground="{DynamicResource AccentColorBrush}"></controls:MetroProgressBar>
-            <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource AccentColorBrush}"></mah:MetroProgressBar>
+        <TextBlock Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Grid.Column="0" Grid.ColumnSpan="2"
                        Name="ProgressText"></TextBlock>
-        </Grid>
     </Grid>
-</controls:MetroWindow>
+</mpc:BaseMetroWindow>
+
+
 

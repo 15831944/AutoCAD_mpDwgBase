@@ -44,7 +44,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\ModPlus_builded\Ionic.Zip.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\Ionic.Zip.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
@@ -188,6 +188,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\mpDwgBase_32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpDwgBase_2010\Resources\NoImageEn.png">
+      <Link>Resources\NoImageEn.png</Link>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

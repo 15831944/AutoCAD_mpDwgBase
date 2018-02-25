@@ -342,6 +342,8 @@ namespace mpDwgBase
     }
     public static class BlockInsertion
     {
+        private const string LangItem = "mpDwgBase";
+
         public static Dictionary<AttributeDefinition, AttributeReference> AppendAttribToBlock(Transaction tr, BlockReference blkref, List<string> atts)
         {
             var blkdef = (BlockTableRecord)tr.GetObject(blkref.BlockTableRecord, OpenMode.ForRead);
@@ -444,7 +446,7 @@ namespace mpDwgBase
                 {
                     case 0:
                         {
-                            JigPromptPointOptions jigOpts = new JigPromptPointOptions("\nТочка вставки:");
+                            JigPromptPointOptions jigOpts = new JigPromptPointOptions("\n" + Language.GetItem(LangItem, "msg13") + ":");
                             jigOpts.UserInputControls =
                             UserInputControls.Accept3dCoordinates |
                             UserInputControls.NoZeroResponseAccepted |
@@ -465,7 +467,7 @@ namespace mpDwgBase
                         }
                     case 1:
                         {
-                            JigPromptAngleOptions jigOpts = new JigPromptAngleOptions("\nУгол поворота:");
+                            JigPromptAngleOptions jigOpts = new JigPromptAngleOptions("\n" + Language.GetItem(LangItem, "msg14") + ":");
                             jigOpts.UserInputControls =
                             UserInputControls.Accept3dCoordinates |
                             UserInputControls.NoNegativeResponseAccepted |
@@ -540,15 +542,20 @@ namespace mpDwgBase
                     var attr = tr.GetObject(id, OpenMode.ForWrite) as AttributeReference;
                     if (attr != null)
                     {
-                        if (attr.Tag.ToLower().Equals("mp:позиция"))
+                        if (attr.Tag.ToLower().Equals("mp:позиция") ||
+                            attr.Tag.ToLower().Equals("mp:position"))
                             attr.TextString = dwgBaseItem.PositionValue;
-                        if (attr.Tag.ToLower().Equals("mp:обозначение"))
+                        if (attr.Tag.ToLower().Equals("mp:обозначение") ||
+                            attr.Tag.ToLower().Equals("mp:designation"))
                             attr.TextString = dwgBaseItem.DesignationValue;
-                        if (attr.Tag.ToLower().Equals("mp:наименование"))
+                        if (attr.Tag.ToLower().Equals("mp:наименование") ||
+                            attr.Tag.ToLower().Equals("mp:name"))
                             attr.TextString = dwgBaseItem.NominationValue;
-                        if (attr.Tag.ToLower().Equals("mp:масса"))
+                        if (attr.Tag.ToLower().Equals("mp:масса") ||
+                            attr.Tag.ToLower().Equals("mp:mass"))
                             attr.TextString = dwgBaseItem.MassValue;
-                        if (attr.Tag.ToLower().Equals("mp:примечание"))
+                        if (attr.Tag.ToLower().Equals("mp:примечание") ||
+                            attr.Tag.ToLower().Equals("mp:note"))
                             attr.TextString = dwgBaseItem.NoteValue;
                     }
                 }
@@ -573,15 +580,20 @@ namespace mpDwgBase
                             var attr = tr.GetObject(id, OpenMode.ForWrite) as AttributeReference;
                             if (attr != null)
                             {
-                                if (attr.Tag.ToLower().Equals("mp:позиция"))
+                                if (attr.Tag.ToLower().Equals("mp:позиция") ||
+                                    attr.Tag.ToLower().Equals("mp:position"))
                                     attr.TextString = dwgBaseItem.PositionValue;
-                                if (attr.Tag.ToLower().Equals("mp:обозначение"))
+                                if (attr.Tag.ToLower().Equals("mp:обозначение") ||
+                                    attr.Tag.ToLower().Equals("mp:designation"))
                                     attr.TextString = dwgBaseItem.DesignationValue;
-                                if (attr.Tag.ToLower().Equals("mp:наименование"))
+                                if (attr.Tag.ToLower().Equals("mp:наименование") ||
+                                    attr.Tag.ToLower().Equals("mp:name"))
                                     attr.TextString = dwgBaseItem.NominationValue;
-                                if (attr.Tag.ToLower().Equals("mp:масса"))
+                                if (attr.Tag.ToLower().Equals("mp:масса") ||
+                                    attr.Tag.ToLower().Equals("mp:mass"))
                                     attr.TextString = dwgBaseItem.MassValue;
-                                if (attr.Tag.ToLower().Equals("mp:примечание"))
+                                if (attr.Tag.ToLower().Equals("mp:примечание") ||
+                                    attr.Tag.ToLower().Equals("mp:note"))
                                     attr.TextString = dwgBaseItem.NoteValue;
                             }
                         }
@@ -598,7 +610,10 @@ namespace mpDwgBase
         /// <returns></returns>
         private static bool HasAttributesForSpecification(Transaction tr, ObjectId objectId)
         {
-            var allowAttributesTags = new List<string> { "mp:позиция", "mp:обозначение", "mp:наименование", "mp:масса", "mp:примечание" };
+            var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };
+            if (Language.RusWebLanguages.Contains(Language.CurrentLanguageName))
+                allowAttributesTags = new List<string> { "mp:позиция", "mp:обозначение", "mp:наименование", "mp:масса", "mp:примечание" };
+
             var blk = tr.GetObject(objectId, OpenMode.ForRead) as BlockReference;
             if (blk != null)
             {
@@ -618,8 +633,16 @@ namespace mpDwgBase
         private static List<AttributeDefinition> AddAttrDefenitions(BlockTableRecord acBlkTblRec, BlockReference blkRef, Transaction tr)
         {
             var attrDefs = new List<AttributeDefinition>();
-            var allowAttributesTags = new List<string> { "mp:Позиция", "mp:Обозначение", "mp:Наименование", "mp:Масса", "mp:Примечание" };
-            var allowAttributesPrompt = new List<string> { "Позиция изделия", "Обозначение для изделия", "Наименование изделия", "Масса изделия", "Примечание для изделия" };
+            var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };
+            if (Language.RusWebLanguages.Contains(Language.CurrentLanguageName))
+                allowAttributesTags = new List<string> { "mp:позиция", "mp:обозначение", "mp:наименование", "mp:масса", "mp:примечание" };
+
+            var allowAttributesPrompt = new List<string>
+            {
+                Language.GetItem(LangItem, "ad1"), Language.GetItem(LangItem, "ad2"),
+                Language.GetItem(LangItem, "ad3"), Language.GetItem(LangItem, "ad4"), Language.GetItem(LangItem, "ad5")
+            };
+
             for (var i = 0; i < allowAttributesTags.Count; i++)
             {
                 using (var acAttDef = new AttributeDefinition())
@@ -650,8 +673,7 @@ namespace mpDwgBase
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string name)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion
@@ -665,14 +687,14 @@ namespace mpDwgBase
         private string _Name;
         public string Name
         {
-            get { return _Name; }
+            get => _Name;
             set { if (_Name != value) { _Name = value; OnPropertyChanged("Name"); } }
         }
 
         private TreeViewModelItem _parent;
         public TreeViewModelItem Parent
         {
-            get { return _parent; }
+            get => _parent;
             set { if (_parent != value) { _parent = value; OnPropertyChanged("Parent"); } }
         }
 

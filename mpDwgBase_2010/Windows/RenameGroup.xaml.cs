@@ -1,16 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 
 namespace mpDwgBase.Windows
 {
     public partial class RenameGroup 
     {
+        private const string LangItem = "mpDwgBase";
+
         public RenameGroup()
         {
             InitializeComponent();
-            this.OnWindowStartUp();
+            Title = ModPlusAPI.Language.GetItem(LangItem, "h63");
             Loaded += RenameLayout_Loaded;
         }
 
@@ -28,7 +28,7 @@ namespace mpDwgBase.Windows
         {
             if (string.IsNullOrEmpty(TbNewName.Text))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Укажите новое имя группы");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg71"));
                 TbNewName.Focus();
             }
             else 

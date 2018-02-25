@@ -1,9 +1,9 @@
-﻿<controls:MetroWindow x:Class="mpDwgBase.Windows.DrawingRecommend"
+﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.Windows.DrawingRecommend"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
                       mc:Ignorable="d" SizeToContent="WidthAndHeight"
                       ShowInTaskbar="False" ShowCloseButton="True" ShowIconOnTitleBar="False"
                       ShowMaxRestoreButton="False" ShowMinButton="False" ShowTitleBar="False"
@@ -11,88 +11,83 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Margin="5">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <!--Label-->
-        <Label Grid.Row="0" FontSize="16" Margin="2">РЕКОМЕНДАЦИИ К ДОБАВЛЕНИЮ ЧЕРТЕЖЕЙ</Label>
         <!--text-->
-        <RichTextBox Grid.Row="1" Margin="2" Width="800" FontSize="14" IsReadOnly="True">
+        <RichTextBox Grid.Row="0" Margin="2" Width="800" FontSize="14" IsReadOnly="True">
             <FlowDocument>
                 <Paragraph>
-                    Функцией по умолчанию принимается что добавляемые в локальную (пользовательскую) базу чертежи будут в последствии добавлены в глобальную базу, доступную всем пользователям.
+                    <Run Text="{Binding Source={StaticResource Lang}, XPath=r10}"></Run>
                     <LineBreak></LineBreak>
-                    Поэтому на добавляемые чертежи накладываются некоторые ограничения:
+                    <Run Text="{Binding Source={StaticResource Lang}, XPath=r11}"></Run>
                 </Paragraph>
                 <List MarkerStyle="Box">
                     <ListItem>
                         <Paragraph>
-                            Добавляемые в базу чертежи должны быть сохранены в версии AutoCAD 2010
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r12}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            В добавляемом чертеже не должно использоваться Proxy-примитивов
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r13}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Чертежи, выполненные в плохом качестве (например, с выносками из отрезков и текста и т.п.) приниматься в общедоступную базу не будут
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r14}"></Run>
                         </Paragraph>
                     </ListItem>
                 </List>
                 <Paragraph>
-                    Также старайтесь соблюдать рекомендации:
+                    <Run Text="{Binding Source={StaticResource Lang}, XPath=r15}"></Run>
                 </Paragraph>
                 <List MarkerStyle="Box">
                     <ListItem>
                         <Paragraph>
-                            Не используйте в чертежах большое разнообразие слоев, если нет в этом необходимости. Лучший вариант – использовать стандартные слои плагина ModPlus
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r16}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Не используйте в чертежах большое количество стилей аннотаций. Лучший вариант – использовать стили аннотаций плагина ModPlus
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r17}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Не используйте в чертежах типов линий, не являющихся стандартными для AutoCAD
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r18}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Не используйте в чертежах шрифтов, не входящих в стандартный набор шрифтов AutoCAD
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r19}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Если Вы взяли чертеж с какого-то ресурса, то обязательно указывайте источник!
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r20}"></Run>
                         </Paragraph>
                     </ListItem>
                     <ListItem>
                         <Paragraph>
-                            Не ленитесь хорошо продумать путь к чертежу в базе
+                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r21}"></Run>
                         </Paragraph>
                     </ListItem>
                 </List>
             </FlowDocument>
         </RichTextBox>
         <!--Button-->
-        <Button Grid.Row="2"  Content="Закрыть" Margin="5"
+        <Button Grid.Row="1"  Content="{Binding Source={StaticResource Lang}, XPath=close}" Margin="5"
                 Name="BtClose" Click="BtClose_OnClick" HorizontalAlignment="Center"></Button>
     </Grid>
-</controls:MetroWindow>
+</mpc:BaseMetroWindow>
+
+
 

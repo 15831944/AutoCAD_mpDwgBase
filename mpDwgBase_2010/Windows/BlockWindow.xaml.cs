@@ -1,14 +1,14 @@
-﻿using System;
+﻿#if ac2010
+using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
+#elif ac2013
+using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+#endif
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-#if ac2010
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
-#elif ac2013
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-#endif
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,12 +23,11 @@ using Visibility = System.Windows.Visibility;
 
 namespace mpDwgBase.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для Block.xaml
-    /// </summary>
     public partial class BlockWindow
     {
-        private readonly bool IsEdit;
+        private const string LangItem = "mpDwgBase";
+
+        private readonly bool _isEdit;
         public DwgBaseItem Item;
         private ObjectId _selectedBlockObjectId;
         private readonly string _mpDwgBaseFile;
@@ -43,7 +42,7 @@ namespace mpDwgBase.Windows
             _mpDwgBaseFile = mpDwgBaseFile;
             _userDwgBaseFile = userDwgBaseFile;
             _dwgBaseFolder = dwgBaseFolder;
-            IsEdit = isEdit;
+            _isEdit = isEdit;
             // Отключаем видимость подробностей до выбора блока
             GridBlockDetails.Visibility = Visibility.Collapsed;
             BtLoadLastInteredData.Visibility = Visibility.Collapsed;
@@ -58,7 +57,7 @@ namespace mpDwgBase.Windows
         private void BlockWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             // if edit - attributes
-            if (IsEdit)
+            if (_isEdit)
                 FillAttributesIfIsEdit();
         }
         private void FillAttributesIfIsEdit()
@@ -86,12 +85,12 @@ namespace mpDwgBase.Windows
         {
             if (!CheckEmptyData()) return;
 
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 var allGood = true;
                 if (CheckInteredItemData())
                 {
-                    allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo("Добавить блок с такими данными?", MessageBoxIcon.Question);
+                    allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg32"), MessageBoxIcon.Question);
                 }
                 if (allGood)
                 {
@@ -109,7 +108,7 @@ namespace mpDwgBase.Windows
                         DialogResult = true;
                         Close();
                     }
-                    else ModPlusAPI.Windows.MessageBox.Show("Не удалось скопировать выбранный блок в указанный файл");
+                    else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg33"));
                 }
             }
             else
@@ -167,8 +166,8 @@ namespace mpDwgBase.Windows
             var ed = doc.Editor;
             try
             {
-                var peo = new PromptEntityOptions("\nВыберите блок для добавления в базу: ");
-                peo.SetRejectMessage("\nReject");
+                var peo = new PromptEntityOptions("\n" + ModPlusAPI.Language.GetItem(LangItem, "msg34") + ":");
+                peo.SetRejectMessage("\n" + ModPlusAPI.Language.GetItem(LangItem, "wrong"));
                 peo.AllowNone = true;
                 peo.AllowObjectOnLockedLayer = true;
                 peo.AddAllowedClass(typeof(BlockReference), true);
@@ -233,66 +232,64 @@ namespace mpDwgBase.Windows
         {
             var hasSame = false;
             #region Проверяем по базе плагина
-            List<DwgBaseItem> mpDwgBaseItems;
-            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out mpDwgBaseItems))
+
+            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
             {
                 foreach (var mpDwgBaseItem in mpDwgBaseItems)
                 {
                     if (mpDwgBaseItem.IsBlock)
                         if (mpDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("База dwg плагина содержит блок с именем " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg35") + ": " + Item.Name);
                             hasSame = true;
                         }
                 }
             }
             else
             {
-                ModPlusAPI.Windows.MessageBox.Show("Ошибка парсинга файла базы dwg плагина!");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg36"));
                 return false;
             }
             #endregion
             #region Проверяем по базе пользователя
-            List<DwgBaseItem> userDwgBaseItems;
-            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out userDwgBaseItems))
+
+            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out var userDwgBaseItems))
             {
                 foreach (var userDwgBaseItem in userDwgBaseItems)
                 {
                     if (userDwgBaseItem.IsBlock)
                         if (userDwgBaseItem.Name.Equals(Item.Name))
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Пользовательская база dwg содержит блок с именем " + Item.Name);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg37") + ": " + Item.Name);
                             hasSame = true;
                         }
                 }
             }
             else
             {
-                ModPlusAPI.Windows.MessageBox.Show("Ошибка парсинга файла пользовательской базы dwg!");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg38"));
                 return false;
             }
             #endregion
             return hasSame;
         }
-        /// <summary>
-        /// Проверка введенных данных на наличие пустых полей
-        /// </summary>
+        /// <summary>Проверка введенных данных на наличие пустых полей</summary>
         /// <returns>true - все заполнено, false - требуется заполнение</returns>
         private bool CheckEmptyData()
         {
             if (string.IsNullOrEmpty(Item.Name))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Укажите отображаемое имя блока (Название)");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg39"));
                 TbName.Focus();
                 return false;
             }
             if (Item.Path.Equals("Блоки/"))
             {
-                ModPlusAPI.Windows.MessageBox.Show("Укажите путь в каталоге");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg40"));
                 CbPath.Focus();
                 return false;
             }
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 var db = AcApp.DocumentManager.MdiActiveDocument.Database;
                 if (ChkIsCurrentDwgFile.IsChecked != null && ChkIsCurrentDwgFile.IsChecked.Value)
@@ -302,15 +299,15 @@ namespace mpDwgBase.Windows
                         var fi = new FileInfo(db.Filename);
                         if (File.Exists(db.Filename))
                             ModPlusAPI.Windows.MessageBox.Show(
-                                "Установлена галочка \"Текущий файл\" для dwg-файла, однако текущий файл не расположен в каталоге dwg-базы!" +
-                                Environment.NewLine + "Каталог dwg-базы - " + _dwgBaseFolder + Environment.NewLine +
-                                "Каталог текущего файла - " + fi.DirectoryName +
-                                Environment.NewLine + "Возможно текущий файл еще не сохранен!"
+                                ModPlusAPI.Language.GetItem(LangItem, "msg41") + Environment.NewLine +
+                                ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
+                                ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
                         else
                             ModPlusAPI.Windows.MessageBox.Show(
-                                "Установлена галочка \"Текущий\" для dwg-файла, однако не удалось распознать каталог расположения текущего файла" +
-                                Environment.NewLine + "Возможно текущий файл не сохранен!"
+                                ModPlusAPI.Language.GetItem(LangItem, "msg45") +
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
 
                         return false;
@@ -320,7 +317,7 @@ namespace mpDwgBase.Windows
                 {
                     if (string.IsNullOrEmpty(Item.SourceFile))
                     {
-                        ModPlusAPI.Windows.MessageBox.Show("Укажите dwg-файл для копирования блока");
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg46"));
                         return false;
                     }
                 }
@@ -360,7 +357,7 @@ namespace mpDwgBase.Windows
             Item.Author = TbAuthor.Text.Trim();
             Item.Is3Dblock = ChkIs3Dblock.IsChecked != null && ChkIs3Dblock.IsChecked.Value;
             // attributes values
-            if (!IsEdit)
+            if (!_isEdit)
             {
                 if (_blockExistAttributes != null && _blockExistAttributes.Any())
                 {
@@ -379,7 +376,7 @@ namespace mpDwgBase.Windows
             }
             else
             {
-                if(DgBlockExistAttributes.Items.Count > 0)
+                if (DgBlockExistAttributes.Items.Count > 0)
                 {
                     Item.AttributesValues = new List<AttributeValue>();
                     foreach (var item in DgBlockExistAttributes.Items)
@@ -390,10 +387,7 @@ namespace mpDwgBase.Windows
                 }
             }
         }
-        /// <summary>
-        /// Копирование блока в файл
-        /// </summary>
-        /// <returns></returns>
+        /// <summary>Копирование блока в файл</summary>
         private bool CopySelectedBlockToFile()
         {
             var tempFile = Path.GetTempFileName();
@@ -448,8 +442,7 @@ namespace mpDwgBase.Windows
         private void TbPath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             var cb = sender as ComboBox;
-            var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && !tb.Text.StartsWith("Блоки/"))
+            if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
                 Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
             }
@@ -458,8 +451,7 @@ namespace mpDwgBase.Windows
         private void TbPath_OnTextInput(object sender, TextCompositionEventArgs e)
         {
             var cb = sender as ComboBox;
-            var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && !tb.Text.StartsWith("Блоки/"))
+            if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
                 Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
             }
@@ -476,8 +468,8 @@ namespace mpDwgBase.Windows
         {
             try
             {
-                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog("Выбор файла для добавления блока", _dwgBaseFolder,
-                    "dwg", "name",
+                var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog(
+                    ModPlusAPI.Language.GetItem(LangItem, "msg47"), _dwgBaseFolder, "dwg", "name",
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoFtpSites |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoShellExtensions |
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoUrls |
@@ -500,12 +492,12 @@ namespace mpDwgBase.Windows
                             }
                             else
                             {
-                                ModPlusAPI.Windows.MessageBox.Show("Выбранный файл должен быть сохранен в версии AutoCAD 2010!");
+                                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg48"));
                             }
                         }
                         else
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Указанный файл должен находиться в подпапке папки " + _dwgBaseFolder);
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
                         }
                     }
                     else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
@@ -527,7 +519,7 @@ namespace mpDwgBase.Windows
         {
             try
             {
-                var sfd = new Autodesk.AutoCAD.Windows.SaveFileDialog("Создать новый фаил базы dwg", _dwgBaseFolder, "dwg", "name",
+                var sfd = new Autodesk.AutoCAD.Windows.SaveFileDialog(ModPlusAPI.Language.GetItem(LangItem, "msg50"), _dwgBaseFolder, "dwg", "name",
                     Autodesk.AutoCAD.Windows.SaveFileDialog.SaveFileDialogFlags.DefaultIsFolder |
                     Autodesk.AutoCAD.Windows.SaveFileDialog.SaveFileDialogFlags.DoNotTransferRemoteFiles |
                     Autodesk.AutoCAD.Windows.SaveFileDialog.SaveFileDialogFlags.ForceDefaultFolder |
@@ -564,13 +556,15 @@ namespace mpDwgBase.Windows
                             }
                             else
                             {
-                                ModPlusAPI.Windows.MessageBox.Show("Не нужно создавать файл в корне папки " + _dwgBaseFolder +
-                                              Environment.NewLine + "Создайте подпапку!");
+                                ModPlusAPI.Windows.MessageBox.Show(
+                                    ModPlusAPI.Language.GetItem(LangItem, "msg51") + " " + _dwgBaseFolder +
+                                    Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg52"));
                             }
                         }
                         else
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Указанный файл должен находиться в подпапке папки " + _dwgBaseFolder);
+                            ModPlusAPI.Windows.MessageBox.Show(
+                                ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
                         }
                     }
                     else if (sfdresult == System.Windows.Forms.DialogResult.Cancel) return;
@@ -659,8 +653,7 @@ namespace mpDwgBase.Windows
             if (attribute != null)
             {
                 var value = attribute.Value;
-                bool attrForSpec;
-                if (bool.TryParse(value, out attrForSpec))
+                if (bool.TryParse(value, out var attrForSpec))
                 {
                     ChkHasAttributesForSpecification.IsChecked = attrForSpec;
                     if (attrForSpec)
@@ -688,6 +681,7 @@ namespace mpDwgBase.Windows
             }
         }
         #endregion
+
         #region Attributes for specification
 
         internal class AttributeForSpecification : INotifyPropertyChanged
@@ -695,7 +689,8 @@ namespace mpDwgBase.Windows
             public string Name { get; set; }
             public string DisplayedName { get; set; }
             private string _baseValue;
-            public string BaseValue { get { return _baseValue; } set { _baseValue = value; OnPropertyChanged(nameof(BaseValue)); } }
+            public string BaseValue { get => _baseValue;
+                set { _baseValue = value; OnPropertyChanged(nameof(BaseValue)); } }
 
 
             public event PropertyChangedEventHandler PropertyChanged;
@@ -713,31 +708,31 @@ namespace mpDwgBase.Windows
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Position",
-                DisplayedName = "Позиция",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a1"),
                 BaseValue = string.Empty
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Designation",
-                DisplayedName = "Обозначение",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a2"),
                 BaseValue = string.Empty
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Nomination",
-                DisplayedName = "Наименование",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a3"),
                 BaseValue = string.Empty
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Mass",
-                DisplayedName = "Масса",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a4"),
                 BaseValue = string.Empty
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Note",
-                DisplayedName = "Примечание",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a5"),
                 BaseValue = string.Empty
             });
         }
@@ -747,39 +742,38 @@ namespace mpDwgBase.Windows
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Position",
-                DisplayedName = "Позиция",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a1"),
                 BaseValue = editingItem.PositionValue
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Designation",
-                DisplayedName = "Обозначение",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a2"),
                 BaseValue = editingItem.DesignationValue
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Nomination",
-                DisplayedName = "Наименование",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a3"),
                 BaseValue = editingItem.NominationValue
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Mass",
-                DisplayedName = "Масса",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a4"),
                 BaseValue = editingItem.MassValue
             });
             _attributesForSpecification.Add(new AttributeForSpecification
             {
                 Name = "Note",
-                DisplayedName = "Примечание",
+                DisplayedName = ModPlusAPI.Language.GetItem(LangItem, "a5"),
                 BaseValue = editingItem.NoteValue
             });
         }
         private void ChkHasAttributesForSpecification_OnChecked(object sender, RoutedEventArgs e)
         {
             if (Item.IsDynamicBlock)
-                ModPlusAPI.Windows.MessageBox.Show("Внимание! Выбранный блок является динамическим! Атрибуты для спецификации учитываются для одного экземпляра блока!" + Environment.NewLine +
-                    "Т.е. если в блоке есть несколько вариантов выбора, то работа с таким блоком будет сбивать с толку!");
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg53"));
             DgAttributesForSpecifictaion.Visibility = Visibility.Visible;
             // fill
             FillAttributesForSpecification();
@@ -791,6 +785,7 @@ namespace mpDwgBase.Windows
             DgAttributesForSpecifictaion.Visibility = Visibility.Collapsed;
         }
         #endregion
+
         #region block exist attributes
 
         internal class BlockExistAttribute
@@ -816,8 +811,8 @@ namespace mpDwgBase.Windows
                     {
                         var blkExistAttr = new BlockExistAttribute
                         {
-                            Constant = attrDef.Constant ? "Да" : "Нет",
-                            Invisible = attrDef.Invisible ? "Да" : "Нет",
+                            Constant = attrDef.Constant ? ModPlusAPI.Language.GetItem(LangItem, "yes") : ModPlusAPI.Language.GetItem(LangItem, "no"),
+                            Invisible = attrDef.Invisible ? ModPlusAPI.Language.GetItem(LangItem, "yes") : ModPlusAPI.Language.GetItem(LangItem, "no"),
                             Prompt = attrDef.Prompt,
                             Tag = attrDef.Tag,
                             TextString = attrDef.TextString
@@ -857,11 +852,7 @@ namespace mpDwgBase.Windows
         // Взять значения атрибутов из блока
         private void BtGetAttrValuesFromBlock_OnClick(object sender, RoutedEventArgs e)
         {
-            if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Текущие значения атрибутов заполнены значениями по умолчанию, заданными при создании блока"
-                + Environment.NewLine +
-                "Если продолжить, то значения атрибутов будут заполнены значениями из выбранного блока!" +
-                Environment.NewLine +
-                "Взять значения атрибутов из выбранного блока?", MessageBoxIcon.Question))
+            if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg54"), MessageBoxIcon.Question))
             {
                 try
                 {
@@ -884,12 +875,7 @@ namespace mpDwgBase.Windows
         }
 
         #endregion
-
-        private void BlockWindow_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
+        
         private void ChkIsCurrentDwgFile_OnChecked(object sender, RoutedEventArgs e)
         {
             // нужно проверить версию файла
@@ -901,15 +887,15 @@ namespace mpDwgBase.Windows
                     var fi = new FileInfo(db.Filename);
                     if (File.Exists(db.Filename))
                         ModPlusAPI.Windows.MessageBox.Show(
-                            "Текущий файл не расположен в каталоге dwg-базы!" +
-                            Environment.NewLine + "Каталог dwg-базы - " + _dwgBaseFolder + Environment.NewLine +
-                            "Каталог текущего файла - " + fi.DirectoryName +
-                            Environment.NewLine + "Возможно текущий файл еще не сохранен!"
+                            ModPlusAPI.Language.GetItem(LangItem, "msg55") + Environment.NewLine +
+                            ModPlusAPI.Language.GetItem(LangItem, "msg42")+ " - " + _dwgBaseFolder + Environment.NewLine +
+                            ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
                     else
                         ModPlusAPI.Windows.MessageBox.Show(
-                            "Не удалось распознать каталог расположения текущего файла" +
-                            Environment.NewLine + "Возможно текущий файл не сохранен!"
+                            ModPlusAPI.Language.GetItem(LangItem, "msg56") +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
 
                     ChkIsCurrentDwgFile.IsChecked = false;
@@ -920,16 +906,14 @@ namespace mpDwgBase.Windows
                     {
                         if (db.LastSavedAsVersion != DwgVersion.AC1024)
                         {
-                            ModPlusAPI.Windows.MessageBox.Show("Версия текущего файла не соответствует версии AutoCAD 2010!" +
-                                          Environment.NewLine + "Так как плагин ModPlus работает с версии AutoCAD 2010 и выше," +
-                                          Environment.NewLine + "файл нужно сохранить в версию AutoCAD 2010");
+                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg57"));
                             ChkIsCurrentDwgFile.IsChecked = false;
                         }
                     }
                     else
                     {
-                        ModPlusAPI.Windows.MessageBox.Show("Не удалось распознать каталог расположения текущего файла" +
-                            Environment.NewLine + "Возможно текущий файл не сохранен!");
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg56") +
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
                         ChkIsCurrentDwgFile.IsChecked = false;
                     }
                 }
@@ -953,12 +937,11 @@ namespace mpDwgBase.Windows
 
         private void BlockWindow_OnClosed(object sender, EventArgs e)
         {
-            if (IsEdit) return;
+            if (_isEdit) return;
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
-                if (ModPlusAPI.Windows.MessageBox.ShowYesNo("Сохранить введенные данные как \"Последние введенные данные\"?",
-                    MessageBoxIcon.Question))
+                if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
                     SaveInteredData();
         }
     }
