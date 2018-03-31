@@ -1,17 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4F13A78E-C9A7-4E77-B3A3-FD00E9E5BF40}</ProjectGuid>
+    <ProjectGuid>{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>mpDwgBase</RootNamespace>
-    <AssemblyName>mpDwgBase_2014</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>mpDwgBase_2019</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,8 +20,6 @@
     <DefineConstants>TRACE;DEBUG;ac2013,ac2014</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,19 +28,18 @@
     <DefineConstants>TRACE;ac2013,ac2014</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
-      <HintPath>..\..\..\..\_Acad dlls\2014\accoremgd.dll</HintPath>
+      <HintPath>..\..\..\..\_Acad dlls\2019\accoremgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>..\..\..\..\_Acad dlls\2014\acdbmgd.dll</HintPath>
+      <HintPath>..\..\..\..\_Acad dlls\2019\acdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acmgd">
-      <HintPath>..\..\..\..\_Acad dlls\2014\acmgd.dll</HintPath>
+      <HintPath>..\..\..\..\_Acad dlls\2019\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Ionic.Zip">
@@ -58,21 +54,35 @@
       <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModPlus_2014">
-      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlus_2014.dll</HintPath>
+    <Reference Include="ModPlus_2019">
+      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlus_2019.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
+    <!--
+    
+    <Reference Include="System.Core"/>
+    <Reference Include="System.Xml.Linq"/>
+    <Reference Include="System.Data.DataSetExtensions"/>
+    
+    
+    <Reference Include="Microsoft.CSharp"/>
+    
+    <Reference Include="System.Data"/>
+    
+    <Reference Include="System.Net.Http"/>
+    
+    <Reference Include="System.Xml"/>
+	-->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\mpDwgBase_2010\mpDwgBase.cs">
@@ -116,6 +126,25 @@
     </Compile>
     <Compile Include="Interface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpDwgBase_2010\Resources\helpImages\helpImage_1.png">
+      <Link>Resources\helpImages\helpImage_1.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_16x16.png">
+      <Link>Resources\mpDwgBase_16x16.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_32x32.png">
+      <Link>Resources\mpDwgBase_32x32.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2010\Resources\NoImage.png">
+      <Link>Resources\NoImage.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2010\Resources\NoImageEn.png">
+      <Link>Resources\NoImageEn.png</Link>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="..\mpDwgBase_2010\mpDwgBaseMainWindow.xaml">
@@ -164,35 +193,5 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\NoImage.png">
-      <Link>Resources\NoImage.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\NoImageEn.png">
-      <Link>Resources\NoImageEn.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\helpImages\helpImage_1.png">
-      <Link>Resources\helpImages\helpImage_1.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_16x16.png">
-      <Link>Resources\mpDwgBase_16x16.png</Link>
-    </Resource>
-    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_32x32.png">
-      <Link>Resources\mpDwgBase_32x32.png</Link>
-    </Resource>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

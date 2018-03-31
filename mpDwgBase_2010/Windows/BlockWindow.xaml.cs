@@ -16,7 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using mpDwgBase.Annotations;
 using ModPlusAPI.Windows;
 using ModPlusAPI.Windows.Helpers;
 using Visibility = System.Windows.Visibility;
@@ -694,7 +693,6 @@ namespace mpDwgBase.Windows
 
 
             public event PropertyChangedEventHandler PropertyChanged;
-            [NotifyPropertyChangedInvocator]
             protected virtual void OnPropertyChanged(string propertyName)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

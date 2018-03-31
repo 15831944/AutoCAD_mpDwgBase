@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using mpDwgBase.Annotations;
 using ModPlusAPI;
 using ModPlusAPI.Windows;
 
@@ -326,7 +325,6 @@ namespace mpDwgBase.Windows
 
             public event PropertyChangedEventHandler PropertyChanged;
 
-            [NotifyPropertyChangedInvocator]
             private void OnPropertyChanged(string propertyName)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -608,7 +606,6 @@ namespace mpDwgBase.Windows
 
             public event PropertyChangedEventHandler PropertyChanged;
 
-            [NotifyPropertyChangedInvocator]
             private void OnPropertyChanged(string propertyName)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

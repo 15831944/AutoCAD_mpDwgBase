@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
 using Ionic.Zip;
-using mpDwgBase.Annotations;
 using ModPlusAPI.Web.FTP;
 using ModPlusAPI.Windows;
 
@@ -359,7 +358,6 @@ namespace mpDwgBase.Windows
         public string SubDirectory { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

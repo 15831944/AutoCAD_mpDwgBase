@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mpDwgBase_2010", "mpDwgBase_2010\mpDwgBase_2010.csproj", "{B15E6A2B-8648-43E9-9C7D-C6C27FF076F1}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mpDwgBase_2017", "mpDwgBase_2017\mpDwgBase_2017.csproj", "{570D846A-8226-453C-A4F8-1C0A6D9BB9AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mpDwgBase_2018", "mpDwgBase_2018\mpDwgBase_2018.csproj", "{600FD157-820B-49C9-96EA-391508409BDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mpDwgBase_2019", "mpDwgBase_2019\mpDwgBase_2019.csproj", "{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,8 +65,15 @@ Global
 		{600FD157-820B-49C9-96EA-391508409BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{600FD157-820B-49C9-96EA-391508409BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{600FD157-820B-49C9-96EA-391508409BDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90D2BD45-BE65-4B52-A3B3-60B2EB0D5218}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A72DB758-B922-445B-ADE6-062D5AF400DE}
 	EndGlobalSection
 EndGlobal
