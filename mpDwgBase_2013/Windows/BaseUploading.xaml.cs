@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
-using Ionic.Zip;
 using ModPlusAPI.Web.FTP;
 using ModPlusAPI.Windows;
 
@@ -184,22 +183,24 @@ namespace mpDwgBase.Windows
             // comment file
             var commentFile = CreateCommentFile(tmpFolder);
             // create zip
-            using (var zip = new ZipFile(Encoding.GetEncoding("cp866")))
+            _currentFileToUpload = Path.ChangeExtension(Path.Combine(tmpFolder, Path.GetRandomFileName()), ".zip");
+            if (File.Exists(_currentFileToUpload))
+                File.Delete(_currentFileToUpload);
+            using (ZipArchive zip = ZipFile.Open(_currentFileToUpload, ZipArchiveMode.Create))
             {
                 // create directories
                 foreach (FileToBind fileToBind in _filesToBind.Where(x => x.Selected))
                 {
-                    zip.AddFile(fileToBind.FullFileName, fileToBind.SubDirectory);
+                    zip.CreateEntryFromFile(fileToBind.FullFileName,
+                        Path.Combine(fileToBind.SubDirectory, fileToBind.FileName));
                 }
                 // add xml file and delete him
-                zip.AddFile(xmlToArchive, "");
+                zip.CreateEntryFromFile(xmlToArchive, new FileInfo(xmlToArchive).Name);
                 // add comment file
                 if (!string.IsNullOrEmpty(commentFile) && File.Exists(commentFile))
-                    zip.AddFile(commentFile, "");
-                // save to zip
-                _currentFileToUpload = Path.ChangeExtension(Path.Combine(tmpFolder, Path.GetRandomFileName()), ".zip");
-                zip.Save(_currentFileToUpload);
+                    zip.CreateEntryFromFile(commentFile, new FileInfo(commentFile).Name);
             }
+
             File.Delete(xmlToArchive);
             // show buttons
             BtMakeArchive.Visibility = Visibility.Collapsed;

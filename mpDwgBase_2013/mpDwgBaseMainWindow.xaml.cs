@@ -253,7 +253,7 @@ namespace mpDwgBase
                         var imagefile = DwgBaseHelpers.FindImageFile(selectedItem, _dwgBaseFolder);
                         if (string.IsNullOrEmpty(imagefile))
                         {
-                            if(ModPlusAPI.Language.RusWebLanguages.Contains(ModPlusAPI.Language.CurrentLanguageName))
+                            if (ModPlusAPI.Language.RusWebLanguages.Contains(ModPlusAPI.Language.CurrentLanguageName))
                                 imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImage.png";
                             else imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImageEn.png";
                         }
@@ -468,7 +468,7 @@ namespace mpDwgBase
 
                     tr.Commit();
                 }
-                if(ChkCloseAfterInsert.IsChecked != null && ChkCloseAfterInsert.IsChecked.Value) Close();
+                if (ChkCloseAfterInsert.IsChecked != null && ChkCloseAfterInsert.IsChecked.Value) Close();
                 else Show();
             }// lock
         }
@@ -563,7 +563,9 @@ namespace mpDwgBase
 
                     // Have to get size of remote object through the webrequest as not available on remote files,
                     // although it does work on local files.
-                    using (WebResponse response = WebRequest.Create(URL2.ToString()).GetResponse())
+                    WebRequest webRequest = WebRequest.Create(URL2.ToString());
+                    webRequest.Proxy = ModPlusAPI.Web.Proxy.GetWebProxy();
+                    using (WebResponse response = webRequest.GetResponse())
                     {
                         using (Stream stream = response.GetResponseStream())
                             remoteSize = response.ContentLength;
@@ -579,7 +581,7 @@ namespace mpDwgBase
                 int bytesRead = 0, bytesReadTotal = 0;
                 try
                 {
-                    using (WebClient webClient = new WebClient())
+                    using (WebClient webClient = new WebClient { Proxy = ModPlusAPI.Web.Proxy.GetWebProxy() })
                     {
                         using (Stream streamRemote = webClient.OpenRead(new Uri(URL2.ToString())))
                         {
@@ -763,7 +765,7 @@ namespace mpDwgBase
                             Title = ModPlusAPI.Language.GetItem(LangItem, "h22"),
                             Item = new DwgBaseItem(),
                             Owner = this,
-                            CbPath = {ItemsSource = pathes.Where(x => x.Contains("Блоки/"))}
+                            CbPath = { ItemsSource = pathes.Where(x => x.Contains("Блоки/")) }
                         };
 
                         if (newBlock.ShowDialog() == true)
@@ -818,7 +820,7 @@ namespace mpDwgBase
             var selectedItem = LbItems.SelectedItem as DwgBaseItem;
             var selectedIndex = LbItems.SelectedIndex;
             var selectedTvItem = TvGroups.SelectedItem as TreeViewModelItem;
-            
+
             var win = new UserBaseTools(
                 Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
                 Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),

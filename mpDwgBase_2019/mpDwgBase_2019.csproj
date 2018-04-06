@@ -31,19 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
-      <HintPath>..\..\..\..\_Acad dlls\2019\accoremgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2019\accoremgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>..\..\..\..\_Acad dlls\2019\acdbmgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2019\acdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acmgd">
-      <HintPath>..\..\..\..\_Acad dlls\2019\acmgd.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\Ionic.Zip.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2019\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
@@ -62,6 +58,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -85,42 +83,42 @@
 	-->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\mpDwgBase_2010\mpDwgBase.cs">
+    <Compile Include="..\mpDwgBase_2013\mpDwgBase.cs">
       <Link>mpDwgBase.cs</Link>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\mpDwgBaseMainWindow.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\mpDwgBaseMainWindow.xaml.cs">
       <Link>mpDwgBaseMainWindow.xaml.cs</Link>
       <DependentUpon>mpDwgBaseMainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\BaseUploading.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml.cs">
       <Link>Windows\BaseUploading.xaml.cs</Link>
       <DependentUpon>BaseUploading.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\BlockRecommend.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\BlockRecommend.xaml.cs">
       <Link>Windows\BlockRecommend.xaml.cs</Link>
       <DependentUpon>BlockRecommend.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\BlockWindow.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\BlockWindow.xaml.cs">
       <Link>Windows\BlockWindow.xaml.cs</Link>
       <DependentUpon>BlockWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\DrawingRecommend.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\DrawingRecommend.xaml.cs">
       <Link>Windows\DrawingRecommend.xaml.cs</Link>
       <DependentUpon>DrawingRecommend.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\DrawingWindow.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\DrawingWindow.xaml.cs">
       <Link>Windows\DrawingWindow.xaml.cs</Link>
       <DependentUpon>DrawingWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\RenameGroup.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\RenameGroup.xaml.cs">
       <Link>Windows\RenameGroup.xaml.cs</Link>
       <DependentUpon>RenameGroup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\SelectAddingVariant.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\SelectAddingVariant.xaml.cs">
       <Link>Windows\SelectAddingVariant.xaml.cs</Link>
       <DependentUpon>SelectAddingVariant.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2010\Windows\UserBaseTools.xaml.cs">
+    <Compile Include="..\mpDwgBase_2013\Windows\UserBaseTools.xaml.cs">
       <Link>Windows\UserBaseTools.xaml.cs</Link>
       <DependentUpon>UserBaseTools.xaml</DependentUpon>
     </Compile>
@@ -128,66 +126,66 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\helpImages\helpImage_1.png">
+    <Resource Include="..\mpDwgBase_2013\Resources\helpImages\helpImage_1.png">
       <Link>Resources\helpImages\helpImage_1.png</Link>
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_16x16.png">
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16.png">
       <Link>Resources\mpDwgBase_16x16.png</Link>
     </Resource>
-    <Resource Include="..\mpDwgBase_2010\Resources\mpDwgBase_32x32.png">
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32.png">
       <Link>Resources\mpDwgBase_32x32.png</Link>
     </Resource>
-    <Resource Include="..\mpDwgBase_2010\Resources\NoImage.png">
+    <Resource Include="..\mpDwgBase_2013\Resources\NoImage.png">
       <Link>Resources\NoImage.png</Link>
     </Resource>
-    <Resource Include="..\mpDwgBase_2010\Resources\NoImageEn.png">
+    <Resource Include="..\mpDwgBase_2013\Resources\NoImageEn.png">
       <Link>Resources\NoImageEn.png</Link>
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\mpDwgBase_2010\mpDwgBaseMainWindow.xaml">
+    <Page Include="..\mpDwgBase_2013\mpDwgBaseMainWindow.xaml">
       <Link>mpDwgBaseMainWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\BaseUploading.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml">
       <Link>Windows\BaseUploading.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\BlockRecommend.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\BlockRecommend.xaml">
       <Link>Windows\BlockRecommend.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\BlockWindow.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\BlockWindow.xaml">
       <Link>Windows\BlockWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\DrawingRecommend.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\DrawingRecommend.xaml">
       <Link>Windows\DrawingRecommend.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\DrawingWindow.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\DrawingWindow.xaml">
       <Link>Windows\DrawingWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\RenameGroup.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\RenameGroup.xaml">
       <Link>Windows\RenameGroup.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\SelectAddingVariant.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\SelectAddingVariant.xaml">
       <Link>Windows\SelectAddingVariant.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2010\Windows\UserBaseTools.xaml">
+    <Page Include="..\mpDwgBase_2013\Windows\UserBaseTools.xaml">
       <Link>Windows\UserBaseTools.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
