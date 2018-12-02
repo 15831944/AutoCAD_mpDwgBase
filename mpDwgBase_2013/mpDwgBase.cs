@@ -1,32 +1,26 @@
-﻿#if ac2010
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
-#elif ac2013
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-#endif
-using Autodesk.AutoCAD.Runtime;
-using Microsoft.Win32;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Serialization;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using System.ComponentModel;
-using System.Drawing;
-using System.Net;
-using System.Windows.Media.Imaging;
-using System.Xml;
-using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Windows.Data;
-using Autodesk.AutoCAD.Internal;
-using ModPlusAPI;
-using ModPlusAPI.Windows;
-
-namespace mpDwgBase
+﻿namespace mpDwgBase
 {
+    using Autodesk.AutoCAD.Windows.Data;
+    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Autodesk.AutoCAD.Runtime;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Xml.Serialization;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Autodesk.AutoCAD.Geometry;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Net;
+    using System.Windows.Media.Imaging;
+    using System.Xml;
+    using Autodesk.AutoCAD.ApplicationServices;
+    using Autodesk.AutoCAD.Internal;
+    using ModPlusAPI;
+    using ModPlusAPI.Windows;
+
     [Serializable]
     public class DwgBaseItem
     {

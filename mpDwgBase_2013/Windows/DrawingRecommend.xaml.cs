@@ -1,8 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Input;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
+    using System.Windows;
+
     public partial class DrawingRecommend
     {
         public DrawingRecommend()
@@ -14,11 +13,6 @@ namespace mpDwgBase.Windows
         private void BtClose_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void DrawingRecommend_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape) Close();
         }
     }
 }

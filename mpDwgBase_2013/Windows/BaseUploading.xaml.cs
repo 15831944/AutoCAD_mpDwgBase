@@ -38,12 +38,7 @@ namespace mpDwgBase.Windows
             _dwgBaseFolder = dwgBaseFolder;
             _dwgBaseItems = dwgBaseItems;
         }
-
-        private void BaseUploading_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
-
+        
         private void BaseUploading_OnLoaded(object sender, RoutedEventArgs e)
         {
             // button visibility
@@ -337,11 +332,6 @@ namespace mpDwgBase.Windows
                     }
                 }
             }
-        }
-
-        private void BaseUploading_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape) Close();
         }
     }
 

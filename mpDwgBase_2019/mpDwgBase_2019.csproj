@@ -16,16 +16,16 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\mpDwgBase\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;ac2013,ac2014</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\AutoCAD\mpDwgBase\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ac2014</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\mpDwgBase\</OutputPath>
-    <DefineConstants>TRACE;ac2013,ac2014</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\AutoCAD\mpDwgBase\</OutputPath>
+    <DefineConstants>TRACE;ac2014</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -42,12 +42,12 @@
       <HintPath>C:\_Acad dlls\2019\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\MahApps.Metro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ModPlusAPI">
       <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ModPlusStyle">
+      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ModPlus_2019">
@@ -90,6 +90,9 @@
       <Link>mpDwgBaseMainWindow.xaml.cs</Link>
       <DependentUpon>mpDwgBaseMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\mpDwgBase_2013\Properties\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
     <Compile Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml.cs">
       <Link>Windows\BaseUploading.xaml.cs</Link>
       <DependentUpon>BaseUploading.xaml</DependentUpon>
@@ -131,12 +134,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16.png">
-      <Link>Resources\mpDwgBase_16x16.png</Link>
-    </Resource>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32.png">
-      <Link>Resources\mpDwgBase_32x32.png</Link>
-    </Resource>
     <Resource Include="..\mpDwgBase_2013\Resources\NoImage.png">
       <Link>Resources\NoImage.png</Link>
     </Resource>
@@ -190,6 +187,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16.png">
+      <Link>Resources\mpDwgBase_16x16.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16_dark.png">
+      <Link>Resources\mpDwgBase_16x16_dark.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32.png">
+      <Link>Resources\mpDwgBase_32x32.png</Link>
+    </Resource>
+    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32_dark.png">
+      <Link>Resources\mpDwgBase_32x32_dark.png</Link>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

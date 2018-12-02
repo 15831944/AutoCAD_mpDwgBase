@@ -1,8 +1,4 @@
-﻿#if ac2010
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
-#elif ac2013
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-#endif
+﻿using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,19 +60,11 @@ namespace mpDwgBase
 
         }
 
-        private void MpDwgBaseMainWindow_OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-                Close();
-        }
         private void MpDwgBaseMainWindow_OnClosed(object sender, EventArgs e)
         {
             SaveToSettings();
         }
-        private void MpDwgBaseMainWindow_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
+        
         private void StartUpChecking()
         {
             _dwgBaseFolder = Path.Combine(DwgBaseHelpers.GetTopDir(), "Data", "DwgBase");
@@ -1164,7 +1152,7 @@ namespace mpDwgBase
                 editBlock.BtAccept.IsEnabled = true;
 
                 editBlock.ChkIs3Dblock.IsChecked = selectedItem.Is3Dblock;
-                // other visivility
+                // other visibility
                 editBlock.TbSourceFile.Visibility = editBlock.BtCreateDwgFile.Visibility =
                 editBlock.BtSelectDwgFile.Visibility = editBlock.ChkIsCurrentDwgFile.Visibility =
                 editBlock.RectangleSourceFile.Visibility = editBlock.BtGetAttrValuesFromBlock.Visibility =
@@ -1202,7 +1190,7 @@ namespace mpDwgBase
 
                 //
                 editDrawing.BtAccept.IsEnabled = true;
-                // other visivility
+                // other visibility
                 editDrawing.TbSourceFile.Visibility = editDrawing.BtCopyDwgFile.Visibility =
                 editDrawing.BtSelectDwgFile.Visibility = editDrawing.ChkIsCurrentDwgFile.Visibility =
                 editDrawing.RectangleSourceFile.Visibility =
@@ -1463,10 +1451,5 @@ namespace mpDwgBase
             }
         }
         #endregion
-
-        private void MpDwgBaseMainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape) Close();
-        }
     }
 }

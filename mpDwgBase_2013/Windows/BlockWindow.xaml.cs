@@ -1,8 +1,4 @@
-﻿#if ac2010
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
-#elif ac2013
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-#endif
+﻿using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,7 +13,6 @@ using System.Xml.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using ModPlusAPI.Windows;
-using ModPlusAPI.Windows.Helpers;
 using Visibility = System.Windows.Visibility;
 
 namespace mpDwgBase.Windows
@@ -37,7 +32,6 @@ namespace mpDwgBase.Windows
         public BlockWindow(string mpDwgBaseFile, string userDwgBaseFile, string dwgBaseFolder, bool isEdit)
         {
             InitializeComponent();
-            this.OnWindowStartUp();
             _mpDwgBaseFile = mpDwgBaseFile;
             _userDwgBaseFile = userDwgBaseFile;
             _dwgBaseFolder = dwgBaseFolder;
@@ -207,7 +201,7 @@ namespace mpDwgBase.Windows
                         if (selBlock.HasAttributeDefinitions)
                         {
                             // Если есть атрибуты в описании блока, то включаем видимость кнопки
-                            // и заполяем значения атрибутов из описания блоков
+                            // и заполняем значения атрибутов из описания блоков
                             BtGetAttrValuesFromBlock.Visibility = Visibility.Visible;
                             GetAttributesFromBlockDefinition(selBlock, tr);
                         }
@@ -407,7 +401,7 @@ namespace mpDwgBase.Windows
                         currentDb.WblockCloneObjects(blockIds, destDb.BlockTableId, mapping,
                             DuplicateRecordCloning.Ignore,
                             false);
-                        destDb.SaveAs(tempFile, DwgVersion.AC1024);
+                        destDb.SaveAs(tempFile, DwgVersion.AC1027);
                     }
                     // now replace
                     File.Copy(tempFile, file, true);
@@ -541,7 +535,7 @@ namespace mpDwgBase.Windows
                                 {
                                     using (var db = new Database())
                                     {
-                                        db.SaveAs(selectedFile, DwgVersion.AC1024);
+                                        db.SaveAs(selectedFile, DwgVersion.AC1027);
                                         TbSourceFile.Text =
                                             DwgBaseHelpers.TrimStart(selectedFile, _dwgBaseFolder).TrimStart('\\');
                                         needLoop = false;
@@ -902,7 +896,7 @@ namespace mpDwgBase.Windows
                 {
                     if (File.Exists(db.Filename))
                     {
-                        if (db.LastSavedAsVersion != DwgVersion.AC1024)
+                        if (db.LastSavedAsVersion != DwgVersion.AC1027)
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg57"));
                             ChkIsCurrentDwgFile.IsChecked = false;
@@ -924,14 +918,6 @@ namespace mpDwgBase.Windows
             win.ShowDialog();
         }
 
-        private void BlockWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-            {
-                DialogResult = false;
-                Close();
-            }
-        }
 
         private void BlockWindow_OnClosed(object sender, EventArgs e)
         {

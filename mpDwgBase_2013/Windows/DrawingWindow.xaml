@@ -1,34 +1,46 @@
-﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.Windows.DrawingWindow"
+﻿<mps:ModPlusWindow x:Class="mpDwgBase.Windows.DrawingWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
+                      xmlns:mps="https://modplus.org/winfx/xaml/controls"
                       mc:Ignorable="d" SizeToContent="WidthAndHeight"
                       ResizeMode="NoResize" Loaded="DrawingWindow_OnLoaded" 
-                     PreviewKeyDown="DrawingWindow_OnPreviewKeyDown" Closed="DrawingWindow_OnClosed"
+                     Closed="DrawingWindow_OnClosed"
                       MinWidth="500">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase" IsAsynchronous="False"/>
             <Path x:Key="appbar_info" Fill="Black" Data="F1 M 38,19C 48.4934,19 57,27.5066 57,38C 57,48.4934 48.4934,57 38,57C 27.5066,57 19,48.4934 19,38C 19,27.5066 27.5066,19 38,19 Z M 33.25,33.25L 33.25,36.4167L 36.4166,36.4167L 36.4166,47.5L 33.25,47.5L 33.25,50.6667L 44.3333,50.6667L 44.3333,47.5L 41.1666,47.5L 41.1666,36.4167L 41.1666,33.25L 33.25,33.25 Z M 38.7917,25.3333C 37.48,25.3333 36.4167,26.3967 36.4167,27.7083C 36.4167,29.02 37.48,30.0833 38.7917,30.0833C 40.1033,30.0833 41.1667,29.02 41.1667,27.7083C 41.1667,26.3967 40.1033,25.3333 38.7917,25.3333 Z "/>
+            <Style x:Key="InfoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ModPlusFlatButton}">
+                <Setter Property="Padding" Value="0"></Setter>
+                <Setter Property="MinWidth" Value="0"></Setter>
+                <Setter Property="ToolTipService.InitialShowDelay" Value="0"></Setter>
+                <Setter Property="ToolTipService.ShowDuration" Value="30000"></Setter>
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Viewbox Width="24" Height="24">
+                                <Canvas Width="24" Height="24">
+                                    <Path Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" 
+                                          Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                                </Canvas>
+                            </Viewbox>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <mah:MetroWindow.RightWindowCommands>
-        <mah:WindowCommands>
+    <mps:ModPlusWindow.RightWindowCommands>
+        <mps:WindowCommands>
             <Button Name="BtRecommend" Content="{Binding Source={StaticResource Lang}, XPath=h38}"
                     Click="BtRecommend_OnClick"></Button>
-        </mah:WindowCommands>
-    </mah:MetroWindow.RightWindowCommands>
+        </mps:WindowCommands>
+    </mps:ModPlusWindow.RightWindowCommands>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -52,16 +64,16 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <!--Load last-->
-            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"
+            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center"
                      Name="BtLoadLastInteredData" Content="{Binding Source={StaticResource Lang}, XPath=h40}"
                     Click="BtLoadLastInteredData_OnClick"></Button>
             <!--SourceFile-->
             <TextBox Name="TbSourceFile" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"
                      MaxWidth="500"
                      Text="{Binding SourceFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="2" mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h41}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"></TextBox>
+                     mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h41}"
+                     mps:HintAssist.IsFloating="True"></TextBox>
             <Grid Grid.Row="1" Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
@@ -77,308 +89,126 @@
                 <Button Grid.Row="0" Grid.Column="1"  Name="BtCopyDwgFile"
                         Content="{Binding Source={StaticResource Lang}, XPath=copy}"
                         Click="BtCopyDwgFile_OnClick" VerticalAlignment="Top"></Button>
-                <CheckBox Margin="2" Content="{Binding Source={StaticResource Lang}, XPath=h42}"
+                <CheckBox  Content="{Binding Source={StaticResource Lang}, XPath=h42}"
                           Name="ChkIsCurrentDwgFile" Checked="ChkIsCurrentDwgFile_OnChecked"
                           Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"></CheckBox>
             </Grid>
-            <Rectangle Grid.Column="2" Grid.Row="1" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2" 
-                       VerticalAlignment="Center" Name="RectangleSourceFile">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutSourceFile" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutSourceFile" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutSourceFile" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp18}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp19}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp20}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp21}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp22}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+            <Button Grid.Column="2" Grid.Row="1" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Center"
+                    Name="RectangleSourceFile">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp18}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp19}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp20}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp21}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp22}"></TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
             <!--Item name-->
-            <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="2" Name="TbName"
+            <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"  Name="TbName"
                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      MaxWidth="600" TextWrapping="Wrap"
-                     mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h46}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"
+                     mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h46}"
+                     mps:HintAssist.IsFloating="True"
                      ></TextBox>
-            <Rectangle Grid.Column="2" Grid.Row="2" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutName" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutName" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutName" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp23}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+            <Button Grid.Column="2" Grid.Row="2" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=pp23}"></Button>
             <!--Description-->
             <TextBox Name="TbDescription" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                      MaxWidth="600" TextWrapping="Wrap"
                      Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="2" mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h6}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"></TextBox>
-            <Rectangle Grid.Column="2" Grid.Row="3" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutDescription" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutDescription" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutDescription" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp24}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+                      mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h6}"
+                     mps:HintAssist.IsFloating="True"></TextBox>
+            <Button Grid.Column="2" Grid.Row="3" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=pp24}"></Button>
             <!--Document-->
             <TextBox Name="TbDocument" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
                      MaxWidth="600" TextWrapping="Wrap"
                      Text="{Binding Document, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="2" mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h49}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"></TextBox>
-            <Rectangle Grid.Column="2" Grid.Row="4" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutDocument" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutDocument" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutDocument" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=h50}"></TextBlock>
-                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h51}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+                      mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h49}"
+                     mps:HintAssist.IsFloating="True"></TextBox>
+            <Button Grid.Column="2" Grid.Row="4" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=h50}"></TextBlock>
+                            <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h51}"></TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
             <!--Author-->
             <TextBox Name="TbAuthor" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
                      MaxWidth="600" TextWrapping="Wrap"
                      Text="{Binding Author, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="2" mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h52}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"></TextBox>
-            <Rectangle Grid.Column="2" Grid.Row="5" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutAuthor" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutAuthor" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutAuthor" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp25}"></TextBlock>
-                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp5}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp6}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+                      mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h52}"
+                     mps:HintAssist.IsFloating="True"></TextBox>
+            <Button Grid.Column="2" Grid.Row="5" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp25}"></TextBlock>
+                            <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp5}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp6}"></TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
             <!--Source-->
             <TextBox Name="TbSource" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"
                      MaxWidth="600" TextWrapping="Wrap"
                      Text="{Binding Source, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="2" mah:TextBoxHelper.ClearTextButton="True"
-                     mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h8}"
-                     mah:TextBoxHelper.UseFloatingWatermark="True"></TextBox>
-            <Rectangle Grid.Column="2" Grid.Row="6" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutSource" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutSource" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutSource" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=p9}"></TextBlock>
-                        <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp26}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+                      mps:TextFieldAssist.ClearTextButton="True"
+                     mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h8}"
+                     mps:HintAssist.IsFloating="True"></TextBox>
+            <Button Grid.Column="2" Grid.Row="6" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=p9}"></TextBlock>
+                            <TextBlock MaxWidth="500" TextWrapping="Wrap" Text="{Binding Source={StaticResource Lang}, XPath=pp26}"></TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
             <!--Path-->
             <ComboBox Name="CbPath" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2"
-                      MaxWidth="600" IsEditable="True" Margin="2"
+                      MaxWidth="600" IsEditable="True" 
                       Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       PreviewTextInput="TbPath_OnPreviewTextInput"
                       TextBoxBase.TextChanged="TbPath_OnTextChanged"
                       TextInput="TbPath_OnTextInput"
-                      mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h5}" 
-                      mah:TextBoxHelper.UseFloatingWatermark="True"
+                      mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h5}" 
+                      mps:HintAssist.IsFloating="True"
                       ></ComboBox>
-            <Rectangle Grid.Column="2" Grid.Row="7" Fill="{DynamicResource AccentColorBrush}" Width="20" Height="20" Margin="2">
-                <Rectangle.OpacityMask>
-                    <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_info}"></VisualBrush>
-                </Rectangle.OpacityMask>
-                <Rectangle.Triggers>
-                    <EventTrigger RoutedEvent="Rectangle.MouseEnter">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutPath" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="True"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Rectangle.MouseLeave">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="PopupAboutPath" TargetProperty="IsOpen">
-                                <BooleanAnimationUsingKeyFrames FillBehavior="HoldEnd">
-                                    <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"></DiscreteBooleanKeyFrame>
-                                </BooleanAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Rectangle.Triggers>
-            </Rectangle>
-            <Popup Name="PopupAboutPath" Placement="Mouse"
-                   PopupAnimation="Fade" AllowsTransparency="True">
-                <Border BorderThickness="1" BorderBrush="{DynamicResource AccentColorBrush}"
-                        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp27}"></TextBlock>
-                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp9}"></TextBlock>
-                        <Image Stretch="UniformToFill" Width="300" Height="103" Name="helpImage_1" Source="/Resources/helpImages/helpImage_1.png"
-                               SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="HighQuality"
-                               RenderOptions.EdgeMode="Aliased"></Image>
-                        <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp10}"></TextBlock>
-                    </StackPanel>
-                </Border>
-            </Popup>
+            <Button Grid.Column="2" Grid.Row="7" Style="{StaticResource InfoButton}"
+                    VerticalAlignment="Bottom">
+                <Button.ToolTip>
+                    <ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock FontSize="14" Text="{Binding Source={StaticResource Lang}, XPath=pp27}"></TextBlock>
+                            <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp9}"></TextBlock>
+                            <Image Stretch="UniformToFill" Width="300" Height="103" Name="helpImage_1" Source="/Resources/helpImages/helpImage_1.png"
+                                   SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="HighQuality"
+                                   RenderOptions.EdgeMode="Aliased"></Image>
+                            <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=pp10}"></TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </Button.ToolTip>
+            </Button>
         </Grid>
         <!--buttons-->
         <Grid Grid.Row="1">
@@ -387,14 +217,14 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Name="BtAccept"  HorizontalAlignment="Left"
-                    Click="BtAccept_OnClick" IsEnabled="False" MinWidth="75"
+                    Click="BtAccept_OnClick" IsEnabled="False" 
                     Content="{Binding Source={StaticResource Lang}, XPath=accept}" ></Button>
             <Button Grid.Column="1" Name="BtCancel" HorizontalAlignment="Right"
-                    Click="BtCancel_OnClick" MinWidth="75"
+                    Click="BtCancel_OnClick" 
                     Content="{Binding Source={StaticResource Lang}, XPath=cancel}"></Button>
         </Grid>
     </Grid>
-</mpc:BaseMetroWindow>
+</mps:ModPlusWindow>
 
 
 

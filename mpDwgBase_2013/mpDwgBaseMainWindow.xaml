@@ -1,39 +1,25 @@
-﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.MpDwgBaseMainWindow"
+﻿<mps:ModPlusWindow x:Class="mpDwgBase.MpDwgBaseMainWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"                      
-                      xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
+                      xmlns:mps="https://modplus.org/winfx/xaml/controls"
                       mc:Ignorable="d" Loaded="Window_Loaded" Closed="MpDwgBaseMainWindow_OnClosed"
                       ResizeMode="CanResizeWithGrip"
-                      KeyDown="MpDwgBaseMainWindow_OnKeyDown" SizeToContent="WidthAndHeight"
-                      MouseLeftButtonDown="MpDwgBaseMainWindow_OnMouseLeftButtonDown"
-                      MinWidth="800" MinHeight="544" PreviewKeyDown="MpDwgBaseMainWindow_OnPreviewKeyDown">
+                      SizeToContent="WidthAndHeight"
+                      MinWidth="820" MinHeight="556">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- For IntelliSense -->
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
             <Path x:Key="upload" Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="Black" />
             <Path x:Key="search" Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" Fill="Black" />
-            <Path x:Key="plus-box-outline" Data="M19,19V5H5V19H19M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5C3,3.89 3.9,3 5,3H19M11,7H13V11H17V13H13V17H11V13H7V11H11V7Z" Fill="Black" />
-            <Path x:Key="wrench" Data="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L6,9L1.6,4.7C0.4,7.1 0.9,10.1 2.9,12.1C4.8,14 7.5,14.5 9.8,13.6L18.9,22.7C19.3,23.1 19.9,23.1 20.3,22.7L22.6,20.4C23.1,20 23.1,19.3 22.7,19Z" Fill="Black" />
         </ResourceDictionary>
     </Window.Resources>
-    <mah:MetroWindow.RightWindowCommands>
-        <mah:WindowCommands>
-            <Button Name="BtUpload" ToolTip="{Binding Source={StaticResource Lang}, XPath=h1}"
-                    Click="BtUpload_OnClick" MinWidth="0">
-                <Rectangle Width="16" Height="16"
-                           Fill="{Binding RelativeSource={RelativeSource AncestorType=Button},Path=Foreground}">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Uniform" Visual="{StaticResource upload}"/>
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-            </Button>
+    <mps:ModPlusWindow.RightWindowCommands>
+        <mps:WindowCommands>
             <Button Name="BtSearch" ToolTip="{Binding Source={StaticResource Lang}, XPath=h2}"
                     MinWidth="0" Click="BtSearch_OnClick">
                 <Rectangle Width="16" Height="16"
@@ -43,22 +29,22 @@
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button>
-        </mah:WindowCommands>
-    </mah:MetroWindow.RightWindowCommands>
-    <mah:MetroWindow.Flyouts>
-        <mah:FlyoutsControl>
-            <mah:Flyout Position="Right" Name="FlyoutSearch"
+        </mps:WindowCommands>
+    </mps:ModPlusWindow.RightWindowCommands>
+    <mps:ModPlusWindow.Flyouts>
+        <mps:FlyoutsControl>
+            <mps:Flyout Position="Right" Name="FlyoutSearch"
                              Header="{Binding Source={StaticResource Lang}, XPath=h3}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" MinWidth="150" Margin="2" Name="TbSearchTxt" TextChanged="TbSearchTxt_OnTextChanged"
-                             mah:TextBoxHelper.Watermark="{Binding Source={StaticResource Lang}, XPath=h4}"
-                             mah:TextBoxHelper.ClearTextButton="True"></TextBox>
+                    <TextBox Grid.Row="0" MinWidth="150"  Name="TbSearchTxt" TextChanged="TbSearchTxt_OnTextChanged"
+                             mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h4}"
+                             mps:TextFieldAssist.ClearTextButton="True"></TextBox>
                     <ListBox Name="LbSearchResults"  SelectionMode="Single" SelectionChanged="LbSearchResults_OnSelectionChanged"
-                             Padding="2" Width="600" Margin="2,2,2,20" Grid.Row="1">
+                             Padding="2" Width="600" Margin="4,4,4,20" Grid.Row="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical">
@@ -84,9 +70,9 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Grid>
-            </mah:Flyout>
-        </mah:FlyoutsControl>
-    </mah:MetroWindow.Flyouts>
+            </mps:Flyout>
+        </mps:FlyoutsControl>
+    </mps:ModPlusWindow.Flyouts>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -99,6 +85,7 @@
             <RowDefinition Height="*" MinHeight="200"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <!--Base type-->
@@ -107,44 +94,58 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ComboBox Margin="2" Name="CbBaseType" SelectionChanged="CbBaseType_OnSelectionChanged"
-                          Grid.Column="0" VerticalAlignment="Center">
+            <ComboBox Name="CbBaseType"
+                      SelectionChanged="CbBaseType_OnSelectionChanged"
+                      Grid.Column="0">
                 <ComboBoxItem Content="{Binding Source={StaticResource Lang}, XPath=bt1}"></ComboBoxItem>
                 <ComboBoxItem Content="{Binding Source={StaticResource Lang}, XPath=bt2}"></ComboBoxItem>
             </ComboBox>
-            <Button Name="BtAddNewElement" Margin="2" MinWidth="0"
-                        Padding="0" Grid.Column="1" VerticalAlignment="Center"
-                        BorderThickness="0" Visibility="Collapsed"
-                        ToolTip="{Binding Source={StaticResource Lang}, XPath=h10}"
-                        ToolTipService.InitialShowDelay="100"
-                        Click="BtAddNewElement_OnClick">
-                <Rectangle Fill="{DynamicResource AccentColorBrush}"
-                               Width="24" Height="24">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Fill" Visual="{StaticResource plus-box-outline}"></VisualBrush>
-                    </Rectangle.OpacityMask>
-                </Rectangle>
+            <Button Name="BtAddNewElement" MinWidth="0" Width="26" Height="26"
+                    Style="{DynamicResource ModPlusFlatButton}" Margin="2"
+                    Padding="0" Grid.Column="1" Visibility="Visible"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=h10}"
+                    ToolTipService.InitialShowDelay="100"
+                    Click="BtAddNewElement_OnClick">
+                <Viewbox Width="24" Height="24">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
             </Button>
-            <Button Name="BtUserBaseTools" Margin="2" MinWidth="0"
-                        Padding="0" Grid.Column="2" VerticalAlignment="Center"
-                        BorderThickness="0" Visibility="Collapsed"
-                        ToolTip="{Binding Source={StaticResource Lang}, XPath=h11}"
-                        ToolTipService.InitialShowDelay="100"
-                        Click="BtUserBaseTools_OnClick">
-                <Rectangle Fill="{DynamicResource AccentColorBrush}"
-                               Width="24" Height="24">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Fill" Visual="{StaticResource wrench}"></VisualBrush>
-                    </Rectangle.OpacityMask>
-                </Rectangle>
+            <Button Name="BtUserBaseTools"  MinWidth="0" Width="26" Height="26"
+                    Style="{DynamicResource ModPlusFlatButton}" Margin="2"
+                    Padding="0" Grid.Column="2" 
+                    Visibility="Visible"
+                    ToolTip="{Binding Source={StaticResource Lang}, XPath=h11}"
+                    ToolTipService.InitialShowDelay="100"
+                    Click="BtUserBaseTools_OnClick">
+                <Viewbox Width="20" Height="20">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L6,9L1.6,4.7C0.4,7.1 0.9,10.1 2.9,12.1C4.8,14 7.5,14.5 9.8,13.6L18.9,22.7C19.3,23.1 19.9,23.1 20.3,22.7L22.6,20.4C23.1,20 23.1,19.3 22.7,19Z" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Button Name="BtUpload" ToolTip="{Binding Source={StaticResource Lang}, XPath=h1}"
+                    Style="{DynamicResource ModPlusFlatButton}" Width="26" Height="26" Margin="2 2 4 2"
+                    Grid.Column="3" Padding="0"
+                    Click="BtUpload_OnClick" MinWidth="0">
+                <Viewbox Width="24" Height="24">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" 
+                              Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                    </Canvas>
+                </Viewbox>
             </Button>
         </Grid>
         <!--Tree-->
-        <TreeView Grid.Column="0" Grid.Row="1" Margin="2" Width="300" Grid.RowSpan="2"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                      BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" Name="TvGroups"
-                      SelectedItemChanged="TvGroups_SelectedItemChanged" ContextMenuOpening="TvGroups_OnContextMenuOpening">
+        <TreeView Grid.Column="0" Grid.Row="1"  Width="300" Grid.RowSpan="2"
+                  Name="TvGroups"
+                  SelectedItemChanged="TvGroups_SelectedItemChanged"
+                  ContextMenuOpening="TvGroups_OnContextMenuOpening">
             <TreeView.Resources>
                 <ContextMenu x:Key="TvContextMenu" StaysOpen="True">
                     <MenuItem Header="{Binding Source={StaticResource Lang}, XPath=h12}"
@@ -160,10 +161,9 @@
             </TreeView.ItemTemplate>
         </TreeView>
         <!--List-->
-        <ListBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="2" 
-                     BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" Name="LbItems"
-                     SelectionChanged="LbItems_SelectionChanged" MouseDoubleClick="LbItems_MouseDoubleClick"
-                     ContextMenuOpening="LbItems_OnContextMenuOpening">
+        <ListBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="LbItems"
+                 SelectionChanged="LbItems_SelectionChanged" MouseDoubleClick="LbItems_MouseDoubleClick"
+                 ContextMenuOpening="LbItems_OnContextMenuOpening">
             <ListBox.Resources>
                 <ContextMenu x:Key="LbContextMenu" StaysOpen="True">
                     <MenuItem Header="{Binding Source={StaticResource Lang}, XPath=h12}"
@@ -180,14 +180,10 @@
         </ListBox>
 
         <!--Preview-->
-        <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Margin="2" VerticalAlignment="Top"
-                    BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1">
+        <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  VerticalAlignment="Top"
+                Margin="{DynamicResource ModPlusDefaultMargin}"
+                BorderBrush="{DynamicResource BoxesBorderBrush}" BorderThickness="1">
             <Grid Width="240" Height="240" Background="White">
-                <Grid.Resources>
-                    <Path x:Key="appbar_minus" Fill="Black" Data="F1 M 19,38L 57,38L 57,44L 19,44L 19,38 Z "/>
-                    <Path x:Key="appbar_add" Fill="Black" Data="F1 M 35,19L 41,19L 41,35L 57,35L 57,41L 41,41L 41,57L 35,57L 35,41L 19,41L 19,35L 35,35L 35,19 Z "/>
-                    <Path x:Key="appbar_box" Fill="#FF000000" Data="F1 M 38,19L 57,28.5L 57,47.5L 38,57L 19,47.5L 19,28.5L 38,19 Z M 22.1667,30.0833L 22.1667,45.9167L 25.3333,47.5L 36.4167,53.0417L 36.4167,37.2083L 22.1667,30.0833 Z M 50.6666,47.5L 53.8333,45.9167L 53.8333,30.0833L 39.5833,37.2083L 39.5833,53.0417L 50.6666,47.5 Z M 38,22.1667L 25.3333,28.5L 38,34.8334L 50.6666,28.5L 38,22.1667 Z "/>
-                </Grid.Resources>
                 <Border ClipToBounds="True"  Name="ImageBorder"
                         ToolTip="{Binding Source={StaticResource Lang}, XPath=h15}">
                     <Image Name="BlkImagePreview" Stretch="Uniform"
@@ -195,39 +191,41 @@
                                RenderOptions.EdgeMode="Aliased"></Image>
                 </Border>
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
-                    <Button Style="{DynamicResource MetroCircleButtonStyle}" 
-                                Margin="0,0,10,0" Width="36" Height="36" BorderBrush="{DynamicResource AccentColorBrush}"
-                                Background="Transparent" ToolTip="{Binding Source={StaticResource Lang}, XPath=h16}"
-                                Name="BtImageSmall" Click="BtImageSmall_OnClick" BorderThickness="1">
-                        <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="14" Height="2">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_minus}"></VisualBrush>
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                    <Button Style="{DynamicResource ModPlusTransparentRoundButton}" 
+                                Margin="0,0,10,2" Width="36" Height="36"
+                                ToolTip="{Binding Source={StaticResource Lang}, XPath=h16}"
+                                Name="BtImageSmall" Click="BtImageSmall_OnClick">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas Width="24" Height="24">
+                                <Path Data="M19,13H5V11H19V13Z" 
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                            </Canvas>
+                        </Viewbox>
                     </Button>
-                    <Button Style="{DynamicResource MetroCircleButtonStyle}" 
-                                Margin="10,0,0,0" Width="36" Height="36" BorderBrush="{DynamicResource AccentColorBrush}"
-                                Background="Transparent" ToolTip="{Binding Source={StaticResource Lang}, XPath=h17}"
-                                Name="BtImageBig" Click="BtImageBig_OnClick" BorderThickness="1">
-                        <Rectangle Fill="{DynamicResource AccentColorBrush}" Width="14" Height="14">
-                            <Rectangle.OpacityMask>
-                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_add}"></VisualBrush>
-                            </Rectangle.OpacityMask>
-                        </Rectangle>
+                    <Button Style="{DynamicResource ModPlusTransparentRoundButton}" 
+                                Margin="10,0,0,2" Width="36" Height="36" 
+                                ToolTip="{Binding Source={StaticResource Lang}, XPath=h17}"
+                                Name="BtImageBig" Click="BtImageBig_OnClick">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas Width="24" Height="24">
+                                <Path Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                                      Fill="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Button}, Path=Foreground}" />
+                            </Canvas>
+                        </Viewbox>
                     </Button>
                 </StackPanel>
-                <Rectangle VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5"
-                               Width="36" Height="35" Fill="{DynamicResource AccentColorBrush}"
-                               ToolTipService.InitialShowDelay="0"
-                               ToolTip="{Binding Source={StaticResource Lang}, XPath=h18}" Name="RectangleIs3Dblock">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_box}"></VisualBrush>
-                    </Rectangle.OpacityMask>
-                </Rectangle>
+                <Viewbox Width="24" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right"
+                         ToolTipService.InitialShowDelay="0" Margin="5"
+                         ToolTip="{Binding Source={StaticResource Lang}, XPath=h18}" Name="RectangleIs3Dblock">
+                    <Canvas Width="24" Height="24">
+                        <Path Data="M21,16.5C21,16.88 20.79,17.21 20.47,17.38L12.57,21.82C12.41,21.94 12.21,22 12,22C11.79,22 11.59,21.94 11.43,21.82L3.53,17.38C3.21,17.21 3,16.88 3,16.5V7.5C3,7.12 3.21,6.79 3.53,6.62L11.43,2.18C11.59,2.06 11.79,2 12,2C12.21,2 12.41,2.06 12.57,2.18L20.47,6.62C20.79,6.79 21,7.12 21,7.5V16.5M12,4.15L6.04,7.5L12,10.85L17.96,7.5L12,4.15M5,15.91L11,19.29V12.58L5,9.21V15.91M19,15.91V9.21L13,12.58V19.29L19,15.91Z" 
+                              Fill="{DynamicResource AccentColorBrush}" />
+                    </Canvas>
+                </Viewbox>
             </Grid>
         </Border>
         <!--Settings and description-->
-        <DataGrid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="2"
+        <DataGrid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" 
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                       VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
                       GridLinesVisibility="All" CanUserAddRows="False" CanUserDeleteRows="False"
@@ -243,7 +241,7 @@
         </DataGrid>
         <!--insert-->
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">
-            <Button Margin="2" HorizontalAlignment="Left" MinWidth="75"
+            <Button  HorizontalAlignment="Left" 
                         Content="{Binding Source={StaticResource Lang}, XPath=insert}"
                         Name="BtInsert" Click="BtInsert_Click"></Button>
             <CheckBox VerticalAlignment="Center" Margin="10,2,2,2"
@@ -254,17 +252,18 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="10,2,2,2" VerticalAlignment="Center"
                                Text="{Binding Source={StaticResource Lang}, XPath=h19}"></TextBlock>
-                <ComboBox Margin="2" Width="160" Name="CbLayers"></ComboBox>
+                <ComboBox  Width="160" Name="CbLayers"></ComboBox>
             </StackPanel>
             <CheckBox VerticalAlignment="Center" Margin="10,2,2,2" Name="ChkCloseAfterInsert"
                           Content="{Binding Source={StaticResource Lang}, XPath=h20}"></CheckBox>
         </StackPanel>
-        <mah:MetroProgressBar Grid.Row="4" Height="20" Name="ProgressBar"
-                                       Grid.Column="0" Grid.ColumnSpan="3"
-                                       Foreground="{DynamicResource AccentColorBrush}"></mah:MetroProgressBar>
-        <TextBlock Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center"
+        
+        <TextBlock Grid.Row="4" HorizontalAlignment="Center"
                        Grid.Column="0" Grid.ColumnSpan="3"
                        Name="ProgressText"></TextBlock>
+        <ProgressBar Grid.Row="5" Name="ProgressBar"
+                     Grid.Column="0" Grid.ColumnSpan="3"
+                     Background="Transparent" BorderThickness="0"></ProgressBar>
     </Grid>
-</mpc:BaseMetroWindow>
+</mps:ModPlusWindow>
 

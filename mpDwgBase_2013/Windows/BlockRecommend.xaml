@@ -1,18 +1,19 @@
-﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.Windows.BlockRecommend"
+﻿<mps:ModPlusWindow x:Class="mpDwgBase.Windows.BlockRecommend"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
+                      xmlns:mps="https://modplus.org/winfx/xaml/controls"
                       mc:Ignorable="d" SizeToContent="WidthAndHeight"
-                      PreviewKeyDown="BlockRecommend_OnPreviewKeyDown">
+                   ShowInTaskbar="False" ShowCloseButton="False" ShowIconOnTitleBar="False"
+                   ShowMaxRestoreButton="False" ShowMinButton="False" ShowTitleBar="False"
+                   WindowStartupLocation="CenterScreen" WindowStyle="None">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- For IntelliSense -->
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
+            <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase" IsAsynchronous="False"/>
         </ResourceDictionary>
     </Window.Resources>
     <Grid >
@@ -21,7 +22,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <!--text-->
-        <RichTextBox Grid.Row="0" Margin="2" Width="800" FontSize="14" IsReadOnly="True">
+        <RichTextBox Grid.Row="0" Width="800" FontSize="14" IsReadOnly="True">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Source={StaticResource Lang}, XPath=r1}"></Run>
@@ -66,10 +67,10 @@
             </FlowDocument>
         </RichTextBox>
         <!--Button-->
-        <Button Grid.Row="1"  Content="{Binding Source={StaticResource Lang}, XPath=close}" Margin="5" MinWidth="75"
+        <Button Grid.Row="1"  Content="{Binding Source={StaticResource Lang}, XPath=close}" 
                 Name="BtClose" Click="BtClose_OnClick" HorizontalAlignment="Center"></Button>
     </Grid>
-</mpc:BaseMetroWindow>
+</mps:ModPlusWindow>
 
 
 

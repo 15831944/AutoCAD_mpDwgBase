@@ -1,21 +1,17 @@
-﻿#if ac2010
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
-#elif ac2013
-using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-#endif
-using System;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using ModPlusAPI.Windows;
-using Visibility = System.Windows.Visibility;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
+    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using System;
+    using System.IO;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media.Imaging;
+    using System.Xml.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using ModPlusAPI.Windows;
+    using Visibility = System.Windows.Visibility;
+
     public partial class DrawingWindow
     {
         private const string LangItem = "mpDwgBase";
@@ -422,7 +418,7 @@ namespace mpDwgBase.Windows
                 {
                     if (File.Exists(db.Filename))
                     {
-                        if (db.LastSavedAsVersion != DwgVersion.AC1024)
+                        if (db.LastSavedAsVersion != DwgVersion.AC1027)
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg57"));
                             ChkIsCurrentDwgFile.IsChecked = false;
@@ -502,15 +498,6 @@ namespace mpDwgBase.Windows
         {
             var win = new DrawingRecommend();
             win.ShowDialog();
-        }
-
-        private void DrawingWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-            {
-                DialogResult = false;
-                Close();
-            }
         }
 
         private void DrawingWindow_OnClosed(object sender, EventArgs e)

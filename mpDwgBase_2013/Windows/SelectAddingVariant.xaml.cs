@@ -1,8 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Input;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
+    using System.Windows;
+
     public partial class SelectAddingVariant
     {
         public string Variant = "None";
@@ -23,12 +22,6 @@ namespace mpDwgBase.Windows
         {
             Variant = "Drawing";
             DialogResult = true;
-        }
-
-        private void SelectAddingVariant_OnPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Escape)
-                Close();
         }
     }
 }

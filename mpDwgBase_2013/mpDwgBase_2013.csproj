@@ -17,8 +17,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\mpDwgBase\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;ac2013</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\AutoCAD\mpDwgBase\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -27,8 +27,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\mpDwgBase\</OutputPath>
-    <DefineConstants>TRACE;ac2013</DefineConstants>
+    <OutputPath>..\..\..\..\..\..\..\ModPlus\Functions\AutoCAD\mpDwgBase\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,12 +47,12 @@
       <HintPath>C:\_Acad dlls\2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MahApps.Metro">
-      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\MahApps.Metro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ModPlusAPI">
       <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ModPlusStyle">
+      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ModPlus_2013">
@@ -74,6 +74,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfoCommon.cs" />
     <Compile Include="Windows\BaseUploading.xaml.cs">
       <DependentUpon>BaseUploading.xaml</DependentUpon>
     </Compile>
@@ -150,13 +151,13 @@
     <Resource Include="Resources\helpImages\helpImage_1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\mpDwgBase_32x32.png" />
+    <Resource Include="Resources\NoImageEn.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\mpDwgBase_16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\NoImageEn.png" />
+    <Resource Include="Resources\mpDwgBase_16x16_dark.png" />
+    <Resource Include="Resources\mpDwgBase_32x32.png" />
+    <Resource Include="Resources\mpDwgBase_32x32_dark.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

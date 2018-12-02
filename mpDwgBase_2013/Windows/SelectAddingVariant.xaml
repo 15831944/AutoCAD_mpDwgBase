@@ -1,16 +1,15 @@
-﻿<mpc:BaseMetroWindow x:Class="mpDwgBase.Windows.SelectAddingVariant"
+﻿<mps:ModPlusWindow x:Class="mpDwgBase.Windows.SelectAddingVariant"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:mpc="clr-namespace:ModPlusAPI.Windows.Mpc;assembly=ModPlusAPI"
-                      mc:Ignorable="d" 
-                      PreviewKeyDown="SelectAddingVariant_OnPreviewKeyDown"
-                      SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+                      xmlns:mps="https://modplus.org/winfx/xaml/controls"
+                      mc:Ignorable="d" Width="350"
+                      SizeToContent="Height" ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/ModPlusAPI;component/Windows/WinResources/Styles.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase"/>
         </ResourceDictionary>
@@ -21,16 +20,19 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Margin="5" TextAlignment="Center" Text="{Binding Source={StaticResource Lang}, XPath=h67}"
+        <TextBlock Grid.Row="0" Margin="{DynamicResource ModPlusDefaultMargin}"
+                   TextAlignment="Center" Text="{Binding Source={StaticResource Lang}, XPath=h67}"
                    FontSize="16"></TextBlock>
-        <Button Grid.Row="1" Margin="5" Name="BtAddBlock" MinWidth="150"
-                HorizontalAlignment="Center"
+        <Button Grid.Row="1" Name="BtAddBlock" 
+                HorizontalAlignment="Stretch"
+                Style="{DynamicResource ModPlusFlatButton}"
                 Content="{Binding Source={StaticResource Lang}, XPath=h68}" 
                 Click="BtAddBlock_OnClick"></Button>
-        <Button Grid.Row="2" Margin="5" Name="BtAddDrawing" MinWidth="150"
-                HorizontalAlignment="Center"
+        <Button Grid.Row="2" Name="BtAddDrawing" 
+                HorizontalAlignment="Stretch"
+                Style="{DynamicResource ModPlusFlatButton}"
                 Content="{Binding Source={StaticResource Lang}, XPath=h69}" 
                 Click="BtAddDrawing_OnClick"></Button>
     </Grid>
-</mpc:BaseMetroWindow>
+</mps:ModPlusWindow>
 

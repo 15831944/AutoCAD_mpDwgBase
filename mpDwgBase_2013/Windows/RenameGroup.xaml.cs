@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 
 namespace mpDwgBase.Windows
 {
@@ -42,18 +41,5 @@ namespace mpDwgBase.Windows
             TbNewName.Focus();
             TbNewName.CaretIndex = TbNewName.Text.Length;
         }
-
-        private void RenameLayout_OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-            {
-                DialogResult = false;
-            }
-            if (e.Key == Key.Return)
-            {
-                OnAccept();
-            }
-        }
-        
     }
 }
