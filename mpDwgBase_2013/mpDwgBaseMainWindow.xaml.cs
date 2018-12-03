@@ -366,7 +366,7 @@ namespace mpDwgBase
 
                             downloaded = DownloadSourceFile(selectedItem.SourceFile,
                                 "https://modplus.org/Downloads/DwgBase/" + selectedItem.SourceFile,
-                                localPath + "/");
+                                localPath + "\\");
                         }
                     }
                     else downloaded = true;
@@ -510,7 +510,7 @@ namespace mpDwgBase
         /// Скачивание файла-источника. На сайте путь должен СОВПАДАТЬ!
         /// </summary>
         /// <param name="sourceFile"></param>
-        /// <param name="uri"></param>
+        /// <param name="url"></param>
         /// <param name="localPath"></param>
         /// <returns></returns>
         private bool DownloadSourceFile(string sourceFile, string url, string localPath)
@@ -527,19 +527,6 @@ namespace mpDwgBase
                 long remoteSize;
                 string fullLocalPath;
 
-                // Преобразование кириллицы
-                StringBuilder URL2 = new StringBuilder();
-                Regex r = new Regex(@"[А-я]");
-                for (int i = 0; i < url.Length; i++)
-                {
-                    if (r.Match(url[i].ToString()).Success)
-                    {
-                        URL2.Append(System.Web.HttpUtility.UrlEncode(url[i].ToString(), Encoding.GetEncoding(1251)));
-                        continue;
-                    }
-                    URL2.Append(url[i]);
-                }
-
                 try
                 {
 
@@ -547,15 +534,18 @@ namespace mpDwgBase
                     Uri remoteUri = new Uri(url);
                     string fileName = Path.GetFileName(remoteUri.LocalPath);
 
-                    fullLocalPath = Path.GetFileName(localPath).Length == 0 ? Path.Combine(localPath, fileName) : localPath;
+                    fullLocalPath = Path.GetFileName(localPath).Length == 0 
+                        ? Path.Combine(localPath, fileName) 
+                        : localPath;
 
                     // Have to get size of remote object through the webrequest as not available on remote files,
                     // although it does work on local files.
-                    WebRequest webRequest = WebRequest.Create(URL2.ToString());
+                    //WebRequest webRequest = WebRequest.Create(URL2.ToString());
+                    WebRequest webRequest = WebRequest.Create(url);
                     webRequest.Proxy = ModPlusAPI.Web.Proxy.GetWebProxy();
                     using (WebResponse response = webRequest.GetResponse())
                     {
-                        using (Stream stream = response.GetResponseStream())
+                        using (response.GetResponseStream())
                             remoteSize = response.ContentLength;
                     }
 
@@ -571,7 +561,7 @@ namespace mpDwgBase
                 {
                     using (WebClient webClient = new WebClient { Proxy = ModPlusAPI.Web.Proxy.GetWebProxy() })
                     {
-                        using (Stream streamRemote = webClient.OpenRead(new Uri(URL2.ToString())))
+                        using (Stream streamRemote = webClient.OpenRead(new Uri(url)))
                         {
                             using (Stream streamLocal = new FileStream(fullLocalPath, FileMode.Create, FileAccess.Write, FileShare.None))
                             {
@@ -584,7 +574,7 @@ namespace mpDwgBase
                                 {
                                     bytesReadTotal += bytesRead;
                                     streamLocal.Write(byteBuffer, 0, bytesRead);
-                                    int newPerc = (int)((double)bytesReadTotal / (double)remoteSize * 100);
+                                    int newPerc = (int)(bytesReadTotal / (double)remoteSize * 100);
                                     if (newPerc > perc)
                                     {
                                         perc = newPerc;
@@ -606,11 +596,9 @@ namespace mpDwgBase
                 }
                 return true;
             }
-            else
-            {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg6"));
-                return false;
-            }
+
+            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg6"));
+            return false;
         }
         #endregion
 

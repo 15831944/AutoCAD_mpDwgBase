@@ -235,8 +235,26 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="{Binding Source={StaticResource Lang}, XPath=h70}" 
                                     Binding="{Binding Name}" IsReadOnly="True"></DataGridTextColumn>
-                <DataGridTextColumn Header="{Binding Source={StaticResource Lang}, XPath=h71}" 
-                                    Binding="{Binding Value}" IsReadOnly="True" Width="*"></DataGridTextColumn>
+                <!--<DataGridTextColumn Header="{Binding Source={StaticResource Lang}, XPath=h71}" 
+                                    Binding="{Binding Value}" IsReadOnly="True" Width="*">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip" Value="{Binding Value}" />
+                            <Setter Property="ToolTipService.InitialShowDelay" Value="0"></Setter>
+                            <Setter Property="ToolTipService.ShowDuration" Value="0"></Setter>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>-->
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Value, Mode=OneWay}"
+                                       ToolTip="{Binding Path=Value, Mode=OneWay}"
+                                       ToolTipService.InitialShowDelay="0"
+                                       ToolTipService.ShowDuration="30000"></TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         <!--insert-->
