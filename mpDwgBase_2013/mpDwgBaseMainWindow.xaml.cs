@@ -21,6 +21,8 @@ using Visibility = System.Windows.Visibility;
 
 namespace mpDwgBase
 {
+    using System.Diagnostics;
+
     public partial class MpDwgBaseMainWindow
     {
         private const string LangItem = "mpDwgBase";
@@ -143,6 +145,7 @@ namespace mpDwgBase
                 // Отключаем контролы и пр.,связанное с локальной базой
                 BtAddNewElement.Visibility = Visibility.Collapsed;
                 BtUserBaseTools.Visibility = Visibility.Collapsed;
+                TbVideoInstruction.Visibility = Visibility.Collapsed;
                 // Если файла нет, то ничего не заполнится
                 if (File.Exists(_dwgBaseFileName))
                     TvGroups.ItemsSource = DwgBaseHelpers.DeSeializerFromXml(_dwgBaseFileName, out _dwgBaseItems) ? CreateTreeViewModel() : null;
@@ -169,6 +172,7 @@ namespace mpDwgBase
                     // Включаем контролы и пр.,связанное с локальной базой
                     BtAddNewElement.Visibility = Visibility.Visible;
                     BtUserBaseTools.Visibility = Visibility.Visible;
+                    TbVideoInstruction.Visibility = Visibility.Visible;
                     // tree view context menu
                     TvGroups.ContextMenu = TvGroups.Resources["TvContextMenu"] as ContextMenu;
                     // listbox context menu
@@ -1439,5 +1443,10 @@ namespace mpDwgBase
             }
         }
         #endregion
+
+        private void HyperlinkVideoInstruction_OnClick(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://youtu.be/5LgxVcM9RsM");
+        }
     }
 }

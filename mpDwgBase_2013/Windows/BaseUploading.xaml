@@ -146,6 +146,11 @@
             <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h31}" 
                        Margin="{DynamicResource ModPlusDefaultMargin}"></TextBlock>
             <TextBox Width="808" TextWrapping="Wrap" MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                     Name="TbFeedback" mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h73}"
+                     ToolTip="{Binding Source={StaticResource Lang}, XPath=h74}"
+                     ToolTipService.InitialShowDelay="0"
+                     ToolTipService.ShowDuration="30000"></TextBox>
+            <TextBox Width="808" TextWrapping="Wrap" MaxHeight="150" VerticalScrollBarVisibility="Auto"
                       Name="TbComment" mps:HintAssist.Hint="{Binding Source={StaticResource Lang}, XPath=h32}"></TextBox>
         </StackPanel>
         <!--Buttons-->

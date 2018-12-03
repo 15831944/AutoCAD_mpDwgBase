@@ -16,6 +16,8 @@ using ModPlusAPI.Windows;
 
 namespace mpDwgBase.Windows
 {
+    using MessageBox = ModPlusAPI.Windows.MessageBox;
+
     public partial class BaseUploading
     {
         private const string LangItem = "mpDwgBase";
@@ -121,11 +123,16 @@ namespace mpDwgBase.Windows
 
         private void BtMakeArchive_OnClick(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(TbFeedback.Text))
+            {
+                if (!MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "h75")))
+                    return;
+            }
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
             if (!_filesToBind.Any(x => x.Selected))
             {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg15"), MessageBoxIcon.Alert);
+                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg15"), MessageBoxIcon.Alert);
                 return;
             }
             CreateArchive();
@@ -233,7 +240,7 @@ namespace mpDwgBase.Windows
         {
             if (!ModPlusAPI.Web.Connection.CheckForInternetConnection())
             {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg23"));
+                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg23"));
                 return;
             }
             if (File.Exists(_currentFileToUpload))
@@ -246,7 +253,8 @@ namespace mpDwgBase.Windows
                     var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
                     Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg24"));
                     // get connect data
-                    if (!DwgBaseHelpers.GetConfigFileFromSite(out XmlDocument docFromSite)) return;
+                    if (!DwgBaseHelpers.GetConfigFileFromSite(out XmlDocument docFromSite))
+                        return;
                     var ftpClient = new FtpClient
                     {
                         UserName = docFromSite.DocumentElement["FTP"].GetAttribute("login"),
@@ -302,7 +310,8 @@ namespace mpDwgBase.Windows
             if (!string.IsNullOrEmpty(TbComment.Text))
             {
                 file = Path.Combine(tmpFolder, "comment.txt");
-                File.WriteAllText(file, TbComment.Text);
+                var text = "Feedback :" + TbFeedback.Text + Environment.NewLine + TbComment.Text;
+                File.WriteAllText(file, text);
             }
             return file;
         }

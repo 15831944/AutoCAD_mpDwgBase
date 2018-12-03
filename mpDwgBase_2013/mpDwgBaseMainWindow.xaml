@@ -96,15 +96,19 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <ComboBox Name="CbBaseType"
                       SelectionChanged="CbBaseType_OnSelectionChanged"
-                      Grid.Column="0">
+                      Grid.Column="0" Grid.Row="0">
                 <ComboBoxItem Content="{Binding Source={StaticResource Lang}, XPath=bt1}"></ComboBoxItem>
                 <ComboBoxItem Content="{Binding Source={StaticResource Lang}, XPath=bt2}"></ComboBoxItem>
             </ComboBox>
             <Button Name="BtAddNewElement" MinWidth="0" Width="26" Height="26"
                     Style="{DynamicResource ModPlusFlatButton}" Margin="2"
-                    Padding="0" Grid.Column="1" Visibility="Visible"
+                    Padding="0" Grid.Column="1" Grid.Row="0" Visibility="Visible"
                     ToolTip="{Binding Source={StaticResource Lang}, XPath=h10}"
                     ToolTipService.InitialShowDelay="100"
                     Click="BtAddNewElement_OnClick">
@@ -117,7 +121,7 @@
             </Button>
             <Button Name="BtUserBaseTools"  MinWidth="0" Width="26" Height="26"
                     Style="{DynamicResource ModPlusFlatButton}" Margin="2"
-                    Padding="0" Grid.Column="2" 
+                    Padding="0" Grid.Column="2" Grid.Row="0"
                     Visibility="Visible"
                     ToolTip="{Binding Source={StaticResource Lang}, XPath=h11}"
                     ToolTipService.InitialShowDelay="100"
@@ -131,7 +135,7 @@
             </Button>
             <Button Name="BtUpload" ToolTip="{Binding Source={StaticResource Lang}, XPath=h1}"
                     Style="{DynamicResource ModPlusFlatButton}" Width="26" Height="26" Margin="2 2 4 2"
-                    Grid.Column="3" Padding="0"
+                    Grid.Column="3" Grid.Row="0" Padding="0"
                     Click="BtUpload_OnClick" MinWidth="0">
                 <Viewbox Width="24" Height="24">
                     <Canvas Width="24" Height="24">
@@ -140,6 +144,12 @@
                     </Canvas>
                 </Viewbox>
             </Button>
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="4 0"
+                       Name="TbVideoInstruction">
+                <Hyperlink Name="HyperlinkVideoInstruction" Click="HyperlinkVideoInstruction_OnClick">
+                    <TextBlock Text="{Binding Source={StaticResource Lang}, XPath=h72}"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
         </Grid>
         <!--Tree-->
         <TreeView Grid.Column="0" Grid.Row="1"  Width="300" Grid.RowSpan="2"
