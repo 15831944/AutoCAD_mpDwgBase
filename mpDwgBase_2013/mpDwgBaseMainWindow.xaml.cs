@@ -234,7 +234,7 @@ namespace mpDwgBase
                         ChkInsertAsBlock.IsEnabled = false;
                         // Если блок, то нужно создать превью файл
                         // Создание превью только для автокадов выше 2013 версии
-#if ac2014
+#if !A2013
                         if (File.Exists(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)))
                             if (!File.Exists(DwgBaseHelpers.FindImageFile(selectedItem, _dwgBaseFolder)))
                             {
@@ -246,8 +246,17 @@ namespace mpDwgBase
                         if (string.IsNullOrEmpty(imagefile))
                         {
                             if (ModPlusAPI.Language.RusWebLanguages.Contains(ModPlusAPI.Language.CurrentLanguageName))
-                                imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImage.png";
-                            else imagefile = "pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/NoImageEn.png";
+                            {
+                                imagefile = "pack://application:,,,/mpDwgBase_" + 
+                                            ModPlusConnector.Instance.AvailProductExternalVersion + 
+                                            ";component/Resources/NoImage.png";
+                            }
+                            else
+                            {
+                                imagefile = "pack://application:,,,/mpDwgBase_" +
+                                            ModPlusConnector.Instance.AvailProductExternalVersion +
+                                            ";component/Resources/NoImageEn.png";
+                            }
                         }
                         var bi = new BitmapImage();
                         bi.BeginInit();

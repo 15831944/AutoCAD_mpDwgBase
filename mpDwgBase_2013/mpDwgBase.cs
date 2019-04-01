@@ -106,7 +106,7 @@
         [CommandMethod("ModPlus", "mpDwgBase", CommandFlags.Session)]
         public void MainFunction()
         {
-            Statistic.SendCommandStarting(new Interface());
+            Statistic.SendCommandStarting(new ModPlusConnector());
             try
             {
                 // Проверяем наличие папок
@@ -706,7 +706,7 @@
 
     public static class ImageCreator
     {
-#if ac2014
+#if !A2013
         public static string ImagePreviewFile(DwgBaseItem selectedItem, string baseFolder)
         {
             try

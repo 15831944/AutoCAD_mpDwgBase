@@ -1,47 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{600FD157-820B-49C9-96EA-391508409BDF}</ProjectGuid>
+    <ProjectGuid>{6FA94457-8B4C-480C-AF0F-C6B7C80A53B5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>mpDwgBase</RootNamespace>
-    <AssemblyName>mpDwgBase_2018</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <AssemblyName>mpDwgBase_2020</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;A2018</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;A2020</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;A2018</DefineConstants>
+    <DefineConstants>TRACE;A2020</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
-      <HintPath>C:\_Acad dlls\2018\accoremgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2020\accoremgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>C:\_Acad dlls\2018\acdbmgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2020\acdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acmgd">
-      <HintPath>C:\_Acad dlls\2018\acmgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2020\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ModPlusAPI">
@@ -52,10 +53,6 @@
       <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusStyle.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ModPlus_2018">
-      <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlus_2018.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -63,13 +60,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="..\mpDwgBase_2013\ModPlusConnector.cs">
       <Link>ModPlusConnector.cs</Link>
@@ -84,38 +81,73 @@
     <Compile Include="..\mpDwgBase_2013\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\BaseUploading.xaml.cs">
       <Link>Windows\BaseUploading.xaml.cs</Link>
       <DependentUpon>BaseUploading.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\BlockRecommend.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\BlockRecommend.xaml.cs">
       <Link>Windows\BlockRecommend.xaml.cs</Link>
       <DependentUpon>BlockRecommend.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\BlockWindow.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\BlockWindow.xaml.cs">
       <Link>Windows\BlockWindow.xaml.cs</Link>
       <DependentUpon>BlockWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\DrawingRecommend.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\DrawingRecommend.xaml.cs">
       <Link>Windows\DrawingRecommend.xaml.cs</Link>
       <DependentUpon>DrawingRecommend.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\DrawingWindow.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\DrawingWindow.xaml.cs">
       <Link>Windows\DrawingWindow.xaml.cs</Link>
       <DependentUpon>DrawingWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\RenameGroup.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\RenameGroup.xaml.cs">
       <Link>Windows\RenameGroup.xaml.cs</Link>
       <DependentUpon>RenameGroup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\SelectAddingVariant.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\SelectAddingVariant.xaml.cs">
       <Link>Windows\SelectAddingVariant.xaml.cs</Link>
       <DependentUpon>SelectAddingVariant.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\mpDwgBase_2013\Windows\UserBaseTools.xaml.cs">
+    <Compile Include="..\mpdwgbase_2013\windows\UserBaseTools.xaml.cs">
       <Link>Windows\UserBaseTools.xaml.cs</Link>
       <DependentUpon>UserBaseTools.xaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\helpimages\helpImage_1.png">
+      <Link>Resources\helpImages\helpImage_1.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\mpDwgBase_16x16.png">
+      <Link>Resources\mpDwgBase_16x16.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\mpDwgBase_16x16_dark.png">
+      <Link>Resources\mpDwgBase_16x16_dark.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\mpDwgBase_32x32.png">
+      <Link>Resources\mpDwgBase_32x32.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\mpDwgBase_32x32_dark.png">
+      <Link>Resources\mpDwgBase_32x32_dark.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\NoImage.png">
+      <Link>Resources\NoImage.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\mpdwgbase_2013\resources\NoImageEn.png">
+      <Link>Resources\NoImageEn.png</Link>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="..\mpDwgBase_2013\mpDwgBaseMainWindow.xaml">
@@ -123,75 +155,46 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\BaseUploading.xaml">
       <Link>Windows\BaseUploading.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\BlockRecommend.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\BlockRecommend.xaml">
       <Link>Windows\BlockRecommend.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\BlockWindow.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\BlockWindow.xaml">
       <Link>Windows\BlockWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\DrawingRecommend.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\DrawingRecommend.xaml">
       <Link>Windows\DrawingRecommend.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\DrawingWindow.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\DrawingWindow.xaml">
       <Link>Windows\DrawingWindow.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\RenameGroup.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\RenameGroup.xaml">
       <Link>Windows\RenameGroup.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\SelectAddingVariant.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\SelectAddingVariant.xaml">
       <Link>Windows\SelectAddingVariant.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="..\mpDwgBase_2013\Windows\UserBaseTools.xaml">
+    <Page Include="..\mpdwgbase_2013\windows\UserBaseTools.xaml">
       <Link>Windows\UserBaseTools.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2013\Resources\NoImage.png">
-      <Link>Resources\NoImage.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2013\Resources\NoImageEn.png">
-      <Link>Resources\NoImageEn.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2013\Resources\helpImages\helpImage_1.png">
-      <Link>Resources\helpImages\helpImage_1.png</Link>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16.png">
-      <Link>Resources\mpDwgBase_16x16.png</Link>
-    </Resource>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_16x16_dark.png">
-      <Link>Resources\mpDwgBase_16x16_dark.png</Link>
-    </Resource>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32.png">
-      <Link>Resources\mpDwgBase_32x32.png</Link>
-    </Resource>
-    <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32_dark.png">
-      <Link>Resources\mpDwgBase_32x32_dark.png</Link>
-    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -202,11 +205,4 @@ if $(ConfigurationName) == Release (
 "$(ModPlusPostBuild)" "AutoCAD" "$(TargetPath)" "s"
 )</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

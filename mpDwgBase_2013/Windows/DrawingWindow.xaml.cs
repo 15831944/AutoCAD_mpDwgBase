@@ -35,7 +35,9 @@
         }
         private void FillHelpImagesToPopUp()
         {
-            Uri uri = new Uri("pack://application:,,,/mpDwgBase_" + VersionData.FuncVersion + ";component/Resources/helpImages/helpImage_1.png", UriKind.RelativeOrAbsolute);
+            Uri uri = new Uri("pack://application:,,,/mpDwgBase_" + 
+                              ModPlusConnector.Instance.AvailProductExternalVersion + 
+                              ";component/Resources/helpImages/helpImage_1.png", UriKind.RelativeOrAbsolute);
             helpImage_1.Source = BitmapFrame.Create(uri);
         }
         private void DrawingWindow_OnLoaded(object sender, RoutedEventArgs e)
