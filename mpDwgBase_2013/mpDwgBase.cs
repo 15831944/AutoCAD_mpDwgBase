@@ -71,7 +71,7 @@
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            var dwgBaseItem = (DwgBaseItem) obj;
+            var dwgBaseItem = (DwgBaseItem)obj;
 
             return
                 BlockName == dwgBaseItem.BlockName &&
@@ -109,10 +109,9 @@
             Statistic.SendCommandStarting(new ModPlusConnector());
             try
             {
-                // Проверяем наличие папок
-                var mpBaseFolder = Path.Combine(DwgBaseHelpers.GetTopDir(), "Data", "DwgBase");
-                if (!Directory.Exists(mpBaseFolder))
-                    Directory.CreateDirectory(mpBaseFolder);
+                MoveDwgBase();
+
+                // Директория расположения базы создается при первом обращении к свойству Constants.DwgBaseDirectory!
 
                 var win = new MpDwgBaseMainWindow();
                 AcApp.ShowModalWindow(AcApp.MainWindow.Handle, win, false);
@@ -123,16 +122,31 @@
                 ExceptionBox.Show(exception);
             }
         }
+
+        private void MoveDwgBase()
+        {
+            var d = Path.Combine(Constants.CurrentDirectory, "Data", "DwgBase");
+            if (Directory.Exists(d))
+            {
+                try
+                {
+                    // Папку назначения нужно удалить, чтобы не было исключения
+                    var dwgBaseDirectory = Constants.DwgBaseDirectory;
+                    if (Directory.Exists(dwgBaseDirectory))
+                        Directory.Delete(dwgBaseDirectory, true);
+
+                    // https://stackoverflow.com/a/38370485/4944499
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(d, dwgBaseDirectory);
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+        }
     }
     public static class DwgBaseHelpers
     {
-        public static string GetTopDir()
-        {
-            using (var r = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("ModPlus"))
-            {
-                return r?.GetValue("TopDir", string.Empty).ToString();
-            }
-        }
         /// <summary>
         /// Сериализация списка элементов в xml
         /// </summary>

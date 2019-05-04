@@ -1,37 +1,35 @@
-﻿using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
-using Autodesk.AutoCAD.DatabaseServices;
-using mpDwgBase.Windows;
-using ModPlusAPI;
-using ModPlusAPI.Windows;
-using Visibility = System.Windows.Visibility;
-
-namespace mpDwgBase
+﻿namespace mpDwgBase
 {
     using System.Diagnostics;
+    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Xml.Linq;
+    using System.Linq;
+    using System.Windows.Threading;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Windows;
+    using ModPlusAPI;
+    using ModPlusAPI.Windows;
+    using Visibility = System.Windows.Visibility;
 
     public partial class MpDwgBaseMainWindow
     {
         private const string LangItem = "mpDwgBase";
+        
         // Путь к файлу, содержащему описание базы
         private string _dwgBaseFileName;
-        // Путь к папке с базами dwg плагина
-        private string _dwgBaseFolder;
+        
         // Список значений 
         private List<DwgBaseItem> _dwgBaseItems;
+        
         //Create a Delegate that matches the Signature of the ProgressBar's SetValue method
         private delegate void UpdateProgressBarDelegate(DependencyProperty dp, object value);
         private delegate void UpdateProgressTextDelegate(DependencyProperty dp, object value);
@@ -69,8 +67,7 @@ namespace mpDwgBase
         
         private void StartUpChecking()
         {
-            _dwgBaseFolder = Path.Combine(DwgBaseHelpers.GetTopDir(), "Data", "DwgBase");
-            if (!File.Exists(Path.Combine(_dwgBaseFolder, "mpDwgBase.xml")))
+            if (!File.Exists(Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml")))
             {
                 _dwgBaseFileName = string.Empty;
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg1"));
@@ -119,6 +116,7 @@ namespace mpDwgBase
             }
             UserConfigFile.SaveConfigFile();
         }
+        
         // Выбор варианта базы
         private void CbBaseType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -141,7 +139,7 @@ namespace mpDwgBase
                 // listbox context menu
                 LbItems.ContextMenu = null;
 
-                _dwgBaseFileName = Path.Combine(_dwgBaseFolder, "mpDwgBase.xml");
+                _dwgBaseFileName = Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml");
                 // Отключаем контролы и пр.,связанное с локальной базой
                 BtAddNewElement.Visibility = Visibility.Collapsed;
                 BtUserBaseTools.Visibility = Visibility.Collapsed;
@@ -153,7 +151,7 @@ namespace mpDwgBase
             else if (CbBaseType.SelectedIndex == 1)
             {
                 // файл должен лежать в той-же папке
-                _dwgBaseFileName = Path.Combine(_dwgBaseFolder, "UserDwgBase.xml");
+                _dwgBaseFileName = Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml");
                 var hasFile = false;
                 if (!File.Exists(_dwgBaseFileName))
                 {
@@ -225,7 +223,7 @@ namespace mpDwgBase
                     DgProperties.ItemsSource = GetProperties(selectedItem);
                     //
                     RectangleIs3Dblock.Visibility = selectedItem.Is3Dblock ? Visibility.Visible : Visibility.Collapsed;
-                    //if (File.Exists(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)))
+                    //if (File.Exists(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)))
                     BtInsert.IsEnabled = true;
                     if (selectedItem.IsBlock)
                     {
@@ -235,14 +233,14 @@ namespace mpDwgBase
                         // Если блок, то нужно создать превью файл
                         // Создание превью только для автокадов выше 2013 версии
 #if !A2013
-                        if (File.Exists(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)))
-                            if (!File.Exists(DwgBaseHelpers.FindImageFile(selectedItem, _dwgBaseFolder)))
+                        if (File.Exists(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)))
+                            if (!File.Exists(DwgBaseHelpers.FindImageFile(selectedItem, Constants.DwgBaseDirectory)))
                             {
-                                ImageCreator.ImagePreviewFile(selectedItem, _dwgBaseFolder);
+                                ImageCreator.ImagePreviewFile(selectedItem, Constants.DwgBaseDirectory);
                             }
 #endif
                         //image
-                        var imagefile = DwgBaseHelpers.FindImageFile(selectedItem, _dwgBaseFolder);
+                        var imagefile = DwgBaseHelpers.FindImageFile(selectedItem, Constants.DwgBaseDirectory);
                         if (string.IsNullOrEmpty(imagefile))
                         {
                             if (ModPlusAPI.Language.RusWebLanguages.Contains(ModPlusAPI.Language.CurrentLanguageName))
@@ -271,7 +269,7 @@ namespace mpDwgBase
                         ChkInsertAsBlock.IsEnabled = true;
                         // Если это чертеж, то нужно просто взять привью из его базы
                         ChkInsertAsBlock.IsEnabled = true;
-                        var dwgFile = Path.Combine(_dwgBaseFolder, selectedItem.SourceFile);
+                        var dwgFile = Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile);
                         if (File.Exists(dwgFile))
                         {
                             Database sourceDb = new Database(false, true);
@@ -368,12 +366,12 @@ namespace mpDwgBase
                     var selectedItem = LbItems.SelectedItem as DwgBaseItem;
                     // Проверяем есть ли файл
                     var downloaded = false;
-                    if (!File.Exists(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)))
+                    if (!File.Exists(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)))
                     {
                         if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg4"), MessageBoxIcon.Question))
                         {
                             var localPath =
-                                new FileInfo(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile)).DirectoryName;
+                                new FileInfo(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)).DirectoryName;
                             if (!Directory.Exists(localPath))
                                 if (localPath != null) Directory.CreateDirectory(localPath);
 
@@ -406,7 +404,7 @@ namespace mpDwgBase
             Database destDb = dm.MdiActiveDocument.Database;
             Database sourceDb = new Database(false, true);
             // Read the DWG into a side database
-            sourceDb.ReadDwgFile(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile), FileShare.Read, true, "");
+            sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, "");
             // Create a variable to store the list of block identifiers
             ObjectIdCollection blockIds = new ObjectIdCollection();
             using (dm.MdiActiveDocument.LockDocument())
@@ -484,9 +482,9 @@ namespace mpDwgBase
 
             using (dm.MdiActiveDocument.LockDocument())
             {
-                var sourceFileInfo = new FileInfo(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile));
+                var sourceFileInfo = new FileInfo(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile));
                 // Read the DWG into a side database
-                sourceDb.ReadDwgFile(Path.Combine(_dwgBaseFolder, selectedItem.SourceFile), FileShare.Read, true, "");
+                sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, "");
                 var insertedBlkName = DwgBaseHelpers.GetBlkNameForInsertDrawing(sourceFileInfo.Name, destDb);
                 var insertedDrawingId = destDb.Insert(sourceFileInfo.FullName, sourceDb, true);
                 sourceDb.Dispose();
@@ -747,9 +745,9 @@ namespace mpDwgBase
                     {
                         // Т.к. новый элемент, то меняем у окна заголовок и создаем пустой элемент DwgBaseItem
                         var newBlock = new BlockWindow(
-                            Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                            Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                            _dwgBaseFolder, false)
+                            Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml"),
+                            Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml"),
+                            Constants.DwgBaseDirectory, false)
                         {
                             Title = ModPlusAPI.Language.GetItem(LangItem, "h22"),
                             Item = new DwgBaseItem(),
@@ -767,9 +765,9 @@ namespace mpDwgBase
                     if (win.Variant.Equals("Drawing"))
                     {
                         var newDrawing = new Windows.DrawingWindow(
-                            Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                            Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                            _dwgBaseFolder, false)
+                            Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml"),
+                            Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml"),
+                            Constants.DwgBaseDirectory, false)
                         {
                             Title = ModPlusAPI.Language.GetItem(LangItem, "h23"),
                             Item = new DwgBaseItem(),
@@ -811,9 +809,9 @@ namespace mpDwgBase
             var selectedTvItem = TvGroups.SelectedItem as TreeViewModelItem;
 
             var win = new UserBaseTools(
-                Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                _dwgBaseFolder, _dwgBaseItems);
+                Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml"),
+                Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml"),
+                Constants.DwgBaseDirectory, _dwgBaseItems);
             win.ShowDialog();
             if (win.UserBaseChanged)
             {
@@ -1132,9 +1130,9 @@ namespace mpDwgBase
             if (selectedItem.IsBlock)
             {
                 var editBlock = new BlockWindow(
-                            Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                            Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                            _dwgBaseFolder, true)
+                            Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml"),
+                            Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml"),
+                            Constants.DwgBaseDirectory, true)
                 {
                     Title = ModPlusAPI.Language.GetItem(LangItem, "h24"),
                     Item = selectedItem,
@@ -1177,9 +1175,9 @@ namespace mpDwgBase
             else // is drawing
             {
                 var editDrawing = new Windows.DrawingWindow(
-                            Path.Combine(_dwgBaseFolder, "mpDwgBase.xml"),
-                            Path.Combine(_dwgBaseFolder, "UserDwgBase.xml"),
-                            _dwgBaseFolder, true)
+                            Path.Combine(Constants.DwgBaseDirectory, "mpDwgBase.xml"),
+                            Path.Combine(Constants.DwgBaseDirectory, "UserDwgBase.xml"),
+                            Constants.DwgBaseDirectory, true)
                 {
                     Title = ModPlusAPI.Language.GetItem(LangItem, "h25"),
                     Item = selectedItem,
@@ -1308,7 +1306,7 @@ namespace mpDwgBase
         {
             if (_dwgBaseItems.Any())
             {
-                var win = new BaseUploading(_dwgBaseFolder, _dwgBaseItems);
+                var win = new BaseUploading(Constants.DwgBaseDirectory, _dwgBaseItems);
                 win.ShowDialog();
             }
         }

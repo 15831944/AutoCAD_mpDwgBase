@@ -869,10 +869,10 @@ namespace mpDwgBase.Windows
                 DbFile selectedFile = (DbFile) RenameSourceFile_LbFiles.SelectedItem;
                 FileInfo fi = new FileInfo(selectedFile.FullFileName);
                 var newFullFileName = Path.Combine(fi.DirectoryName, RenameSourceFile_NewFileName.Text + ".dwg");
-                var dir = Path.Combine(Constants.CurrentDirectory, "Data", "DwgBase");
+                
                 File.Move(selectedFile.FullFileName, newFullFileName);
 
-                foreach (string file in Directory.GetFiles(dir, "*.dwg", SearchOption.AllDirectories))
+                foreach (string file in Directory.GetFiles(Constants.DwgBaseDirectory, "*.dwg", SearchOption.AllDirectories))
                 {
                     FileInfo efi = new FileInfo(file);
                     if (efi.FullName.Equals(newFullFileName))
@@ -891,9 +891,9 @@ namespace mpDwgBase.Windows
                 var index = 1;
                 foreach (var dwgBaseItem in _dwgBaseItems)
                 {
-                    if (Path.Combine(dir, dwgBaseItem.SourceFile).Equals(selectedFile.FullFileName))
+                    if (Path.Combine(Constants.DwgBaseDirectory, dwgBaseItem.SourceFile).Equals(selectedFile.FullFileName))
                     {
-                        dwgBaseItem.SourceFile = newFullFileName.TrimStart(dir.ToCharArray());
+                        dwgBaseItem.SourceFile = newFullFileName.TrimStart(Constants.DwgBaseDirectory.ToCharArray());
                     }
 
                     Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,

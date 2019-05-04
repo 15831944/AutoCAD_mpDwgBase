@@ -46,6 +46,7 @@
       <HintPath>C:\_Acad dlls\2016\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="ModPlusAPI">
       <HintPath>..\..\..\..\..\..\..\ModPlus\Extensions\ModPlusAPI.dll</HintPath>
       <Private>False</Private>
