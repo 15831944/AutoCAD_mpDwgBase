@@ -1,35 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Threading;
-using System.Xml;
-using ModPlusAPI.Web.FTP;
-using ModPlusAPI.Windows;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Linq;
+    using System.Net;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Threading;
+    using System.Xml;
+    using Models;
+    using ModPlusAPI.Web.FTP;
+    using ModPlusAPI.Windows;
+    using ModPlusStyle.Controls.Dialogs;
+    using Utils;
     using MessageBox = ModPlusAPI.Windows.MessageBox;
 
     public partial class BaseUploading
     {
         private const string LangItem = "mpDwgBase";
-        
+
         // Путь к папке с базами dwg плагина
         private readonly string _dwgBaseFolder;
+
         // Список значений 
         private readonly List<DwgBaseItem> _dwgBaseItems;
         private List<FileToBind> _filesToBind;
-        //Create a Delegate that matches the Signature of the ProgressBar's SetValue method
+
+        // Create a Delegate that matches the Signature of the ProgressBar's SetValue method
         private delegate void UpdateProgressBarDelegate(DependencyProperty dp, object value);
         private delegate void UpdateProgressTextDelegate(DependencyProperty dp, object value);
+
         // current archive to upload
         private string _currentFileToUpload;
 
@@ -40,7 +43,7 @@ namespace mpDwgBase.Windows
             _dwgBaseFolder = dwgBaseFolder;
             _dwgBaseItems = dwgBaseItems;
         }
-        
+
         private void BaseUploading_OnLoaded(object sender, RoutedEventArgs e)
         {
             // button visibility
@@ -68,6 +71,7 @@ namespace mpDwgBase.Windows
                         _filesToBind.Add(filetobind);
                 }
             }
+
             LvDwgFiles.ItemsSource = _filesToBind;
         }
 
@@ -83,13 +87,15 @@ namespace mpDwgBase.Windows
                     has = true; break;
                 }
             }
+
             return has;
         }
 
         private void LvDwgFiles_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var lv = sender as ListView;
-            if (!(lv?.SelectedItem is FileToBind selectedFile)) return;
+            if (!(lv?.SelectedItem is FileToBind selectedFile))
+                return;
             LvItemsInFile.ItemsSource = null;
             var lstToBind = new List<ItemToBind>();
             foreach (var dwgBaseItem in _dwgBaseItems)
@@ -118,6 +124,7 @@ namespace mpDwgBase.Windows
                         lstToBind.Add(itemToBnd);
                 }
             }
+
             LvItemsInFile.ItemsSource = lstToBind;
         }
 
@@ -128,6 +135,7 @@ namespace mpDwgBase.Windows
                 if (!MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "h75")))
                     return;
             }
+
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
             if (!_filesToBind.Any(x => x.Selected))
@@ -135,6 +143,7 @@ namespace mpDwgBase.Windows
                 MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg15"), MessageBoxIcon.Alert);
                 return;
             }
+
             CreateArchive();
             Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
             Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
@@ -142,20 +151,24 @@ namespace mpDwgBase.Windows
 
         private void CreateArchive()
         {
-            //Create a new instance of our ProgressBar Delegate that points
+            // Create a new instance of our ProgressBar Delegate that points
             //  to the ProgressBar's SetValue method.
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
+
             // progress text
             Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg16"));
+
             // create temp folder
             var tmpFolder = Path.Combine(_dwgBaseFolder, "Temp");
             if (!Directory.Exists(tmpFolder))
                 Directory.CreateDirectory(tmpFolder);
+
             // create base file with selected files items
             ProgressBar.Minimum = 0;
             ProgressBar.Maximum = _dwgBaseItems.Count;
             ProgressBar.Value = 0;
+
             // Соберем список файлов-источников чтобы проще их сверять
             var sourceFiles = new List<string>();
             foreach (FileToBind fileToBind in _filesToBind)
@@ -163,6 +176,7 @@ namespace mpDwgBase.Windows
                 if (!sourceFiles.Contains(fileToBind.SourceFile))
                     sourceFiles.Add(fileToBind.SourceFile);
             }
+
             var baseFileToArchive = new List<DwgBaseItem>();
             for (var i = 0; i < _dwgBaseItems.Count; i++)
             {
@@ -174,16 +188,19 @@ namespace mpDwgBase.Windows
                     if (!baseFileToArchive.Contains(dwgBaseItem))
                         baseFileToArchive.Add(dwgBaseItem);
             }
+
             // save xml file
             var xmlToArchive = Path.Combine(tmpFolder, "UserDwgBase.xml");
             DwgBaseHelpers.SerializerToXml(baseFileToArchive, xmlToArchive);
             if (!File.Exists(xmlToArchive))
             {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg18"), MessageBoxIcon.Close);
+                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg18"), MessageBoxIcon.Close);
                 return;
             }
+
             // comment file
             var commentFile = CreateCommentFile(tmpFolder);
+
             // create zip
             _currentFileToUpload = Path.ChangeExtension(Path.Combine(tmpFolder, Path.GetRandomFileName()), ".zip");
             if (File.Exists(_currentFileToUpload))
@@ -196,14 +213,17 @@ namespace mpDwgBase.Windows
                     zip.CreateEntryFromFile(fileToBind.FullFileName,
                         Path.Combine(fileToBind.SubDirectory, fileToBind.FileName));
                 }
+
                 // add xml file and delete him
                 zip.CreateEntryFromFile(xmlToArchive, new FileInfo(xmlToArchive).Name);
+
                 // add comment file
                 if (!string.IsNullOrEmpty(commentFile) && File.Exists(commentFile))
                     zip.CreateEntryFromFile(commentFile, new FileInfo(commentFile).Name);
             }
 
             File.Delete(xmlToArchive);
+
             // show buttons
             BtMakeArchive.Visibility = Visibility.Collapsed;
             BtSeeArchive.Visibility = Visibility.Visible;
@@ -211,6 +231,7 @@ namespace mpDwgBase.Windows
             BtUploadArchive.Visibility = Visibility.Visible;
             Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg19"));
         }
+
         // window closed
         private void BaseUploading_OnClosed(object sender, EventArgs e)
         {
@@ -223,35 +244,40 @@ namespace mpDwgBase.Windows
             }
             catch
             {
-                ModPlusAPI.Windows.MessageBox.Show(
+                MessageBox.Show(
                    ModPlusAPI.Language.GetItem(LangItem, "msg20") + ": " + tmpFolder + Environment.NewLine +
                    ModPlusAPI.Language.GetItem(LangItem, "msg21"));
             }
         }
+
         // open
         private void BtSeeArchive_OnClick(object sender, RoutedEventArgs e)
         {
             if (File.Exists(_currentFileToUpload))
                 Process.Start(_currentFileToUpload);
-            else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
+            else
+                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
         }
+
         // upload
-        private void BtUploadArchive_OnClick(object sender, RoutedEventArgs e)
+        private async void BtUploadArchive_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!ModPlusAPI.Web.Connection.CheckForInternetConnection())
+            if (!await ModPlusAPI.Web.Connection.HasAllConnectionAsync(1))
             {
-                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg23"));
+                await this.ShowMessageAsync(ModPlusAPI.Language.GetItem(LangItem, "msg23"), string.Empty);
                 return;
             }
+
             if (File.Exists(_currentFileToUpload))
             {
                 try
                 {
-                    //Create a new instance of our ProgressBar Delegate that points
+                    // Create a new instance of our ProgressBar Delegate that points
                     //  to the ProgressBar's SetValue method.
                     var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
                     var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg24"));
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg24"));
+
                     // get connect data
                     if (!DwgBaseHelpers.GetConfigFileFromSite(out XmlDocument docFromSite))
                         return;
@@ -288,12 +314,14 @@ namespace mpDwgBase.Windows
                             }
                         }
                     }
+
                     Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg26"));
                     Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
-                    ModPlusAPI.Windows.MessageBox.Show(
+                    MessageBox.Show(
                         ModPlusAPI.Language.GetItem(LangItem, "msg27") + ": " + _currentFileToUpload + " " +
                         ModPlusAPI.Language.GetItem(LangItem, "msg28") + Environment.NewLine +
                         ModPlusAPI.Language.GetItem(LangItem, "msg29"));
+
                     //
                 }
                 catch (Exception exception)
@@ -301,8 +329,9 @@ namespace mpDwgBase.Windows
                     ExceptionBox.Show(exception);
                 }
             }
-            else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
+            else MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
         }
+
         // create comment file
         private string CreateCommentFile(string tmpFolder)
         {
@@ -313,14 +342,16 @@ namespace mpDwgBase.Windows
                 var text = "Feedback :" + TbFeedback.Text + Environment.NewLine + TbComment.Text;
                 File.WriteAllText(file, text);
             }
+
             return file;
         }
+
         //
         private void BtDeleteArchive_OnClick(object sender, RoutedEventArgs e)
         {
             if (File.Exists(_currentFileToUpload))
             {
-                if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg30"), MessageBoxIcon.Question))
+                if (MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg30"), MessageBoxIcon.Question))
                 {
                     var wasDel = false;
                     try
@@ -330,8 +361,9 @@ namespace mpDwgBase.Windows
                     }
                     catch
                     {
-                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg31"));
+                        MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg31"));
                     }
+
                     if (wasDel)
                     {
                         BtDeleteArchive.Visibility = Visibility.Collapsed;
@@ -342,35 +374,5 @@ namespace mpDwgBase.Windows
                 }
             }
         }
-    }
-
-    internal class FileToBind : INotifyPropertyChanged
-    {
-        public string FileName { get; set; }
-        public string FullFileName { get; set; }
-        public string SourceFile { get; set; }
-        private bool _selected;
-        public bool Selected { get => _selected;
-            set { _selected = value; OnPropertyChanged(nameof(Selected)); } }
-        // Полный путь к директории
-        public string FullDirectory { get; set; }
-        // Усеченный путь
-        public string SubDirectory { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    internal class ItemToBind
-    {
-        public string Name { get; set; }
-        public Visibility IsBlock { get; set; }
-        public Visibility IsDrawing { get; set; }
-        public string Description { get; set; }
-        public string Author { get; set; }
-        public string Source { get; set; }
     }
 }

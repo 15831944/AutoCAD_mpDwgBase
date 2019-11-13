@@ -2,6 +2,9 @@
 {
     using System.Windows;
 
+    /// <summary>
+    /// Рекомендации к созданию блоков
+    /// </summary>
     public partial class BlockRecommend 
     {
         public BlockRecommend()

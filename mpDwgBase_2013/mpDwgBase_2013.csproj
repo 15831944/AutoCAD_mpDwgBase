@@ -34,6 +34,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
       <HintPath>C:\_Acad dlls\2013\accoremgd.dll</HintPath>
@@ -75,6 +78,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\AttributeValue.cs" />
+    <Compile Include="Models\DwgBaseItem.cs" />
+    <Compile Include="Models\FileToBind.cs" />
+    <Compile Include="Models\ItemToBind.cs" />
+    <Compile Include="Models\TreeViewModelItem.cs" />
+    <Compile Include="Utils\BlockInsertion.cs" />
+    <Compile Include="Utils\DwgBaseHelpers.cs" />
+    <Compile Include="Utils\ImageCreator.cs" />
     <Compile Include="Windows\BaseUploading.xaml.cs">
       <DependentUpon>BaseUploading.xaml</DependentUpon>
     </Compile>
@@ -88,7 +99,7 @@
       <DependentUpon>BlockWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ModPlusConnector.cs" />
-    <Compile Include="mpDwgBase.cs" />
+    <Compile Include="DwgBasePlugin.cs" />
     <Compile Include="mpDwgBaseMainWindow.xaml.cs">
       <DependentUpon>mpDwgBaseMainWindow.xaml</DependentUpon>
     </Compile>
@@ -158,6 +169,13 @@
     <Resource Include="Resources\mpDwgBase_16x16_dark.png" />
     <Resource Include="Resources\mpDwgBase_32x32.png" />
     <Resource Include="Resources\mpDwgBase_32x32_dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

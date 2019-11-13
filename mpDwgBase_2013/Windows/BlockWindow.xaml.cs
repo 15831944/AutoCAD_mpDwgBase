@@ -1,22 +1,25 @@
-﻿using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using ModPlusAPI.Windows;
-using Visibility = System.Windows.Visibility;
-
-namespace mpDwgBase.Windows
+﻿namespace mpDwgBase.Windows
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Linq;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using System.Windows.Media.Imaging;
+    using System.Xml.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.EditorInput;
+    using Models;
+    using ModPlusAPI.Mvvm;
+    using ModPlusAPI.Windows;
+    using Utils;
+    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
+    using Visibility = System.Windows.Visibility;
+
     public partial class BlockWindow
     {
         private const string LangItem = "mpDwgBase";
@@ -26,6 +29,7 @@ namespace mpDwgBase.Windows
         private ObjectId _selectedBlockObjectId;
         private readonly string _mpDwgBaseFile;
         private readonly string _userDwgBaseFile;
+
         // Путь к папке с базами dwg плагина
         private readonly string _dwgBaseFolder;
 
@@ -36,33 +40,40 @@ namespace mpDwgBase.Windows
             _userDwgBaseFile = userDwgBaseFile;
             _dwgBaseFolder = dwgBaseFolder;
             _isEdit = isEdit;
+
             // Отключаем видимость подробностей до выбора блока
             GridBlockDetails.Visibility = Visibility.Collapsed;
             BtLoadLastInteredData.Visibility = Visibility.Collapsed;
             DgAttributesForSpecifictaion.Visibility = Visibility.Collapsed;
+
             // block exist visibility
             BtAboutBlockExistAttributes.Visibility = Visibility.Collapsed;
             TbBlkExistHeader.Visibility = Visibility.Collapsed;
             DgBlockExistAttributes.Visibility = Visibility.Collapsed;
-            //
+
             FillHelpImagesToPopUp();
         }
+
         private void BlockWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             // if edit - attributes
             if (_isEdit)
                 FillAttributesIfIsEdit();
         }
+
         private void FillAttributesIfIsEdit()
         {
             ChkHasAttributesForSpecification.Checked -= ChkHasAttributesForSpecification_OnChecked;
             ChkHasAttributesForSpecification.IsChecked = Item.HasAttributesForSpecification;
             DgAttributesForSpecifictaion.Visibility = Visibility.Visible;
             ChkHasAttributesForSpecification.Checked += ChkHasAttributesForSpecification_OnChecked;
+
             // fill
             FillAttributesForSpecification(Item);
+
             // bind
             DgAttributesForSpecifictaion.ItemsSource = _attributesForSpecification;
+
             // атрибуты самого блока
             if (Item.AttributesValues.Any())
             {
@@ -73,10 +84,12 @@ namespace mpDwgBase.Windows
                 DgBlockExistAttributes.ItemsSource = lstToBind;
             }
         }
+
         // on accept click
         private void BtAccept_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!CheckEmptyData()) return;
+            if (!CheckEmptyData())
+                return;
 
             if (!_isEdit)
             {
@@ -85,6 +98,7 @@ namespace mpDwgBase.Windows
                 {
                     allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg32"), MessageBoxIcon.Question);
                 }
+
                 if (allGood)
                 {
                     SaveInteredData();
@@ -101,7 +115,10 @@ namespace mpDwgBase.Windows
                         DialogResult = true;
                         Close();
                     }
-                    else ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg33"));
+                    else
+                    {
+                        ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg33"));
+                    }
                 }
             }
             else
@@ -112,12 +129,14 @@ namespace mpDwgBase.Windows
                 Close();
             }
         }
+
         // on cancel click
         private void BtCancel_OnClick(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
         }
+
         // Выбор блока
         private void BtSelectBlock_OnClick(object sender, RoutedEventArgs e)
         {
@@ -132,26 +151,31 @@ namespace mpDwgBase.Windows
                     TbBlockName.Text = Item.BlockName;
                     TbIsAnnot.Opacity = Item.IsAnnotative ? 1.0 : 0.5;
                     TbIsDynamic.Opacity = Item.IsDynamicBlock ? 1.0 : 0.5;
+
                     // Биндим 
                     GridBlockDetails.DataContext = Item;
+
                     // включаем видимость подробностей
                     GridBlockDetails.Visibility = Visibility.Visible;
-                    //
+
                     BtAccept.IsEnabled = true;
+
                     // visibility of button to load last data
                     BtLoadLastInteredData.Visibility = CheckFileWithLastDataExists() ? Visibility.Visible : Visibility.Collapsed;
+
                     // move window to center of current screen
                     WindowStartupLocation = WindowStartupLocation.Manual;
                     UpdateLayout();
                     var screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
                     var workArea = screen.WorkingArea;
-                    Left = (workArea.Width - Width) / 2 + workArea.Left;
-                    Top = (workArea.Height - Height) / 2 + workArea.Top;
+                    Left = ((workArea.Width - Width) / 2) + workArea.Left;
+                    Top = ((workArea.Height - Height) / 2) + workArea.Top;
                 }
             }
 
             ShowDialog();
         }
+
         // Получение ObjectId для блока
         private static ObjectId GetBlock()
         {
@@ -174,8 +198,8 @@ namespace mpDwgBase.Windows
                 return ObjectId.Null;
             }
         }
+
         // Получение данных из блока и добавление их в текущий DwgBaseItem
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         private bool ReadDetailsFromSelectedBlock()
         {
             try
@@ -184,6 +208,7 @@ namespace mpDwgBase.Windows
                 using (var tr = doc.Database.TransactionManager.StartTransaction())
                 {
                     var selBlkRef = tr.GetObject(_selectedBlockObjectId, OpenMode.ForRead, true) as BlockReference;
+
                     // С учетом http://adn-cis.org/opredelenie-imeni-bloka-po-vstavke-bloka.html
                     BlockTableRecord selBlock;
                     if (selBlkRef.IsDynamicBlock)
@@ -195,8 +220,10 @@ namespace mpDwgBase.Windows
                         Item.BlockName = selBlock.Name;
                         Item.IsAnnotative = selBlock.Annotative == AnnotativeStates.True;
                         Item.IsDynamicBlock = selBlock.IsDynamicBlock;
+
                         // по умолчанию задаем путь
                         Item.Path = "Блоки/";
+
                         // read attributes
                         if (selBlock.HasAttributeDefinitions)
                         {
@@ -205,10 +232,17 @@ namespace mpDwgBase.Windows
                             BtGetAttrValuesFromBlock.Visibility = Visibility.Visible;
                             GetAttributesFromBlockDefinition(selBlock, tr);
                         }
-                        else BtGetAttrValuesFromBlock.Visibility = Visibility.Collapsed;
+                        else
+                        {
+                            BtGetAttrValuesFromBlock.Visibility = Visibility.Collapsed;
+                        }
                     }
-                    else return false;
+                    else
+                    {
+                        return false;
+                    }
                 }
+
                 return true;
             }
             catch (Exception exception)
@@ -217,6 +251,7 @@ namespace mpDwgBase.Windows
                 return false;
             }
         }
+
         /// <summary>
         /// Проверка введенных данных по базе
         /// </summary>
@@ -224,18 +259,21 @@ namespace mpDwgBase.Windows
         private bool CheckInteredItemData()
         {
             var hasSame = false;
+
             #region Проверяем по базе плагина
 
-            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
+            if (DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
             {
                 foreach (var mpDwgBaseItem in mpDwgBaseItems)
                 {
                     if (mpDwgBaseItem.IsBlock)
+                    {
                         if (mpDwgBaseItem.Name.Equals(Item.Name))
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg35") + ": " + Item.Name);
                             hasSame = true;
                         }
+                    }
                 }
             }
             else
@@ -244,18 +282,21 @@ namespace mpDwgBase.Windows
                 return false;
             }
             #endregion
+
             #region Проверяем по базе пользователя
 
-            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out var userDwgBaseItems))
+            if (DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out var userDwgBaseItems))
             {
                 foreach (var userDwgBaseItem in userDwgBaseItems)
                 {
                     if (userDwgBaseItem.IsBlock)
+                    {
                         if (userDwgBaseItem.Name.Equals(Item.Name))
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg37") + ": " + Item.Name);
                             hasSame = true;
                         }
+                    }
                 }
             }
             else
@@ -264,8 +305,10 @@ namespace mpDwgBase.Windows
                 return false;
             }
             #endregion
+
             return hasSame;
         }
+
         /// <summary>Проверка введенных данных на наличие пустых полей</summary>
         /// <returns>true - все заполнено, false - требуется заполнение</returns>
         private bool CheckEmptyData()
@@ -276,12 +319,14 @@ namespace mpDwgBase.Windows
                 TbName.Focus();
                 return false;
             }
+
             if (Item.Path.Equals("Блоки/"))
             {
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg40"));
                 CbPath.Focus();
                 return false;
             }
+
             if (!_isEdit)
             {
                 var db = AcApp.DocumentManager.MdiActiveDocument.Database;
@@ -291,17 +336,21 @@ namespace mpDwgBase.Windows
                     {
                         var fi = new FileInfo(db.Filename);
                         if (File.Exists(db.Filename))
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(
                                 ModPlusAPI.Language.GetItem(LangItem, "msg41") + Environment.NewLine +
                                 ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
                                 ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
                                 Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
+                        }
                         else
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(
                                 ModPlusAPI.Language.GetItem(LangItem, "msg45") +
                                 Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
                             );
+                        }
 
                         return false;
                     }
@@ -315,8 +364,10 @@ namespace mpDwgBase.Windows
                     }
                 }
             }
+
             return true;
         }
+
         // Заполнение текущего элемента данными
         private void FillDwgBaseItemData()
         {
@@ -346,9 +397,11 @@ namespace mpDwgBase.Windows
                 Item.NoteValue = string.Empty;
                 Item.NominationValue = string.Empty;
             }
+
             Item.Source = TbSource.Text.Trim();
             Item.Author = TbAuthor.Text.Trim();
             Item.Is3Dblock = ChkIs3Dblock.IsChecked != null && ChkIs3Dblock.IsChecked.Value;
+
             // attributes values
             if (!_isEdit)
             {
@@ -357,7 +410,7 @@ namespace mpDwgBase.Windows
                     Item.AttributesValues = new List<AttributeValue>();
                     foreach (var blockExistAttribute in _blockExistAttributes)
                     {
-                        //Item.AttributesValues.Add(blockExistAttribute.TextString);
+                        // Item.AttributesValues.Add(blockExistAttribute.TextString);
                         Item.AttributesValues.Add(new AttributeValue
                         {
                             Tag = blockExistAttribute.Tag,
@@ -380,6 +433,7 @@ namespace mpDwgBase.Windows
                 }
             }
         }
+
         /// <summary>Копирование блока в файл</summary>
         private bool CopySelectedBlockToFile()
         {
@@ -394,20 +448,26 @@ namespace mpDwgBase.Windows
                     using (var destDb = new Database(false, true))
                     {
                         destDb.ReadDwgFile(file, FileShare.ReadWrite, true, string.Empty);
+
                         // Create a variable to store the list of block identifiers
                         var blockIds = new ObjectIdCollection { _selectedBlockObjectId };
                         var mapping = new IdMapping();
+
                         // copy
                         currentDb.WblockCloneObjects(blockIds, destDb.BlockTableId, mapping,
                             DuplicateRecordCloning.Ignore,
                             false);
                         destDb.SaveAs(tempFile, DwgVersion.AC1027);
                     }
+
                     // now replace
                     File.Copy(tempFile, file, true);
                     return true;
                 }
-                else return false;
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception exception)
             {
@@ -425,7 +485,8 @@ namespace mpDwgBase.Windows
         {
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && tb.CaretIndex < 6) e.Handled = true;
+            if (tb != null && tb.CaretIndex < 6)
+                e.Handled = true;
             if (tb != null && !tb.Text.StartsWith("Блоки/"))
             {
                 e.Handled = true;
@@ -452,9 +513,10 @@ namespace mpDwgBase.Windows
 
         private void FillHelpImagesToPopUp()
         {
-            Uri uri = new Uri("pack://application:,,,/mpDwgBase_" + 
-                              ModPlusConnector.Instance.AvailProductExternalVersion +
-                              ";component/Resources/helpImages/helpImage_1.png", UriKind.RelativeOrAbsolute);
+            Uri uri =
+                new Uri("pack://application:,,,/mpDwgBase_" + ModPlusConnector.Instance.AvailProductExternalVersion +
+                        ";component/Resources/helpImages/helpImage_1.png",
+                    UriKind.RelativeOrAbsolute);
             helpImage_1.Source = BitmapFrame.Create(uri);
         }
 
@@ -495,8 +557,14 @@ namespace mpDwgBase.Windows
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
                         }
                     }
-                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
-                    else needLoop = false;
+                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        needLoop = false;
+                    }
                 }
             }
             catch (Exception exception)
@@ -562,8 +630,14 @@ namespace mpDwgBase.Windows
                                 ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
                         }
                     }
-                    else if (sfdresult == System.Windows.Forms.DialogResult.Cancel) return;
-                    else needLoop = false;
+                    else if (sfdresult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        needLoop = false;
+                    }
                 }
             }
             catch (Exception exception)
@@ -575,6 +649,7 @@ namespace mpDwgBase.Windows
                 Focus();
             }
         }
+
         #region last intered data
 
         public bool CheckFileWithLastDataExists()
@@ -582,26 +657,36 @@ namespace mpDwgBase.Windows
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForBlock.xml");
             return File.Exists(file);
         }
+
         private void SaveInteredData()
         {
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForBlock.xml");
             var xEl = new XElement("LastData");
+
             // Name
             xEl.SetAttributeValue("Name", TbName.Text);
+
             // Description
             xEl.SetAttributeValue("Description", TbDescription.Text);
+
             // document
             xEl.SetAttributeValue("Document", TbDocument.Text);
+
             // Author
             xEl.SetAttributeValue("Author", TbAuthor.Text);
+
             // Source
             xEl.SetAttributeValue("Source", TbSource.Text);
+
             // Path
             xEl.SetAttributeValue("Path", CbPath.Text);
+
             // Check if current file
             xEl.SetAttributeValue("IsCurrentDwgFile", ChkIsCurrentDwgFile.IsChecked != null && ChkIsCurrentDwgFile.IsChecked.Value);
+
             // Source file
             xEl.SetAttributeValue("SourceFile", TbSourceFile.Text);
+
             // attributes for spec
             xEl.SetAttributeValue("HasAttributesForSpecification", ChkHasAttributesForSpecification.IsChecked != null && ChkHasAttributesForSpecification.IsChecked.Value);
             if (_attributesForSpecification != null && _attributesForSpecification.Any())
@@ -615,34 +700,46 @@ namespace mpDwgBase.Windows
                     att.SetAttributeValue("DisplayedName", attributeForSpecification.DisplayedName);
                     attrEl.Add(att);
                 }
+
                 xEl.Add(attrEl);
             }
+
             // save
             xEl.Save(file);
         }
+
         private void BtLoadLastInteredData_OnClick(object sender, RoutedEventArgs e)
         {
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForBlock.xml");
             var xEl = XElement.Load(file);
+
             // Name 
             TbName.Text = xEl.Attribute("Name")?.Value;
+
             // Description
             TbDescription.Text = xEl.Attribute("Description")?.Value;
+
             // Document
             TbDocument.Text = xEl.Attribute("Document")?.Value;
+
             // Author
             TbAuthor.Text = xEl.Attribute("Author")?.Value;
+
             // Source
             TbSource.Text = xEl.Attribute("Source")?.Value;
+
             // Path
             CbPath.Text = xEl.Attribute("Path")?.Value;
+
             // ChkIsCurrentDwgFile
             ChkIsCurrentDwgFile.IsChecked = bool.TryParse(xEl.Attribute("IsCurrentDwgFile")?.Value, out bool b) && b; // false
+
             // Source File
             // ReSharper disable once AssignNullToNotNullAttribute
             var sf = Path.Combine(_dwgBaseFolder, xEl.Attribute("SourceFile")?.Value);
             if (!string.IsNullOrEmpty(sf) && File.Exists(sf))
                 TbSourceFile.Text = xEl.Attribute("SourceFile")?.Value;
+
             // attributes for spec
             XAttribute attribute = xEl.Attribute("HasAttributesForSpecification");
             if (attribute != null)
@@ -669,6 +766,7 @@ namespace mpDwgBase.Windows
                                     }
                                 }
                             }
+
                             DgAttributesForSpecifictaion.ItemsSource = _attributesForSpecification;
                         }
                     }
@@ -679,23 +777,27 @@ namespace mpDwgBase.Windows
 
         #region Attributes for specification
 
-        internal class AttributeForSpecification : INotifyPropertyChanged
+        internal class AttributeForSpecification : VmBase
         {
-            public string Name { get; set; }
-            public string DisplayedName { get; set; }
             private string _baseValue;
-            public string BaseValue { get => _baseValue;
-                set { _baseValue = value; OnPropertyChanged(nameof(BaseValue)); } }
+            
+            public string Name { get; set; }
 
+            public string DisplayedName { get; set; }
 
-            public event PropertyChangedEventHandler PropertyChanged;
-            protected virtual void OnPropertyChanged(string propertyName)
+            public string BaseValue
             {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                get => _baseValue;
+                set
+                {
+                    _baseValue = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
         private List<AttributeForSpecification> _attributesForSpecification;
+
         private void FillAttributesForSpecification()
         {
             _attributesForSpecification = new List<AttributeForSpecification>();
@@ -730,6 +832,7 @@ namespace mpDwgBase.Windows
                 BaseValue = string.Empty
             });
         }
+
         private void FillAttributesForSpecification(DwgBaseItem editingItem)
         {
             _attributesForSpecification = new List<AttributeForSpecification>();
@@ -764,16 +867,20 @@ namespace mpDwgBase.Windows
                 BaseValue = editingItem.NoteValue
             });
         }
+
         private void ChkHasAttributesForSpecification_OnChecked(object sender, RoutedEventArgs e)
         {
             if (Item.IsDynamicBlock)
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg53"));
             DgAttributesForSpecifictaion.Visibility = Visibility.Visible;
+
             // fill
             FillAttributesForSpecification();
+
             // bind
             DgAttributesForSpecifictaion.ItemsSource = _attributesForSpecification;
         }
+
         private void ChkHasAttributesForSpecification_OnUnchecked(object sender, RoutedEventArgs e)
         {
             DgAttributesForSpecifictaion.Visibility = Visibility.Collapsed;
@@ -785,13 +892,18 @@ namespace mpDwgBase.Windows
         internal class BlockExistAttribute
         {
             public string Invisible { get; set; }
+
             public string Constant { get; set; }
+
             public string Tag { get; set; }
+
             public string TextString { get; set; }
+
             public string Prompt { get; set; }
         }
 
         private List<BlockExistAttribute> _blockExistAttributes;
+
         // Получение из описания блока атрибутов
         private void GetAttributesFromBlockDefinition(BlockTableRecord blk, Transaction tr)
         {
@@ -814,6 +926,7 @@ namespace mpDwgBase.Windows
                         _blockExistAttributes.Add(blkExistAttr);
                     }
                 }
+
                 // binding
                 if (_blockExistAttributes.Any())
                 {
@@ -824,6 +937,7 @@ namespace mpDwgBase.Windows
                 }
             }
         }
+
         // Получение значений атрибутов из вхождения блока
         private void GetAttributesValuesFromBlockReference(BlockReference blkRef, Transaction tr)
         {
@@ -843,6 +957,7 @@ namespace mpDwgBase.Windows
                 }
             }
         }
+
         // Взять значения атрибутов из блока
         private void BtGetAttrValuesFromBlock_OnClick(object sender, RoutedEventArgs e)
         {
@@ -869,7 +984,7 @@ namespace mpDwgBase.Windows
         }
 
         #endregion
-        
+
         private void ChkIsCurrentDwgFile_OnChecked(object sender, RoutedEventArgs e)
         {
             // нужно проверить версию файла
@@ -880,17 +995,19 @@ namespace mpDwgBase.Windows
                 {
                     var fi = new FileInfo(db.Filename);
                     if (File.Exists(db.Filename))
+                    {
                         ModPlusAPI.Windows.MessageBox.Show(
                             ModPlusAPI.Language.GetItem(LangItem, "msg55") + Environment.NewLine +
-                            ModPlusAPI.Language.GetItem(LangItem, "msg42")+ " - " + _dwgBaseFolder + Environment.NewLine +
+                            ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
                             ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                    }
                     else
+                    {
                         ModPlusAPI.Windows.MessageBox.Show(
                             ModPlusAPI.Language.GetItem(LangItem, "msg56") +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                    }
 
                     ChkIsCurrentDwgFile.IsChecked = false;
                 }
@@ -919,16 +1036,18 @@ namespace mpDwgBase.Windows
             var win = new BlockRecommend();
             win.ShowDialog();
         }
-
-
+        
         private void BlockWindow_OnClosed(object sender, EventArgs e)
         {
-            if (_isEdit) return;
+            if (_isEdit)
+                return;
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
+            {
                 if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
                     SaveInteredData();
+            }
         }
     }
 }

@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(SolutionDir)\ModPlus.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
       <HintPath>C:\_Acad dlls\2019\accoremgd.dll</HintPath>
@@ -84,11 +87,26 @@
 	-->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\mpDwgBase_2013\DwgBasePlugin.cs">
+      <Link>DwgBasePlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\models\AttributeValue.cs">
+      <Link>Models\AttributeValue.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\models\DwgBaseItem.cs">
+      <Link>Models\DwgBaseItem.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\models\FileToBind.cs">
+      <Link>Models\FileToBind.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\models\ItemToBind.cs">
+      <Link>Models\ItemToBind.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\models\TreeViewModelItem.cs">
+      <Link>Models\TreeViewModelItem.cs</Link>
+    </Compile>
     <Compile Include="..\mpDwgBase_2013\ModPlusConnector.cs">
       <Link>ModPlusConnector.cs</Link>
-    </Compile>
-    <Compile Include="..\mpDwgBase_2013\mpDwgBase.cs">
-      <Link>mpDwgBase.cs</Link>
     </Compile>
     <Compile Include="..\mpDwgBase_2013\mpDwgBaseMainWindow.xaml.cs">
       <Link>mpDwgBaseMainWindow.xaml.cs</Link>
@@ -96,6 +114,15 @@
     </Compile>
     <Compile Include="..\mpDwgBase_2013\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\utils\BlockInsertion.cs">
+      <Link>Utils\BlockInsertion.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\utils\DwgBaseHelpers.cs">
+      <Link>Utils\DwgBaseHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\mpdwgbase_2013\utils\ImageCreator.cs">
+      <Link>Utils\ImageCreator.cs</Link>
     </Compile>
     <Compile Include="..\mpDwgBase_2013\Windows\BaseUploading.xaml.cs">
       <Link>Windows\BaseUploading.xaml.cs</Link>
@@ -203,6 +230,13 @@
     <Resource Include="..\mpDwgBase_2013\Resources\mpDwgBase_32x32_dark.png">
       <Link>Resources\mpDwgBase_32x32_dark.png</Link>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

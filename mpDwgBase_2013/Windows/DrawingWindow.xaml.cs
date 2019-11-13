@@ -1,6 +1,5 @@
 ﻿namespace mpDwgBase.Windows
 {
-    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using System;
     using System.IO;
     using System.Windows;
@@ -9,7 +8,10 @@
     using System.Windows.Media.Imaging;
     using System.Xml.Linq;
     using Autodesk.AutoCAD.DatabaseServices;
+    using Models;
     using ModPlusAPI.Windows;
+    using Utils;
+    using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using Visibility = System.Windows.Visibility;
 
     public partial class DrawingWindow
@@ -20,6 +22,7 @@
         public DwgBaseItem Item;
         private readonly string _mpDwgBaseFile;
         private readonly string _userDwgBaseFile;
+
         // Путь к папке с базами dwg плагина
         private readonly string _dwgBaseFolder;
 
@@ -30,16 +33,18 @@
             _userDwgBaseFile = userDwgBaseFile;
             _dwgBaseFolder = dwgBaseFolder;
             _isEdit = isEdit;
-            //
             FillHelpImagesToPopUp();
         }
+
         private void FillHelpImagesToPopUp()
         {
-            Uri uri = new Uri("pack://application:,,,/mpDwgBase_" + 
-                              ModPlusConnector.Instance.AvailProductExternalVersion + 
-                              ";component/Resources/helpImages/helpImage_1.png", UriKind.RelativeOrAbsolute);
+            Uri uri = 
+                new Uri("pack://application:,,,/mpDwgBase_" + ModPlusConnector.Instance.AvailProductExternalVersion + 
+                        ";component/Resources/helpImages/helpImage_1.png",
+                    UriKind.RelativeOrAbsolute);
             helpImage_1.Source = BitmapFrame.Create(uri);
         }
+
         private void DrawingWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             if (!_isEdit)
@@ -48,8 +53,10 @@
                 BtLoadLastInteredData.Visibility = CheckFileWithLastDataExists()
                     ? Visibility.Visible
                     : Visibility.Collapsed;
+
                 // set first item data
                 Item.Path = "Чертежи/";
+
                 // bind
                 GridDrawingDetails.DataContext = Item;
             }
@@ -59,7 +66,8 @@
         {
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
-            if (tb != null && tb.CaretIndex < 8) e.Handled = true;
+            if (tb != null && tb.CaretIndex < 8)
+                e.Handled = true;
             if (tb != null && !tb.Text.StartsWith("Чертежи/"))
             {
                 e.Handled = true;
@@ -83,6 +91,7 @@
                 Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
             }
         }
+
         // Выбрать dwg-файл для добавления 
         private void BtSelectDwgFile_OnClick(object sender, RoutedEventArgs e)
         {
@@ -114,16 +123,28 @@
                                     needLoop = false;
                                 }
                                 else
+                                {
                                     ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg60"));
+                                }
                             }
                             else
+                            {
                                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg48"));
+                            }
                         }
                         else
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg49") + " " + _dwgBaseFolder);
+                        }
                     }
-                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
-                    else needLoop = false;
+                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        needLoop = false;
+                    }
                 }
             }
             catch (Exception exception)
@@ -143,6 +164,7 @@
                 var selectedFile = string.Empty;
                 var selectedPath = string.Empty;
                 var copiedFile = string.Empty;
+
                 // Сначала нужно выбрать файл, проверив версию его
                 var ofd = new Autodesk.AutoCAD.Windows.OpenFileDialog(ModPlusAPI.Language.GetItem(LangItem, "msg59"), _dwgBaseFolder, "dwg", "name",
                     Autodesk.AutoCAD.Windows.OpenFileDialog.OpenFileDialogFlags.NoFtpSites |
@@ -166,11 +188,20 @@
                                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg60"));
                         }
                         else
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg48"));
+                        }
                     }
-                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel) return;
-                    else needLoop = false;
+                    else if (ofdresult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        needLoop = false;
+                    }
                 }
+
                 // Теперь нужно указать папку для расположения файла
                 var fbd = new System.Windows.Forms.FolderBrowserDialog
                 {
@@ -198,21 +229,36 @@
                                             ModPlusAPI.Language.GetItem(LangItem, "msg62") + " " + fi.Name +
                                             Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg63"), MessageBoxIcon.Question);
                                 }
-                                else needLoop = false;
+                                else
+                                {
+                                    needLoop = false;
+                                }
                             }
                             else
+                            {
                                 ModPlusAPI.Windows.MessageBox.Show(
                                     ModPlusAPI.Language.GetItem(LangItem, "msg64") + " " + _dwgBaseFolder + Environment.NewLine +
                                     ModPlusAPI.Language.GetItem(LangItem, "msg52"));
+                            }
                         }
                         else
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg65") + " " + _dwgBaseFolder);
+                        }
                     }
-                    else if (fbdResult == System.Windows.Forms.DialogResult.Cancel) return;
-                    else needLoop = true;
+                    else if (fbdResult == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        needLoop = true;
+                    }
                 }
+
                 // then copy file
                 if (!string.IsNullOrEmpty(selectedFile) & !string.IsNullOrEmpty(selectedPath))
+                {
                     if (File.Exists(selectedFile))
                     {
                         File.Copy(selectedFile, copiedFile, true);
@@ -222,6 +268,7 @@
                             BtAccept.IsEnabled = true;
                         }
                     }
+                }
             }
             catch (Exception exception)
             {
@@ -232,10 +279,12 @@
                 Focus();
             }
         }
+
         // on accept click
         private void BtAccept_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!CheckEmptyData()) return;
+            if (!CheckEmptyData())
+                return;
             if (!_isEdit)
             {
                 var allGood = true;
@@ -243,6 +292,7 @@
                 {
                     allGood = ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg66"), MessageBoxIcon.Question);
                 }
+
                 if (allGood)
                 {
                     SaveInteredData();
@@ -260,12 +310,14 @@
                 Close();
             }
         }
+
         // on cancel click
         private void BtCancel_OnClick(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
         }
+
         /// <summary>
         /// Проверка введенных данных по базе
         /// </summary>
@@ -273,18 +325,21 @@
         private bool CheckInteredItemData()
         {
             var hasSame = false;
+
             #region Проверяем по базе плагина
 
-            if (DwgBaseHelpers.DeSeializerFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
+            if (DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out var mpDwgBaseItems))
             {
                 foreach (var mpDwgBaseItem in mpDwgBaseItems)
                 {
                     if (!mpDwgBaseItem.IsBlock)
+                    {
                         if (mpDwgBaseItem.Name.Equals(Item.Name))
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg67") + " " + Item.Name);
                             hasSame = true;
                         }
+                    }
                 }
             }
             else
@@ -293,18 +348,21 @@
                 return false;
             }
             #endregion
+            
             #region Проверяем по базе пользователя
 
-            if (DwgBaseHelpers.DeSeializerFromXml(_userDwgBaseFile, out var userDwgBaseItems))
+            if (DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out var userDwgBaseItems))
             {
                 foreach (var userDwgBaseItem in userDwgBaseItems)
                 {
                     if (!userDwgBaseItem.IsBlock)
+                    {
                         if (userDwgBaseItem.Name.Equals(Item.Name))
                         {
                             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg68") + " " + Item.Name);
                             hasSame = true;
                         }
+                    }
                 }
             }
             else
@@ -313,8 +371,10 @@
                 return false;
             }
             #endregion
+            
             return hasSame;
         }
+
         /// <summary>
         /// Проверка введенных данных на наличие пустых полей
         /// </summary>
@@ -327,12 +387,14 @@
                 TbName.Focus();
                 return false;
             }
+
             if (Item.Path.Equals("Чертежи/"))
             {
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg40"));
                 CbPath.Focus();
                 return false;
             }
+
             if (!_isEdit)
             {
                 var db = AcApp.DocumentManager.MdiActiveDocument.Database;
@@ -342,17 +404,19 @@
                     {
                         var fi = new FileInfo(db.Filename);
                         if (File.Exists(db.Filename))
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(
                                 ModPlusAPI.Language.GetItem(LangItem, "msg41") + Environment.NewLine +
                                 ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
                                 ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
-                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                        }
                         else
+                        {
                             ModPlusAPI.Windows.MessageBox.Show(
                                 ModPlusAPI.Language.GetItem(LangItem, "msg45") +
-                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                                Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                        }
 
                         return false;
                     }
@@ -366,8 +430,10 @@
                     }
                 }
             }
+
             return true;
         }
+
         // Заполнение текущего элемента данными
         private void FillDwgBaseItemData()
         {
@@ -392,6 +458,7 @@
             Item.Author = TbAuthor.Text.Trim();
             Item.Is3Dblock = false;
         }
+
         private void ChkIsCurrentDwgFile_OnChecked(object sender, RoutedEventArgs e)
         {
             // нужно проверить версию файла
@@ -402,17 +469,19 @@
                 {
                     var fi = new FileInfo(db.Filename);
                     if (File.Exists(db.Filename))
+                    {
                         ModPlusAPI.Windows.MessageBox.Show(
                             ModPlusAPI.Language.GetItem(LangItem, "msg55") + Environment.NewLine +
                             ModPlusAPI.Language.GetItem(LangItem, "msg42") + " - " + _dwgBaseFolder + Environment.NewLine +
                             ModPlusAPI.Language.GetItem(LangItem, "msg43") + " - " + fi.DirectoryName +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                    }
                     else
+                    {
                         ModPlusAPI.Windows.MessageBox.Show(
                             ModPlusAPI.Language.GetItem(LangItem, "msg56") +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44")
-                            );
+                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                    }
 
                     ChkIsCurrentDwgFile.IsChecked = false;
                 }
@@ -437,6 +506,7 @@
         }
 
         #region last intered data
+
         public bool CheckFileWithLastDataExists()
         {
             var file = System.IO.Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
@@ -447,44 +517,61 @@
         {
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
             var xEl = new XElement("LastData");
+
             // Name
             xEl.SetAttributeValue("Name", TbName.Text);
+
             // Description
             xEl.SetAttributeValue("Description", TbDescription.Text);
+
             // document
             xEl.SetAttributeValue("Document", TbDocument.Text);
+
             // Author
             xEl.SetAttributeValue("Author", TbAuthor.Text);
+
             // Source
             xEl.SetAttributeValue("Source", TbSource.Text);
+
             // Path
             xEl.SetAttributeValue("Path", CbPath.Text);
+
             // Check if current file
             xEl.SetAttributeValue("IsCurrentDwgFile", ChkIsCurrentDwgFile.IsChecked != null && ChkIsCurrentDwgFile.IsChecked.Value);
+
             // Source file
             xEl.SetAttributeValue("SourceFile", TbSourceFile.Text);
 
             // save
             xEl.Save(file);
         }
+
         private void BtLoadLastInteredData_OnClick(object sender, RoutedEventArgs e)
         {
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForDrawing.xml");
             var xEl = XElement.Load(file);
+
             // Name 
             TbName.Text = xEl.Attribute("Name")?.Value;
+
             // Description
             TbDescription.Text = xEl.Attribute("Description")?.Value;
+
             // Document
             TbDocument.Text = xEl.Attribute("Document")?.Value;
+
             // Author
             TbAuthor.Text = xEl.Attribute("Author")?.Value;
+
             // Source
             TbSource.Text = xEl.Attribute("Source")?.Value;
+
             // Path
             CbPath.Text = xEl.Attribute("Path")?.Value;
+
             // ChkIsCurrentDwgFile
             ChkIsCurrentDwgFile.IsChecked = bool.TryParse(xEl.Attribute("IsCurrentDwgFile")?.Value, out bool b) && b; // false
+
             // Source File
             // ReSharper disable once AssignNullToNotNullAttribute
             var sf = System.IO.Path.Combine(_dwgBaseFolder, xEl.Attribute("SourceFile")?.Value);
@@ -504,12 +591,15 @@
 
         private void DrawingWindow_OnClosed(object sender, EventArgs e)
         {
-            if (_isEdit) return;
+            if (_isEdit)
+                return;
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
+            {
                 if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
                     SaveInteredData();
+            }
         }
     }
 }
