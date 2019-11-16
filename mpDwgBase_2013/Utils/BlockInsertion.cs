@@ -32,9 +32,14 @@
                     var attributeReference = new AttributeReference();
                     attributeReference.SetAttributeFromBlock(attributeDefinition, blkref.BlockTransform);
                     if (i < atts.Count)
+                    {
                         attributeReference.TextString = atts[i];
+                    }
                     else
+                    {
                         attributeReference.TextString = attributeDefinition.TextString;
+                    }
+
                     i++;
                     blkref.AttributeCollection.AppendAttribute(attributeReference);
                     tr.AddNewlyCreatedDBObject(attributeReference, true);
@@ -150,9 +155,11 @@
                         }
 
                         if (res.Status == PromptStatus.Cancel)
-                            return SamplerStatus.Cancel;
+                            {
+                                return SamplerStatus.Cancel;
+                            }
 
-                        return SamplerStatus.OK;
+                            return SamplerStatus.OK;
                     }
 
                     case 1:
@@ -169,13 +176,20 @@
                         var res = prompts.AcquireAngle(jigOpts);
                         var angleTemp = res.Value;
                         if (Math.Abs(angleTemp - _angle) > Tolerance.Global.EqualVector)
-                            _angle = angleTemp;
-                        else
-                            return SamplerStatus.NoChange;
-                        if (res.Status == PromptStatus.Cancel)
-                            return SamplerStatus.Cancel;
+                            {
+                                _angle = angleTemp;
+                            }
+                            else
+                            {
+                                return SamplerStatus.NoChange;
+                            }
 
-                        return SamplerStatus.OK;
+                            if (res.Status == PromptStatus.Cancel)
+                            {
+                                return SamplerStatus.Cancel;
+                            }
+
+                            return SamplerStatus.OK;
                     }
 
                     default:
@@ -241,19 +255,33 @@
                     {
                         if (attr.Tag.ToLower().Equals("mp:позиция") ||
                             attr.Tag.ToLower().Equals("mp:position"))
+                        {
                             attr.TextString = dwgBaseItem.PositionValue;
+                        }
+
                         if (attr.Tag.ToLower().Equals("mp:обозначение") ||
                             attr.Tag.ToLower().Equals("mp:designation"))
+                        {
                             attr.TextString = dwgBaseItem.DesignationValue;
+                        }
+
                         if (attr.Tag.ToLower().Equals("mp:наименование") ||
                             attr.Tag.ToLower().Equals("mp:name"))
+                        {
                             attr.TextString = dwgBaseItem.NominationValue;
+                        }
+
                         if (attr.Tag.ToLower().Equals("mp:масса") ||
                             attr.Tag.ToLower().Equals("mp:mass"))
+                        {
                             attr.TextString = dwgBaseItem.MassValue;
+                        }
+
                         if (attr.Tag.ToLower().Equals("mp:примечание") ||
                             attr.Tag.ToLower().Equals("mp:note"))
+                        {
                             attr.TextString = dwgBaseItem.NoteValue;
+                        }
                     }
                 }
             }
@@ -283,19 +311,33 @@
                             {
                                 if (attr.Tag.ToLower().Equals("mp:позиция") ||
                                     attr.Tag.ToLower().Equals("mp:position"))
+                                {
                                     attr.TextString = dwgBaseItem.PositionValue;
+                                }
+
                                 if (attr.Tag.ToLower().Equals("mp:обозначение") ||
                                     attr.Tag.ToLower().Equals("mp:designation"))
+                                {
                                     attr.TextString = dwgBaseItem.DesignationValue;
+                                }
+
                                 if (attr.Tag.ToLower().Equals("mp:наименование") ||
                                     attr.Tag.ToLower().Equals("mp:name"))
+                                {
                                     attr.TextString = dwgBaseItem.NominationValue;
+                                }
+
                                 if (attr.Tag.ToLower().Equals("mp:масса") ||
                                     attr.Tag.ToLower().Equals("mp:mass"))
+                                {
                                     attr.TextString = dwgBaseItem.MassValue;
+                                }
+
                                 if (attr.Tag.ToLower().Equals("mp:примечание") ||
                                     attr.Tag.ToLower().Equals("mp:note"))
+                                {
                                     attr.TextString = dwgBaseItem.NoteValue;
+                                }
                             }
                         }
                     }
@@ -313,7 +355,9 @@
         {
             var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };
             if (Language.RusWebLanguages.Contains(Language.CurrentLanguageName))
+            {
                 allowAttributesTags = new List<string> { "mp:позиция", "mp:обозначение", "mp:наименование", "mp:масса", "mp:примечание" };
+            }
 
             var blk = tr.GetObject(objectId, OpenMode.ForRead) as BlockReference;
             if (blk != null)
@@ -325,7 +369,9 @@
                     {
                         var attr = tr.GetObject(id, OpenMode.ForRead) as AttributeReference;
                         if (allowAttributesTags.Contains(attr?.Tag.ToLower()))
+                        {
                             return true;
+                        }
                     }
                 }
             }
@@ -339,7 +385,9 @@
             var attributeDefinitions = new List<AttributeDefinition>();
             var allowAttributesTags = new List<string> { "mp:position", "mp:designation", "mp:name", "mp:mass", "mp:note" };
             if (Language.RusWebLanguages.Contains(Language.CurrentLanguageName))
+            {
                 allowAttributesTags = new List<string> { "mp:позиция", "mp:обозначение", "mp:наименование", "mp:масса", "mp:примечание" };
+            }
 
             var allowAttributesPrompt = new List<string>
             {

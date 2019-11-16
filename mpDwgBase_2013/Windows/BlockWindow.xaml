@@ -19,6 +19,7 @@
                 <Setter Property="MinWidth" Value="0"></Setter>
                 <Setter Property="ToolTipService.InitialShowDelay" Value="0"></Setter>
                 <Setter Property="ToolTipService.ShowDuration" Value="30000"></Setter>
+                <Setter Property="IsTabStop" Value="False"></Setter>
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
@@ -96,9 +97,9 @@
         </Grid>
         <Separator Grid.Row="1"  BorderBrush="{DynamicResource BoxesBorderBrush}" BorderThickness="0,1,0,0"></Separator>
         <!--Load last-->
-        <Button Grid.Row="2"  Name="BtLoadLastInteredData"
+        <Button Grid.Row="2"  Name="BtLoadLastEnteredData"
                 HorizontalAlignment="Center"
-                Click="BtLoadLastInteredData_OnClick"
+                Click="BtLoadLastEnteredData_OnClick"
                 Content="{Binding Source={StaticResource Lang}, XPath=h40}"></Button>
         <!--Details-->
         <Grid Grid.Row="3" Name="GridBlockDetails">

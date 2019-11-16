@@ -1,4 +1,8 @@
-﻿namespace mpDwgBase.Windows
+﻿using System.Net.Mail;
+using System.Threading.Tasks;
+using ModPlusService.Dto;
+
+namespace mpDwgBase.Windows
 {
     using System;
     using System.Collections.Generic;
@@ -31,6 +35,7 @@
 
         // Create a Delegate that matches the Signature of the ProgressBar's SetValue method
         private delegate void UpdateProgressBarDelegate(DependencyProperty dp, object value);
+
         private delegate void UpdateProgressTextDelegate(DependencyProperty dp, object value);
 
         // current archive to upload
@@ -58,17 +63,19 @@
                 if (File.Exists(file))
                 {
                     var fi = new FileInfo(file);
-                    var filetobind = new FileToBind
+                    var fileToBind = new FileToBind
                     {
                         FileName = fi.Name,
                         FullFileName = fi.FullName,
                         SourceFile = dwgBaseItem.SourceFile,
                         Selected = false,
                         FullDirectory = fi.DirectoryName,
-                        SubDirectory = fi.DirectoryName?.Replace(_dwgBaseFolder + @"\", "")
+                        SubDirectory = fi.DirectoryName?.Replace(_dwgBaseFolder + @"\", string.Empty)
                     };
-                    if (!HasFileToBindInList(filetobind))
-                        _filesToBind.Add(filetobind);
+                    if (!HasFileToBindInList(fileToBind))
+                    {
+                        _filesToBind.Add(fileToBind);
+                    }
                 }
             }
 
@@ -84,7 +91,8 @@
                     toBind.FullFileName.Equals(fileToBind.FullFileName) &
                     toBind.SourceFile.Equals(fileToBind.SourceFile))
                 {
-                    has = true; break;
+                    has = true;
+                    break;
                 }
             }
 
@@ -95,7 +103,10 @@
         {
             var lv = sender as ListView;
             if (!(lv?.SelectedItem is FileToBind selectedFile))
+            {
                 return;
+            }
+
             LvItemsInFile.ItemsSource = null;
             var lstToBind = new List<ItemToBind>();
             foreach (var dwgBaseItem in _dwgBaseItems)
@@ -121,7 +132,9 @@
                     }
 
                     if (!lstToBind.Contains(itemToBnd))
+                    {
                         lstToBind.Add(itemToBnd);
+                    }
                 }
             }
 
@@ -133,7 +146,9 @@
             if (string.IsNullOrEmpty(TbFeedback.Text))
             {
                 if (!MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "h75")))
+                {
                     return;
+                }
             }
 
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
@@ -145,8 +160,8 @@
             }
 
             CreateArchive();
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
+            Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
         }
 
         private void CreateArchive()
@@ -157,12 +172,14 @@
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
 
             // progress text
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg16"));
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg16"));
 
             // create temp folder
             var tmpFolder = Path.Combine(_dwgBaseFolder, "Temp");
             if (!Directory.Exists(tmpFolder))
+            {
                 Directory.CreateDirectory(tmpFolder);
+            }
 
             // create base file with selected files items
             ProgressBar.Minimum = 0;
@@ -171,10 +188,12 @@
 
             // Соберем список файлов-источников чтобы проще их сверять
             var sourceFiles = new List<string>();
-            foreach (FileToBind fileToBind in _filesToBind)
+            foreach (var fileToBind in _filesToBind)
             {
                 if (!sourceFiles.Contains(fileToBind.SourceFile))
+                {
                     sourceFiles.Add(fileToBind.SourceFile);
+                }
             }
 
             var baseFileToArchive = new List<DwgBaseItem>();
@@ -183,10 +202,14 @@
                 Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                     ModPlusAPI.Language.GetItem(LangItem, "msg17") + ": " + i + "/" + _dwgBaseItems.Count);
                 Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)i);
-                DwgBaseItem dwgBaseItem = _dwgBaseItems[i];
+                var dwgBaseItem = _dwgBaseItems[i];
                 if (sourceFiles.Contains(dwgBaseItem.SourceFile))
+                {
                     if (!baseFileToArchive.Contains(dwgBaseItem))
+                    {
                         baseFileToArchive.Add(dwgBaseItem);
+                    }
+                }
             }
 
             // save xml file
@@ -204,13 +227,17 @@
             // create zip
             _currentFileToUpload = Path.ChangeExtension(Path.Combine(tmpFolder, Path.GetRandomFileName()), ".zip");
             if (File.Exists(_currentFileToUpload))
+            {
                 File.Delete(_currentFileToUpload);
-            using (ZipArchive zip = ZipFile.Open(_currentFileToUpload, ZipArchiveMode.Create))
+            }
+
+            using (var zip = ZipFile.Open(_currentFileToUpload, ZipArchiveMode.Create))
             {
                 // create directories
-                foreach (FileToBind fileToBind in _filesToBind.Where(x => x.Selected))
+                foreach (var fileToBind in _filesToBind.Where(x => x.Selected))
                 {
-                    zip.CreateEntryFromFile(fileToBind.FullFileName,
+                    zip.CreateEntryFromFile(
+                        fileToBind.FullFileName,
                         Path.Combine(fileToBind.SubDirectory, fileToBind.FileName));
                 }
 
@@ -219,7 +246,9 @@
 
                 // add comment file
                 if (!string.IsNullOrEmpty(commentFile) && File.Exists(commentFile))
+                {
                     zip.CreateEntryFromFile(commentFile, new FileInfo(commentFile).Name);
+                }
             }
 
             File.Delete(xmlToArchive);
@@ -229,7 +258,7 @@
             BtSeeArchive.Visibility = Visibility.Visible;
             BtDeleteArchive.Visibility = Visibility.Visible;
             BtUploadArchive.Visibility = Visibility.Visible;
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg19"));
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg19"));
         }
 
         // window closed
@@ -240,7 +269,9 @@
             {
                 // check if temp directory exist
                 if (Directory.Exists(tmpFolder))
+                {
                     Directory.Delete(tmpFolder, true);
+                }
             }
             catch
             {
@@ -254,9 +285,13 @@
         private void BtSeeArchive_OnClick(object sender, RoutedEventArgs e)
         {
             if (File.Exists(_currentFileToUpload))
+            {
                 Process.Start(_currentFileToUpload);
+            }
             else
+            {
                 MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
+            }
         }
 
         // upload
@@ -270,66 +305,50 @@
 
             if (File.Exists(_currentFileToUpload))
             {
+                ProgressDialogController controller = null;
                 try
                 {
-                    // Create a new instance of our ProgressBar Delegate that points
-                    //  to the ProgressBar's SetValue method.
-                    var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
-                    var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
-                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBox.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg24"));
-
-                    // get connect data
-                    if (!DwgBaseHelpers.GetConfigFileFromSite(out XmlDocument docFromSite))
-                        return;
-                    var ftpClient = new FtpClient
+                    var settings = new MetroDialogSettings
                     {
-                        UserName = docFromSite.DocumentElement["FTP"].GetAttribute("login"),
-                        Host = docFromSite.DocumentElement["FTP"].GetAttribute("host"),
-                        Password = docFromSite.DocumentElement["FTP"].GetAttribute("password")
+                        AnimateShow = true,
+                        AnimateHide = true,
+                        DialogTitleFontSize = 20
                     };
-                    var directoryToUpload = "/dwgBases/";
-                    string shortName = _currentFileToUpload.Remove(0, _currentFileToUpload.LastIndexOf('\\') + 1);
-                    FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + ftpClient.Host + directoryToUpload + shortName);
-                    ftpRequest.Credentials = new NetworkCredential(ftpClient.UserName, ftpClient.Password);
-                    ftpRequest.EnableSsl = false;
-                    ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg25"));
-                    using (var inputStream = File.OpenRead(_currentFileToUpload))
+                    controller = await this.ShowProgressAsync(ModPlusAPI.Language.GetItem(LangItem, "msg24"), string.Empty, false, settings);
+                    controller.Minimum = 0;
+                    controller.Maximum = 2;
+
+                    using (var client = ModPlusAPI.Web.ApiClient.CreateClient())
                     {
-                        using (var outputStream = ftpRequest.GetRequestStream())
-                        {
-                            ProgressBar.Minimum = 0;
-                            ProgressBar.Maximum = 100;
-                            ProgressBar.Value = 0;
-                            var buffer = new byte[1024 * 10];
-                            int totalReadBytesCount = 0;
-                            int readBytesCount;
-                            while ((readBytesCount = inputStream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                outputStream.Write(buffer, 0, readBytesCount);
-                                var progress = (int)((totalReadBytesCount += readBytesCount) / (float)inputStream.Length * 100);
-                                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
-                                    ModPlusAPI.Language.GetItem(LangItem, "msg25") + ": " + progress + "%");
-                                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)progress);
-                            }
-                        }
+                        controller.SetMessage(ModPlusAPI.Language.GetItem(LangItem, "msg25"));
+                        controller.SetProgress(1);
+                        await client.UploadUserFile(new[] { "DwgForBaseFromUsers" }, _currentFileToUpload, false, true);
+
+                        controller.SetMessage(ModPlusAPI.Language.GetItem(LangItem, "msg26"));
+                        controller.SetProgress(2);
+                        var emailSettings = await client.GetEmailSettings();
+                        await SendEmailNotification(emailSettings);
                     }
 
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "msg26"));
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
-                    MessageBox.Show(
+                    await controller.CloseAsync();
+
+                    await this.ShowMessageAsync(
+                        string.Empty,
                         ModPlusAPI.Language.GetItem(LangItem, "msg27") + ": " + _currentFileToUpload + " " +
                         ModPlusAPI.Language.GetItem(LangItem, "msg28") + Environment.NewLine +
                         ModPlusAPI.Language.GetItem(LangItem, "msg29"));
-
-                    //
                 }
                 catch (Exception exception)
                 {
+                    if (controller != null)
+                        await controller.CloseAsync();
                     ExceptionBox.Show(exception);
                 }
             }
-            else MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
+            else
+            {
+                MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg22"));
+            }
         }
 
         // create comment file
@@ -346,7 +365,6 @@
             return file;
         }
 
-        //
         private void BtDeleteArchive_OnClick(object sender, RoutedEventArgs e)
         {
             if (File.Exists(_currentFileToUpload))
@@ -370,6 +388,27 @@
                         BtUploadArchive.Visibility = Visibility.Collapsed;
                         BtSeeArchive.Visibility = Visibility.Collapsed;
                         BtMakeArchive.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+        }
+
+        private async Task SendEmailNotification(EmailSettingsDto emailSettings)
+        {
+            if (emailSettings != null && emailSettings.IsAvailable())
+            {
+                var from = new MailAddress(emailSettings.Address, "Dwg Base Notification");
+                var to = new MailAddress(emailSettings.Address);
+                using (var m = new MailMessage(from, to))
+                {
+                    m.Subject = "Dwg Base Notification";
+                    m.Body = "New file was uploaded by user";
+                    m.IsBodyHtml = false;
+                    using (var smtp = new SmtpClient(emailSettings.Host, emailSettings.Port))
+                    {
+                        smtp.Credentials = new NetworkCredential(emailSettings.UserName, emailSettings.Password);
+                        smtp.EnableSsl = false;
+                        await smtp.SendMailAsync(m).ConfigureAwait(true);
                     }
                 }
             }

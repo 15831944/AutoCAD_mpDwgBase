@@ -20,6 +20,7 @@
     using ModPlusAPI.Windows;
     using Utils;
     using Windows;
+    using ModPlusStyle.Controls.Dialogs;
     using AcApp = Autodesk.AutoCAD.ApplicationServices.Core.Application;
     using Visibility = System.Windows.Visibility;
 
@@ -135,7 +136,7 @@
         }
 
         // Заполнение окна в зависимости от версии базы
-        private void FillByBaseType()
+        private async void FillByBaseType()
         {
             // Сначала все очищаем
             ClearControls();
@@ -161,7 +162,9 @@
 
                 // Если файла нет, то ничего не заполнится
                 if (File.Exists(_dwgBaseFileName))
+                {
                     TvGroups.ItemsSource = DwgBaseHelpers.DeseializeFromXml(_dwgBaseFileName, out _dwgBaseItems) ? CreateTreeViewModel() : null;
+                }
             }
             else if (CbBaseType.SelectedIndex == 1)
             {
@@ -170,9 +173,11 @@
                 var hasFile = false;
                 if (!File.Exists(_dwgBaseFileName))
                 {
-                    if (ModPlusAPI.Windows.MessageBox.ShowYesNo(
+                    // Пользовательская база отсутствует. Создать?
+                    if (await this.ShowMessageAsync(
                         ModPlusAPI.Language.GetItem(LangItem, "msg3"),
-                        MessageBoxIcon.Question))
+                        string.Empty,
+                        MessageDialogStyle.AffirmativeAndNegative) == MessageDialogResult.Affirmative)
                     {
                         var newUserFile = new XElement("ArrayOfDwgBaseItem");
                         newUserFile.Save(_dwgBaseFileName);
@@ -205,9 +210,13 @@
 
                     // Включаем кнопку загрузки на сервер если есть элементы
                     if (items != null && items.Any())
+                    {
                         BtUpload.Visibility = Visibility.Visible;
+                    }
                     else
+                    {
                         BtUpload.Visibility = Visibility.Collapsed;
+                    }
 
                     TvGroups.ItemsSource = items;
                 }
@@ -249,7 +258,9 @@
                 if (lb.SelectedIndex != -1)
                 {
                     if (!(lb.SelectedItem is DwgBaseItem selectedItem))
+                    {
                         return;
+                    }
 
                     // Get dwg properties
                     DgProperties.ItemsSource = GetProperties(selectedItem);
@@ -313,7 +324,7 @@
                             var sourceDb = new Database(false, true);
 
                             // Read the DWG into a side database
-                            sourceDb.ReadDwgFile(dwgFile, FileShare.Read, true, "");
+                            sourceDb.ReadDwgFile(dwgFile, FileShare.Read, true, string.Empty);
                             var bi = DwgBaseHelpers.BitmapToImageSource(sourceDb.ThumbnailBitmap);
                             BlkImagePreview.Source = bi;
                         }
@@ -348,7 +359,10 @@
             {
                 var ls = new List<string>();
                 foreach (var item in _dwgBaseItems)
+                {
                     ls.Add(item.Path);
+                }
+
                 return BuildTree(ls, null);
             }
             catch (Exception exception)
@@ -411,14 +425,20 @@
                     var downloaded = false;
                     if (!File.Exists(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)))
                     {
-                        if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg4"), MessageBoxIcon.Question))
+                        // Файл-источник отсутствует. Скачать?
+                        if (await this.ShowMessageAsync(
+                            ModPlusAPI.Language.GetItem(LangItem, "msg4"),
+                            string.Empty,
+                            MessageDialogStyle.AffirmativeAndNegative) == MessageDialogResult.Affirmative)
                         {
                             var localPath =
                                 new FileInfo(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile)).DirectoryName;
                             if (!Directory.Exists(localPath))
                             {
                                 if (localPath != null)
+                                {
                                     Directory.CreateDirectory(localPath);
+                                }
                             }
 
                             downloaded = await DownloadSourceFile(
@@ -434,10 +454,15 @@
 
                     if (downloaded)
                     {
+                        Autodesk.AutoCAD.Internal.Utils.SetFocusToDwgView();
                         if (selectedItem.IsBlock)
+                        {
                             InsertBlock(selectedItem);
+                        }
                         else
+                        {
                             InsertDrawing(selectedItem);
+                        }
                     }
 
                     // clear progress
@@ -459,7 +484,7 @@
             var sourceDb = new Database(false, true);
 
             // Read the DWG into a side database
-            sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, "");
+            sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, string.Empty);
 
             // Create a variable to store the list of block identifiers
             var blockIds = new ObjectIdCollection();
@@ -503,7 +528,10 @@
 
                     var layer = string.Empty;
                     if (CbLayers.SelectedIndex != 0)
+                    {
                         layer = CbLayers.SelectedItem.ToString();
+                    }
+
                     var attrs = new List<string>();
                     if (selectedItem.AttributesValues != null && selectedItem.AttributesValues.Any())
                     {
@@ -521,19 +549,27 @@
 
                     var blk = tr.GetObject(blkId, OpenMode.ForWrite, true, false) as BlockReference;
                     if (!string.IsNullOrEmpty(layer))
+                    {
                         blk.Layer = layer;
+                    }
 
                     // attributes for specification
                     if (selectedItem.HasAttributesForSpecification)
+                    {
                         BlockInsertion.AddAttributesForSpecification(tr, blk, selectedItem);
+                    }
 
                     tr.Commit();
                 }
 
                 if (ChkCloseAfterInsert.IsChecked != null && ChkCloseAfterInsert.IsChecked.Value)
+                {
                     Close();
+                }
                 else
+                {
                     Show();
+                }
             }// lock
         }
 
@@ -550,7 +586,7 @@
                 var sourceFileInfo = new FileInfo(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile));
 
                 // Read the DWG into a side database
-                sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, "");
+                sourceDb.ReadDwgFile(Path.Combine(Constants.DwgBaseDirectory, selectedItem.SourceFile), FileShare.Read, true, string.Empty);
                 var insertedBlkName = DwgBaseHelpers.GetBlkNameForInsertDrawing(sourceFileInfo.Name, destDb);
                 var insertedDrawingId = destDb.Insert(sourceFileInfo.FullName, sourceDb, true);
                 sourceDb.Dispose();
@@ -585,9 +621,13 @@
             }// lock
 
             if (ChkCloseAfterInsert.IsChecked != null && ChkCloseAfterInsert.IsChecked.Value)
+            {
                 Close();
+            }
             else
+            {
                 Show();
+            }
         }
 
         /// <summary>
@@ -626,7 +666,9 @@
                     using (var response = webRequest.GetResponse())
                     {
                         using (response.GetResponseStream())
+                        {
                             remoteSize = response.ContentLength;
+                        }
                     }
                 }
                 catch (Exception exception)
@@ -691,7 +733,10 @@
             if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Pressed)
             {
                 if (BlkImagePreview.IsMouseCaptured)
+                {
                     return;
+                }
+
                 Cursor = Cursors.Hand;
                 BlkImagePreview.CaptureMouse();
 
@@ -713,7 +758,10 @@
         private void image_MouseMove(object sender, MouseEventArgs e)
         {
             if (!BlkImagePreview.IsMouseCaptured)
+            {
                 return;
+            }
+
             var p = e.MouseDevice.GetPosition(ImageBorder);
 
             var m = BlkImagePreview.RenderTransform.Value;
@@ -729,9 +777,13 @@
 
             var m = BlkImagePreview.RenderTransform.Value;
             if (e.Delta > 0)
+            {
                 m.ScaleAtPrepend(1.2, 1.2, p.X, p.Y);
+            }
             else
+            {
                 m.ScaleAtPrepend(1 / 1.2, 1 / 1.2, p.X, p.Y);
+            }
 
             BlkImagePreview.RenderTransform = new MatrixTransform(m);
         }
@@ -817,7 +869,9 @@
                     foreach (var dwgBaseItem in _dwgBaseItems)
                     {
                         if (!pathes.Contains(dwgBaseItem.Path))
+                        {
                             pathes.Add(dwgBaseItem.Path);
+                        }
                     }
 
                     var reFill = false;
@@ -928,9 +982,13 @@
                 if (selectedIndex > 0)
                 {
                     if (selectedIndex < LbItems.Items.Count - 1)
+                    {
                         LbItems.SelectedIndex = selectedIndex;
+                    }
                     else
+                    {
                         LbItems.SelectedIndex = LbItems.Items.Count - 1;
+                    }
                 }
                 else
                 {
@@ -944,7 +1002,10 @@
         {
             // tree view context menu
             if (!(TvGroups.Resources["TvContextMenu"] is ContextMenu cm))
+            {
                 return;
+            }
+
             var miRenameGroup = LogicalTreeHelper.FindLogicalNode(cm, "MiRenameGroup") as MenuItem;
 
             if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem))
@@ -952,7 +1013,9 @@
                 foreach (var cmItem in cm.Items)
                 {
                     if (cmItem is MenuItem mi)
+                    {
                         mi.IsEnabled = false;
+                    }
                 }
             }
             else
@@ -960,13 +1023,17 @@
                 foreach (var cmItem in cm.Items)
                 {
                     if (cmItem is MenuItem mi)
+                    {
                         mi.IsEnabled = true;
+                    }
                 }
 
                 if (selectedItem.Name.Equals("Блоки") || selectedItem.Name.Equals("Чертежи"))
                 {
                     if (miRenameGroup != null)
+                    {
                         miRenameGroup.IsEnabled = false;
+                    }
                 }
                 else if (miRenameGroup != null)
                 {
@@ -979,13 +1046,18 @@
         private void LbItems_OnContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (!(LbItems.Resources["LbContextMenu"] is ContextMenu cm))
+            {
                 return;
+            }
+
             if (!(LbItems.SelectedItem is DwgBaseItem))
             {
                 foreach (var cmItem in cm.Items)
                 {
                     if (cmItem is MenuItem mi)
+                    {
                         mi.IsEnabled = false;
+                    }
                 }
             }
             else
@@ -993,7 +1065,9 @@
                 foreach (var cmItem in cm.Items)
                 {
                     if (cmItem is MenuItem mi)
+                    {
                         mi.IsEnabled = true;
+                    }
                 }
             }
         }
@@ -1002,7 +1076,9 @@
         private void TreeViewContextMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem))
+            {
                 return;
+            }
 
             if (ModPlusAPI.Windows.MessageBox.ShowYesNo(
                 ModPlusAPI.Language.GetItem(LangItem, "msg7") + ": " + selectedItem.Name + " " + ModPlusAPI.Language.GetItem(LangItem, "msg8") + "!"
@@ -1029,7 +1105,9 @@
 
                 // deleting
                 if (listOfPathToDelete.Any())
+                {
                     DeleteGroup(listOfPathToDelete);
+                }
 
                 // resave
                 DwgBaseHelpers.SerializerToXml(_dwgBaseItems, _dwgBaseFileName);
@@ -1042,9 +1120,14 @@
 
                 // Включаем кнопку загрузки на сервер если есть элементы
                 if (items != null && items.Any())
+                {
                     BtUpload.Visibility = Visibility.Visible;
+                }
                 else
+                {
                     BtUpload.Visibility = Visibility.Collapsed;
+                }
+
                 TvGroups.ItemsSource = items;
 
                 // reselect
@@ -1077,7 +1160,9 @@
         private void TreeViewContextMenuRenameGroup_OnClick(object sender, RoutedEventArgs e)
         {
             if (!(TvGroups.SelectedItem is TreeViewModelItem selectedItem))
+            {
                 return;
+            }
 
             // get window
             var win = new RenameGroup();
@@ -1218,9 +1303,15 @@
             var selectedIndex = LbItems.SelectedIndex;
             var selectedTvItem = TvGroups.SelectedItem as TreeViewModelItem;
             if (selectedItem == null)
+            {
                 return;
+            }
+
             if (selectedTvItem == null)
+            {
                 return;
+            }
+
             if (ModPlusAPI.Windows.MessageBox.ShowYesNo(
                 ModPlusAPI.Language.GetItem(LangItem, "msg11") + Environment.NewLine +
                 ModPlusAPI.Language.GetItem(LangItem, "msg9") + Environment.NewLine +
@@ -1262,9 +1353,13 @@
                 if (selectedIndex > 0)
                 {
                     if (selectedIndex < LbItems.Items.Count - 1)
+                    {
                         LbItems.SelectedIndex = selectedIndex;
+                    }
                     else
+                    {
                         LbItems.SelectedIndex = LbItems.Items.Count - 1;
+                    }
                 }
                 else
                 {
@@ -1280,9 +1375,15 @@
             var selectedIndex = LbItems.SelectedIndex;
             var selectedTvItem = TvGroups.SelectedItem as TreeViewModelItem;
             if (selectedItem == null)
+            {
                 return;
+            }
+
             if (selectedTvItem == null)
+            {
                 return;
+            }
+
             var needRefill = false;
 
             // fill cb with path
@@ -1290,7 +1391,9 @@
             foreach (var dwgBaseItem in _dwgBaseItems)
             {
                 if (!pathes.Contains(dwgBaseItem.Path))
+                {
                     pathes.Add(dwgBaseItem.Path);
+                }
             }
 
             // if block
@@ -1325,7 +1428,7 @@
                 editBlock.TbSourceFile.Visibility = editBlock.BtCreateDwgFile.Visibility =
                 editBlock.BtSelectDwgFile.Visibility = editBlock.ChkIsCurrentDwgFile.Visibility =
                 editBlock.RectangleSourceFile.Visibility = editBlock.BtGetAttrValuesFromBlock.Visibility =
-                editBlock.BtLoadLastInteredData.Visibility = Visibility.Collapsed;
+                editBlock.BtLoadLastEnteredData.Visibility = Visibility.Collapsed;
                 editBlock.BtSelectBlock.IsEnabled = false;
 
                 if (editBlock.ShowDialog() == true)
@@ -1419,9 +1522,13 @@
                 if (selectedIndex > 0)
                 {
                     if (selectedIndex < LbItems.Items.Count - 1)
+                    {
                         LbItems.SelectedIndex = selectedIndex;
+                    }
                     else
+                    {
                         LbItems.SelectedIndex = LbItems.Items.Count - 1;
+                    }
                 }
                 else
                 {
@@ -1437,7 +1544,9 @@
         {
             str = treeViewModelItem.Name + "/" + str;
             if (treeViewModelItem.Parent != null)
+            {
                 GetStartPathForSelectedItem(treeViewModelItem.Parent, ref str);
+            }
         }
 
         private void GetSubItemsPathForSelectedItem(TreeViewModelItem treeViewModelItem, string Path, ref List<string> listOfPathToDelete)
@@ -1446,12 +1555,16 @@
             if (treeViewModelItem.Items.Any())
             {
                 foreach (var viewModelItem in treeViewModelItem.Items)
+                {
                     GetSubItemsPathForSelectedItem(viewModelItem, Path, ref listOfPathToDelete);
+                }
             }
             else
             {
                 if (!listOfPathToDelete.Contains(Path.TrimEnd('/')))
+                {
                     listOfPathToDelete.Add(Path.TrimEnd('/'));
+                }
             }
         }
 
@@ -1465,7 +1578,9 @@
             foreach (var dwgBaseItem in _dwgBaseItems)
             {
                 if (listOfPathToDelete.Contains(dwgBaseItem.Path))
+                {
                     tmpList.Add(dwgBaseItem);
+                }
             }
 
             if (tmpList.Any())
@@ -1483,9 +1598,14 @@
         private void GetParentsOfTreeViewModelItem(TreeViewModelItem treeViewModelItem, List<TreeViewModelItem> list)
         {
             if (!list.Contains(treeViewModelItem))
+            {
                 list.Add(treeViewModelItem);
+            }
+
             if (treeViewModelItem.Parent != null)
+            {
                 GetParentsOfTreeViewModelItem(treeViewModelItem.Parent, list);
+            }
         }
 
         // uploading
@@ -1523,9 +1643,13 @@
             if (sender is TextBox textbox)
             {
                 if (textbox.Text.Length >= 3)
+                {
                     SearchItemsInBases(textbox.Text);
+                }
                 else
+                {
                     LbSearchResults.ItemsSource = null;
+                }
             }
         }
 
@@ -1538,31 +1662,41 @@
                 if (dwgBaseItem.Name.ToLower().Contains(searchValue.ToLower()))
                 {
                     if (!serachResult.Contains(dwgBaseItem))
+                    {
                         serachResult.Add(dwgBaseItem);
+                    }
                 }
 
                 if (dwgBaseItem.Description.ToLower().Contains(searchValue.ToLower()))
                 {
                     if (!serachResult.Contains(dwgBaseItem))
+                    {
                         serachResult.Add(dwgBaseItem);
+                    }
                 }
 
                 if (dwgBaseItem.Path.ToLower().Contains(searchValue.ToLower()))
                 {
                     if (!serachResult.Contains(dwgBaseItem))
+                    {
                         serachResult.Add(dwgBaseItem);
+                    }
                 }
 
                 if (dwgBaseItem.Author.ToLower().Contains(searchValue.ToLower()))
                 {
                     if (!serachResult.Contains(dwgBaseItem))
+                    {
                         serachResult.Add(dwgBaseItem);
+                    }
                 }
 
                 if (dwgBaseItem.Source.ToLower().Contains(searchValue.ToLower()))
                 {
                     if (!serachResult.Contains(dwgBaseItem))
+                    {
                         serachResult.Add(dwgBaseItem);
+                    }
                 }
             }
 
@@ -1573,7 +1707,9 @@
         {
             var lb = sender as ListBox;
             if (!(lb?.SelectedItem is DwgBaseItem selectedItem))
+            {
                 return;
+            }
 
             var splittedPath = selectedItem.Path.Split('/').ToList();
             if (splittedPath.Any())
@@ -1601,7 +1737,9 @@
         private void SearchLastSelectedItem(string selectedPath, string selectedName)
         {
             if (string.IsNullOrEmpty(selectedPath))
+            {
                 return;
+            }
 
             // try open group
             var splittedPath = selectedPath.Split('/').ToList();
@@ -1638,9 +1776,13 @@
                 {
                     TreeViewItem treeViewItem;
                     if (parentItem == null)
+                    {
                         treeViewItem = TvGroups.ItemContainerGenerator.ContainerFromItem(treeViewModelItem) as TreeViewItem;
+                    }
                     else
+                    {
                         treeViewItem = parentItem.ItemContainerGenerator.ContainerFromItem(treeViewModelItem) as TreeViewItem;
+                    }
 
                     if (treeViewItem != null)
                     {
@@ -1662,14 +1804,21 @@
                 {
                     TreeViewItem treeViewItem;
                     if (parentItem == null)
+                    {
                         treeViewItem = TvGroups.ItemContainerGenerator.ContainerFromItem(treeViewModelItem) as TreeViewItem;
+                    }
                     else
+                    {
                         treeViewItem = parentItem.ItemContainerGenerator.ContainerFromItem(treeViewModelItem) as TreeViewItem;
+                    }
+
                     if (treeViewItem != null)
                     {
                         treeViewItem.IsSelected = true;
                         if (treeViewModelItem.Items.Any())
+                        {
                             treeViewItem.IsExpanded = true;
+                        }
                     }
                 }
             }

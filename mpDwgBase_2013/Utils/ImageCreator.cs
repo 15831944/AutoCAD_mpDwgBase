@@ -20,7 +20,10 @@
                 if (!string.IsNullOrEmpty(imgFile))
                 {
                     if (File.Exists(imgFile))
+                    {
                         return imgFile;
+                    }
+
                     return CreateImageFile(selectedItem, baseFolder);
                 }
 
@@ -62,7 +65,9 @@
             var btr = (BlockTableRecord)tr.GetObject(id, OpenMode.ForRead);
 
             if (!Directory.Exists(iconPath))
+            {
                 Directory.CreateDirectory(iconPath);
+            }
 
             // Save the icon to our out directory
 
@@ -72,7 +77,9 @@
             var fname = iconPath + "\\" + btr.Name + ".bmp";
 
             if (File.Exists(fname))
+            {
                 File.Delete(fname);
+            }
 
             bmp.Save(fname);
 

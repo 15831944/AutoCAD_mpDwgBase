@@ -43,7 +43,9 @@
                     // Папку назначения нужно удалить, чтобы не было исключения
                     var dwgBaseDirectory = Constants.DwgBaseDirectory;
                     if (Directory.Exists(dwgBaseDirectory))
+                    {
                         Directory.Delete(dwgBaseDirectory, true);
+                    }
 
                     // https://stackoverflow.com/a/38370485/4944499
                     Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(d, dwgBaseDirectory);

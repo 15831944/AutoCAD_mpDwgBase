@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -57,7 +56,9 @@
         private void UserBaseTools_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
+            {
                 Close();
+            }
 
             // select all
             if (e.Key == Key.A && Keyboard.IsKeyDown(Key.LeftCtrl))
@@ -117,19 +118,25 @@
                 if (MultiChangePath_Tab.IsSelected)
                 {
                     if (MultiChangePath_CbMainGroup.SelectedIndex == -1)
+                    {
                         MultiChangePath_CbMainGroup.SelectedIndex = 0;
+                    }
                 }
 
                 if (MultiChangeSourceAuthor_Tab.IsSelected)
                 {
                     if (MultiChangeSourceAuthor_LvItems.Items.Count == 0)
+                    {
                         MultiChangeSourceAuthor_FillData();
+                    }
                 }
 
                 if (RenameSourceFile_Tab.IsSelected)
                 {
                     if (RenameSourceFile_LbFiles.Items.Count == 0)
+                    {
                         RenameFiles_FindAllFiles();
+                    }
                 }
             }
         }
@@ -141,7 +148,10 @@
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
             if (tb != null && tb.CaretIndex < 6)
+            {
                 e.Handled = true;
+            }
+
             if (tb != null && !tb.Text.StartsWith("Блоки/"))
             {
                 e.Handled = true;
@@ -153,7 +163,7 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
-                Dispatcher.Invoke(new Action(() => tb.Undo()));
+                Dispatcher?.Invoke(new Action(() => tb.Undo()));
             }
         }
 
@@ -162,7 +172,7 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
-                Dispatcher.Invoke(new Action(() => tb.Undo()));
+                Dispatcher?.Invoke(new Action(() => tb.Undo()));
             }
         }
 
@@ -171,7 +181,10 @@
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
             if (tb != null && tb.CaretIndex < 8)
+            {
                 e.Handled = true;
+            }
+
             if (tb != null && !tb.Text.StartsWith("Чертежи/"))
             {
                 e.Handled = true;
@@ -183,7 +196,7 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Чертежи/"))
             {
-                Dispatcher.Invoke(new Action(() => tb.Undo()));
+                Dispatcher?.Invoke(new Action(() => tb.Undo()));
             }
         }
 
@@ -192,7 +205,7 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Чертежи/"))
             {
-                Dispatcher.Invoke(new Action(() => tb.Undo()));
+                Dispatcher?.Invoke(new Action(() => tb.Undo()));
             }
         }
         #endregion
@@ -201,7 +214,10 @@
         private void MultiChangePath_CbMainGroup_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!(sender is ComboBox cb))
+            {
                 return;
+            }
+
             MultiChangePath_FillData();
         }
 
@@ -220,18 +236,25 @@
             MultiChangePath_Path.TextInput -= Blocks_TbPath_OnTextInput;
             MultiChangePath_Path.PreviewTextInput -= Blocks_TbPath_OnPreviewTextInput;
             if (tb != null)
+            {
                 tb.TextChanged -= Blocks_TbPath_OnTextChanged;
+            }
+
             MultiChangePath_Path.TextInput -= Drawings_TbPath_OnTextInput;
             MultiChangePath_Path.PreviewTextInput -= Drawings_TbPath_OnPreviewTextInput;
             if (tb != null)
+            {
                 tb.TextChanged -= Drawings_TbPath_OnTextChanged;
+            }
 
             // fill cb with path
-            var pathes = new List<string>();
+            var paths = new List<string>();
             foreach (var dwgBaseItem in _dwgBaseItems)
             {
-                if (!pathes.Contains(dwgBaseItem.Path))
-                    pathes.Add(dwgBaseItem.Path);
+                if (!paths.Contains(dwgBaseItem.Path))
+                {
+                    paths.Add(dwgBaseItem.Path);
+                }
             }
 
             if (cb.SelectedIndex == 0) // blocks
@@ -240,8 +263,11 @@
                 MultiChangePath_Path.TextInput += Blocks_TbPath_OnTextInput;
                 MultiChangePath_Path.PreviewTextInput += Blocks_TbPath_OnPreviewTextInput;
                 if (tb != null)
+                {
                     tb.TextChanged += Blocks_TbPath_OnTextChanged;
-                MultiChangePath_Path.ItemsSource = pathes.Where(x => x.StartsWith("Блоки/"));
+                }
+
+                MultiChangePath_Path.ItemsSource = paths.Where(x => x.StartsWith("Блоки/"));
 
                 // fill items
                 MultiChangePath_LvItems.ItemsSource = null;
@@ -253,16 +279,15 @@
                 foreach (var dwgBaseItem in _dwgBaseItems)
                 {
                     if (dwgBaseItem.IsBlock)
+                    {
                         lst.Add(new DwgBaseItemWithSelector { Selected = false, Item = dwgBaseItem });
+                    }
 
-                    // if (index % 10 == 0 | index == _dwgBaseItems.Count - 1)
-                    // {
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Render, TextBlock.TextProperty,
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Render, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Render,
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Render,
                         System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
 
-                    // }
                     index++;
                 }
 
@@ -275,8 +300,11 @@
                 MultiChangePath_Path.TextInput += Drawings_TbPath_OnTextInput;
                 MultiChangePath_Path.PreviewTextInput += Drawings_TbPath_OnPreviewTextInput;
                 if (tb != null)
+                {
                     tb.TextChanged += Drawings_TbPath_OnTextChanged;
-                MultiChangePath_Path.ItemsSource = pathes.Where(x => x.StartsWith("Чертежи/"));
+                }
+
+                MultiChangePath_Path.ItemsSource = paths.Where(x => x.StartsWith("Чертежи/"));
 
                 // fill items
                 MultiChangePath_LvItems.ItemsSource = null;
@@ -288,7 +316,10 @@
                 foreach (var dwgBaseItem in _dwgBaseItems)
                 {
                     if (!dwgBaseItem.IsBlock)
+                    {
                         lst.Add(new DwgBaseItemWithSelector { Selected = false, Item = dwgBaseItem });
+                    }
+
                     Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
                     Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
@@ -299,9 +330,7 @@
                 MultiChangePath_LvItems.ItemsSource = lst;
             }
 
-            // clear progress
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+            ClearProgress();
         }
 
         private void MultiChangePath_Accept_OnClick(object sender, RoutedEventArgs e)
@@ -324,13 +353,16 @@
 
             if (!selectedItems.Any())
             {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u26")); return;
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u26"));
+                return;
             }
 
             if (!ModPlusAPI.Windows.MessageBox.ShowYesNo(
                 ModPlusAPI.Language.GetItem(LangItem, "u27"),
                 MessageBoxIcon.Question))
+            {
                 return;
+            }
 
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
@@ -343,12 +375,14 @@
                 foreach (var selectedItem in selectedItems)
                 {
                     if (dwgBaseItem.Equals(selectedItem))
+                    {
                         dwgBaseItem.Path = MultiChangePath_Path.Text;
+                    }
                 }
 
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                     ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                     System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                 index++;
             }
@@ -359,10 +393,10 @@
             // save
             DwgBaseHelpers.SerializerToXml(_dwgBaseItems, _userDwgBaseFile);
             DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out _dwgBaseItems);
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "u28"));
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "u28"));
             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u28"));
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+
+            ClearProgress();
 
             // refill
             MultiChangePath_FillData();
@@ -412,13 +446,24 @@
                 {
                     blks++;
                     if (dwgBaseItem.IsDynamicBlock)
+                    {
                         dynBlks++;
+                    }
+
                     if (dwgBaseItem.Is3Dblock)
+                    {
                         is3dblks++;
+                    }
+
                     if (dwgBaseItem.IsAnnotative)
+                    {
                         annotBlks++;
+                    }
+
                     if (dwgBaseItem.HasAttributesForSpecification)
+                    {
                         hasSpecAttr++;
+                    }
                 }
                 else
                 {
@@ -426,17 +471,24 @@
                 }
 
                 if (!authors.Contains(dwgBaseItem.Author))
+                {
                     authors.Add(dwgBaseItem.Author);
+                }
+
                 var sourceFile = Path.Combine(_dwgBaseFolder, dwgBaseItem.SourceFile);
                 if (File.Exists(sourceFile))
                 {
                     if (!sourceFiles.Contains(dwgBaseItem.SourceFile))
+                    {
                         sourceFiles.Add(dwgBaseItem.SourceFile);
+                    }
                 }
                 else
                 {
                     if (!sourceFilesNotFound.Contains(dwgBaseItem.SourceFile))
+                    {
                         sourceFilesNotFound.Add(dwgBaseItem.SourceFile);
+                    }
                 }
 
                 // if (index % 10 == 0 | index == _dwgBaseItems.Count - 1)
@@ -464,13 +516,24 @@
                     ModPlusAPI.Language.GetItem(LangItem, "u34") + " " + blks + " " +
                     ModPlusAPI.Language.GetItem(LangItem, "u35"));
                 if (dynBlks > 0)
+                {
                     resultStr.AppendLine("     " + ModPlusAPI.Language.GetItem(LangItem, "u36") + " " + dynBlks);
+                }
+
                 if (annotBlks > 0)
+                {
                     resultStr.AppendLine("     " + ModPlusAPI.Language.GetItem(LangItem, "u37") + " " + annotBlks);
+                }
+
                 if (is3dblks > 0)
+                {
                     resultStr.AppendLine("     " + ModPlusAPI.Language.GetItem(LangItem, "u38") + " " + is3dblks);
+                }
+
                 if (hasSpecAttr > 0)
+                {
                     resultStr.AppendLine("     " + ModPlusAPI.Language.GetItem(LangItem, "u39") + " " + hasSpecAttr);
+                }
             }
 
             if (authors.Any())
@@ -501,9 +564,7 @@
 
             Statistic_TbStat.Text = resultStr.ToString();
 
-            // clear progress
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+            ClearProgress();
         }
         #endregion
 
@@ -517,7 +578,7 @@
                 UnusedFiles_LvFiles.ItemsSource = null;
 
                 // Load plugin base
-                DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out List<DwgBaseItem> pluginDwgBaseItems);
+                DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out var pluginDwgBaseItems);
 
                 // Create full one list
                 var allDwgBaseItems = _dwgBaseItems.Concat(pluginDwgBaseItems).ToList();
@@ -532,15 +593,18 @@
                 {
                     var file = Path.Combine(_dwgBaseFolder, baseItem.SourceFile.Replace("/", "\\"));
                     if (!filesInItems.Contains(file))
+                    {
                         filesInItems.Add(file);
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    }
+
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + allDwgBaseItems.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                         System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                     index++;
                 }
 
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+                Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
                 var filesInBaseDirectory = Directory.GetFiles(_dwgBaseFolder, "*.dwg", SearchOption.AllDirectories).ToList();
                 ProgressBar.Minimum = 0;
                 ProgressBar.Maximum = filesInBaseDirectory.Count;
@@ -559,9 +623,9 @@
                         });
                     }
 
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + filesInBaseDirectory.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                     index++;
                 }
 
@@ -577,13 +641,12 @@
                     ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u45"));
                 }
 
-                // clear progress
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+                ClearProgress();
             }
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
+                ClearProgress();
             }
         }
 
@@ -596,7 +659,9 @@
                 foreach (UnusedFile file in UnusedFiles_LvFiles.Items)
                 {
                     if (file.Selected)
+                    {
                         selectedUnusedFiles.Add(file);
+                    }
                 }
 
                 if (selectedUnusedFiles.Any())
@@ -619,7 +684,10 @@
                                     var fi = new FileInfo(file.FullFileName);
                                     var images = file.FullFileName + " icons";
                                     if (Directory.Exists(images))
+                                    {
                                         Directory.Delete(images, true);
+                                    }
+
                                     if (fi.DirectoryName != null)
                                     {
                                         var bak = Path.Combine(fi.DirectoryName, Path.GetFileNameWithoutExtension(file.FullFileName) + ".bak");
@@ -722,9 +790,9 @@
                         });
                     }
 
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                         System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                     index++;
                 }
@@ -740,13 +808,12 @@
                     ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u50"));
                 }
 
-                // clear progress
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+                ClearProgress();
             }
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
+                ClearProgress();
             }
         }
 
@@ -758,7 +825,9 @@
                 foreach (DwgBaseItemWithSelector item in UnusedItems_LvFiles.Items)
                 {
                     if (item.Selected)
+                    {
                         selectedUnusedItems.Add(item.Item);
+                    }
                 }
 
                 if (selectedUnusedItems.Any())
@@ -810,18 +879,16 @@
             foreach (var dwgBaseItem in _dwgBaseItems)
             {
                 lst.Add(new DwgBaseItemWithSelector { Selected = false, Item = dwgBaseItem });
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                     ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                     System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                 index++;
             }
 
             MultiChangeSourceAuthor_LvItems.ItemsSource = lst;
 
-            // clear progress
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+            ClearProgress();
         }
 
         // on accept
@@ -845,13 +912,16 @@
 
             if (!selectedItems.Any())
             {
-                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u26")); return;
+                ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u26"));
+                return;
             }
 
             if (!ModPlusAPI.Windows.MessageBox.ShowYesNo(
                 ModPlusAPI.Language.GetItem(LangItem, "u27"),
                 MessageBoxIcon.Question))
+            {
                 return;
+            }
 
             var updatePbDelegate = new UpdateProgressBarDelegate(ProgressBar.SetValue);
             var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
@@ -866,15 +936,20 @@
                     if (dwgBaseItem.Equals(selectedItem))
                     {
                         if (!string.IsNullOrEmpty(MultiChangeSourceAuthor_TbSource.Text))
+                        {
                             dwgBaseItem.Source = MultiChangeSourceAuthor_TbSource.Text;
+                        }
+
                         if (!string.IsNullOrEmpty(MultiChangeSourceAuthor_TbAuthor.Text))
+                        {
                             dwgBaseItem.Author = MultiChangeSourceAuthor_TbAuthor.Text;
+                        }
                     }
                 }
 
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                     ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
+                Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                 index++;
             }
 
@@ -884,10 +959,10 @@
             // save
             DwgBaseHelpers.SerializerToXml(_dwgBaseItems, _userDwgBaseFile);
             DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out _dwgBaseItems);
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "u28"));
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, ModPlusAPI.Language.GetItem(LangItem, "u28"));
             ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u28"));
-            Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-            Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+
+            ClearProgress();
 
             // refill
             MultiChangeSourceAuthor_FillData();
@@ -905,7 +980,7 @@
                 RenameSourceFile_LbFiles.ItemsSource = null;
 
                 // Load plugin base
-                DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out List<DwgBaseItem> pluginDwgBaseItems);
+                DwgBaseHelpers.DeseializeFromXml(_mpDwgBaseFile, out var pluginDwgBaseItems);
 
                 ProgressBar.Minimum = 0;
                 ProgressBar.Maximum = _dwgBaseItems.Count;
@@ -921,14 +996,14 @@
                         filesInItems.Add(file);
                     }
 
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                         System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                     index++;
                 }
 
-                foreach (string filesInItem in filesInItems)
+                foreach (var filesInItem in filesInItems)
                 {
                     var fi = new FileInfo(filesInItem);
                     files.Add(new DbFile()
@@ -943,13 +1018,12 @@
                     RenameSourceFile_LbFiles.ItemsSource = files;
                 }
 
-                // clear progress
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background, System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+                ClearProgress();
             }
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
+                ClearProgress();
             }
         }
 
@@ -980,15 +1054,15 @@
 
             try
             {
-                DbFile selectedFile = (DbFile)RenameSourceFile_LbFiles.SelectedItem;
-                FileInfo fi = new FileInfo(selectedFile.FullFileName);
+                var selectedFile = (DbFile)RenameSourceFile_LbFiles.SelectedItem;
+                var fi = new FileInfo(selectedFile.FullFileName);
                 var newFullFileName = Path.Combine(fi.DirectoryName, RenameSourceFile_NewFileName.Text + ".dwg");
 
                 File.Move(selectedFile.FullFileName, newFullFileName);
 
-                foreach (string file in Directory.GetFiles(Constants.DwgBaseDirectory, "*.dwg", SearchOption.AllDirectories))
+                foreach (var file in Directory.GetFiles(Constants.DwgBaseDirectory, "*.dwg", SearchOption.AllDirectories))
                 {
-                    FileInfo efi = new FileInfo(file);
+                    var efi = new FileInfo(file);
                     if (efi.FullName.Equals(newFullFileName))
                     {
                         ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u61") +
@@ -1010,9 +1084,9 @@
                         dwgBaseItem.SourceFile = newFullFileName.TrimStart(Constants.DwgBaseDirectory.ToCharArray());
                     }
 
-                    Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                    Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                         ModPlusAPI.Language.GetItem(LangItem, "u24") + ": " + index + "/" + _dwgBaseItems.Count);
-                    Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
+                    Dispatcher?.Invoke(updatePbDelegate, DispatcherPriority.Background,
                         System.Windows.Controls.Primitives.RangeBase.ValueProperty, (double)index);
                     index++;
                 }
@@ -1023,13 +1097,11 @@
                 // save
                 DwgBaseHelpers.SerializerToXml(_dwgBaseItems, _userDwgBaseFile);
                 DwgBaseHelpers.DeseializeFromXml(_userDwgBaseFile, out _dwgBaseItems);
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
+                Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
                     ModPlusAPI.Language.GetItem(LangItem, "u28"));
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "u28"));
-                Dispatcher.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty,
-                    string.Empty);
-                Dispatcher.Invoke(updatePbDelegate, DispatcherPriority.Background,
-                    System.Windows.Controls.Primitives.RangeBase.ValueProperty, 0.0);
+
+                ClearProgress();
 
                 // refill
                 RenameFiles_FindAllFiles();
@@ -1041,6 +1113,7 @@
             catch (Exception exception)
             {
                 ExceptionBox.Show(exception);
+                ClearProgress();
             }
         }
 
@@ -1051,5 +1124,14 @@
             public string FullFileName { get; set; }
         }
         #endregion
+
+        private void ClearProgress()
+        {
+            var updatePtDelegate = new UpdateProgressTextDelegate(ProgressText.SetValue);
+            ProgressBar.Minimum = 0;
+            ProgressBar.Maximum = 1;
+            ProgressBar.Value = 0;
+            Dispatcher?.Invoke(updatePtDelegate, DispatcherPriority.Background, TextBlock.TextProperty, string.Empty);
+        }
     }
 }

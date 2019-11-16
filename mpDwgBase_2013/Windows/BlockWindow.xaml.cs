@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
@@ -43,7 +42,7 @@
 
             // Отключаем видимость подробностей до выбора блока
             GridBlockDetails.Visibility = Visibility.Collapsed;
-            BtLoadLastInteredData.Visibility = Visibility.Collapsed;
+            BtLoadLastEnteredData.Visibility = Visibility.Collapsed;
             DgAttributesForSpecifictaion.Visibility = Visibility.Collapsed;
 
             // block exist visibility
@@ -58,7 +57,9 @@
         {
             // if edit - attributes
             if (_isEdit)
+            {
                 FillAttributesIfIsEdit();
+            }
         }
 
         private void FillAttributesIfIsEdit()
@@ -89,7 +90,9 @@
         private void BtAccept_OnClick(object sender, RoutedEventArgs e)
         {
             if (!CheckEmptyData())
+            {
                 return;
+            }
 
             if (!_isEdit)
             {
@@ -161,7 +164,7 @@
                     BtAccept.IsEnabled = true;
 
                     // visibility of button to load last data
-                    BtLoadLastInteredData.Visibility = CheckFileWithLastDataExists() ? Visibility.Visible : Visibility.Collapsed;
+                    BtLoadLastEnteredData.Visibility = CheckFileWithLastDataExists() ? Visibility.Visible : Visibility.Collapsed;
 
                     // move window to center of current screen
                     WindowStartupLocation = WindowStartupLocation.Manual;
@@ -208,13 +211,22 @@
                 using (var tr = doc.Database.TransactionManager.StartTransaction())
                 {
                     var selBlkRef = tr.GetObject(_selectedBlockObjectId, OpenMode.ForRead, true) as BlockReference;
+                    if (selBlkRef == null)
+                    {
+                        throw new ArgumentNullException(nameof(selBlkRef));
+                    }
 
                     // С учетом http://adn-cis.org/opredelenie-imeni-bloka-po-vstavke-bloka.html
                     BlockTableRecord selBlock;
                     if (selBlkRef.IsDynamicBlock)
+                    {
                         selBlock = tr.GetObject(selBlkRef.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+                    }
                     else
+                    {
                         selBlock = tr.GetObject(selBlkRef.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+                    }
+
                     if (selBlock != null)
                     {
                         Item.BlockName = selBlock.Name;
@@ -477,7 +489,9 @@
             finally
             {
                 if (File.Exists(tempFile))
+                {
                     File.Delete(tempFile);
+                }
             }
         }
 
@@ -486,7 +500,10 @@
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
             if (tb != null && tb.CaretIndex < 6)
+            {
                 e.Handled = true;
+            }
+
             if (tb != null && !tb.Text.StartsWith("Блоки/"))
             {
                 e.Handled = true;
@@ -498,7 +515,7 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
-                Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
+                Dispatcher?.BeginInvoke(new Action(() => tb.Undo()));
             }
         }
 
@@ -507,15 +524,16 @@
             var cb = sender as ComboBox;
             if (cb?.Template.FindName("PART_EditableTextBox", cb) is TextBox tb && !tb.Text.StartsWith("Блоки/"))
             {
-                Dispatcher.BeginInvoke(new Action(() => tb.Undo()));
+                Dispatcher?.BeginInvoke(new Action(() => tb.Undo()));
             }
         }
 
         private void FillHelpImagesToPopUp()
         {
-            Uri uri =
-                new Uri("pack://application:,,,/mpDwgBase_" + ModPlusConnector.Instance.AvailProductExternalVersion +
-                        ";component/Resources/helpImages/helpImage_1.png",
+            var uri =
+                new Uri(
+                    "pack://application:,,,/mpDwgBase_" + ModPlusConnector.Instance.AvailProductExternalVersion +
+                    ";component/Resources/helpImages/helpImage_1.png",
                     UriKind.RelativeOrAbsolute);
             helpImage_1.Source = BitmapFrame.Create(uri);
         }
@@ -708,7 +726,8 @@
             xEl.Save(file);
         }
 
-        private void BtLoadLastInteredData_OnClick(object sender, RoutedEventArgs e)
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+        private void BtLoadLastEnteredData_OnClick(object sender, RoutedEventArgs e)
         {
             var file = Path.Combine(_dwgBaseFolder, "LastInteredUserDataForBlock.xml");
             var xEl = XElement.Load(file);
@@ -738,7 +757,9 @@
             // ReSharper disable once AssignNullToNotNullAttribute
             var sf = Path.Combine(_dwgBaseFolder, xEl.Attribute("SourceFile")?.Value);
             if (!string.IsNullOrEmpty(sf) && File.Exists(sf))
+            {
                 TbSourceFile.Text = xEl.Attribute("SourceFile")?.Value;
+            }
 
             // attributes for spec
             XAttribute attribute = xEl.Attribute("HasAttributesForSpecification");
@@ -871,7 +892,10 @@
         private void ChkHasAttributesForSpecification_OnChecked(object sender, RoutedEventArgs e)
         {
             if (Item.IsDynamicBlock)
+            {
                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg53"));
+            }
+
             DgAttributesForSpecifictaion.Visibility = Visibility.Visible;
 
             // fill
@@ -951,7 +975,9 @@
                         foreach (var blockExistAttribute in _blockExistAttributes)
                         {
                             if (blockExistAttribute.Tag.Equals(attrRef.Tag))
+                            {
                                 blockExistAttribute.TextString = attrRef.TextString;
+                            }
                         }
                     }
                 }
@@ -1040,13 +1066,18 @@
         private void BlockWindow_OnClosed(object sender, EventArgs e)
         {
             if (_isEdit)
+            {
                 return;
+            }
+
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
             {
                 if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
+                {
                     SaveInteredData();
+                }
             }
         }
     }

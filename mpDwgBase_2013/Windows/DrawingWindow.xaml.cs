@@ -67,7 +67,10 @@
             var cb = sender as ComboBox;
             var tb = cb?.Template.FindName("PART_EditableTextBox", cb) as TextBox;
             if (tb != null && tb.CaretIndex < 8)
+            {
                 e.Handled = true;
+            }
+
             if (tb != null && !tb.Text.StartsWith("Чертежи/"))
             {
                 e.Handled = true;
@@ -183,9 +186,13 @@
                         if (DwgBaseHelpers.Is2010DwgVersion(selectedFile))
                         {
                             if (!DwgBaseHelpers.HasProxyEntities(selectedFile))
+                            {
                                 needLoop = false;
+                            }
                             else
+                            {
                                 ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg60"));
+                            }
                         }
                         else
                         {
@@ -284,7 +291,10 @@
         private void BtAccept_OnClick(object sender, RoutedEventArgs e)
         {
             if (!CheckEmptyData())
+            {
                 return;
+            }
+
             if (!_isEdit)
             {
                 var allGood = true;
@@ -592,13 +602,18 @@
         private void DrawingWindow_OnClosed(object sender, EventArgs e)
         {
             if (_isEdit)
+            {
                 return;
+            }
+
             if (!string.IsNullOrEmpty(TbName.Text) | !string.IsNullOrEmpty(TbDescription.Text) |
                 !string.IsNullOrEmpty(TbAuthor.Text) | !string.IsNullOrEmpty(TbDocument.Text) |
                 !string.IsNullOrEmpty(TbSource.Text) | !string.IsNullOrEmpty(TbSourceFile.Text))
             {
                 if (ModPlusAPI.Windows.MessageBox.ShowYesNo(ModPlusAPI.Language.GetItem(LangItem, "msg58"), MessageBoxIcon.Question))
+                {
                     SaveInteredData();
+                }
             }
         }
     }

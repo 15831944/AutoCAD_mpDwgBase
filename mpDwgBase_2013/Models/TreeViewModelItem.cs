@@ -33,7 +33,10 @@
             set
             {
                 if (_name == value)
+                {
                     return;
+                }
+
                 _name = value;
                 OnPropertyChanged();
             }
@@ -48,7 +51,10 @@
             set
             {
                 if (_parent == value)
+                {
                     return;
+                }
+
                 _parent = value;
                 OnPropertyChanged();
             }
@@ -66,7 +72,10 @@
         {
             var x = string.Empty;
             if (Parent != null)
+            {
                 x += Parent.GetAncestry() + "/";
+            }
+
             x += Name;
             return x;
         }

@@ -57,7 +57,10 @@
             {
                 file = Path.Combine(dwgFile.DirectoryName, dwgFile.Name + " icons", selectedItem.BlockName + ".bmp");
                 if (File.Exists(file))
+                {
                     return file;
+                }
+
                 file = string.Empty;
             }
 
@@ -103,7 +106,10 @@
         public static bool HasProxyEntities(string file)
         {
             if (!File.Exists(file))
+            {
                 return false;
+            }
+
             var db = new Database(false, true);
             db.ReadDwgFile(file, FileShare.Read, true, string.Empty);
             using (var tr = db.TransactionManager.StartTransaction())
@@ -116,7 +122,9 @@
                     {
                         var ent = tr.GetObject(objId, OpenMode.ForRead) as Entity;
                         if (ent.IsAProxy)
+                        {
                             return true;
+                        }
                     }
                 }
             }
@@ -176,7 +184,9 @@
                     {
                         var btr = tr.GetObject(bt[blkName], OpenMode.ForWrite) as BlockTableRecord;
                         if (btr != null && (btr.GetBlockReferenceIds(false, false).Count == 0 && !btr.IsLayout))
+                        {
                             btr.Erase(true);
+                        }
                     }
                 }
 

@@ -14,12 +14,12 @@
                 <ResourceDictionary Source="pack://application:,,,/ModPlusStyle;component/Styles/Controls.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <XmlDataProvider x:Key="Lang" Source="E:/ModPlus/Languages/en-US.xml" XPath="ModPlus/mpDwgBase" IsAsynchronous="False"/>
-            <Path x:Key="appbar_info" Fill="Black" Data="F1 M 38,19C 48.4934,19 57,27.5066 57,38C 57,48.4934 48.4934,57 38,57C 27.5066,57 19,48.4934 19,38C 19,27.5066 27.5066,19 38,19 Z M 33.25,33.25L 33.25,36.4167L 36.4166,36.4167L 36.4166,47.5L 33.25,47.5L 33.25,50.6667L 44.3333,50.6667L 44.3333,47.5L 41.1666,47.5L 41.1666,36.4167L 41.1666,33.25L 33.25,33.25 Z M 38.7917,25.3333C 37.48,25.3333 36.4167,26.3967 36.4167,27.7083C 36.4167,29.02 37.48,30.0833 38.7917,30.0833C 40.1033,30.0833 41.1667,29.02 41.1667,27.7083C 41.1667,26.3967 40.1033,25.3333 38.7917,25.3333 Z "/>
             <Style x:Key="InfoButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ModPlusFlatButton}">
                 <Setter Property="Padding" Value="0"></Setter>
                 <Setter Property="MinWidth" Value="0"></Setter>
                 <Setter Property="ToolTipService.InitialShowDelay" Value="0"></Setter>
                 <Setter Property="ToolTipService.ShowDuration" Value="30000"></Setter>
+                <Setter Property="IsTabStop" Value="False"></Setter>
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
