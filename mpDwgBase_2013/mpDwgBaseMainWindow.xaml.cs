@@ -110,20 +110,24 @@
 
         private void LoadFromSettings()
         {
-            ChkRotate.IsChecked = bool.TryParse(UserConfigFile.GetValue("mpDwgBase", "Rotate"), out var b) && b; // false
-            ChkCloseAfterInsert.IsChecked = bool.TryParse(UserConfigFile.GetValue("mpDwgBase", "CloseAfterInsert"), out b) && b; // false
-            CbBaseType.SelectedIndex = int.TryParse(UserConfigFile.GetValue("mpDwgBase", "BaseType"), out var i) ? i : 0;
+            ChkAlphabeticalSort.IsChecked = bool.TryParse(UserConfigFile.GetValue(LangItem, "AlphabeticalSort"), out var b) && b; // false
+            ChkAlphabeticalSort.Checked += (sender, args) => FillByBaseType();
+            ChkAlphabeticalSort.Unchecked += (sender, args) => FillByBaseType();
+            ChkRotate.IsChecked = bool.TryParse(UserConfigFile.GetValue(LangItem, "Rotate"), out b) && b; // false
+            ChkCloseAfterInsert.IsChecked = bool.TryParse(UserConfigFile.GetValue(LangItem, "CloseAfterInsert"), out b) && b; // false
+            CbBaseType.SelectedIndex = int.TryParse(UserConfigFile.GetValue(LangItem, "BaseType"), out var i) ? i : 0;
         }
 
         private void SaveToSettings()
         {
-            UserConfigFile.SetValue("mpDwgBase", "Rotate", (ChkRotate.IsChecked != null && ChkRotate.IsChecked.Value).ToString(), false);
-            UserConfigFile.SetValue("mpDwgBase", "BaseType", CbBaseType.SelectedIndex.ToString(), false);
-            UserConfigFile.SetValue("mpDwgBase", "CloseAfterInsert", (ChkCloseAfterInsert.IsChecked != null && ChkCloseAfterInsert.IsChecked.Value).ToString(), false);
+            UserConfigFile.SetValue(LangItem, "Rotate", ChkRotate.IsChecked.ToString(), false);
+            UserConfigFile.SetValue(LangItem, "BaseType", CbBaseType.SelectedIndex.ToString(), false);
+            UserConfigFile.SetValue(LangItem, "CloseAfterInsert", ChkCloseAfterInsert.IsChecked.ToString(), false);
+            UserConfigFile.SetValue(LangItem, "AlphabeticalSort", ChkAlphabeticalSort.IsChecked.ToString(), false);
             if (LbItems.SelectedItem != null)
             {
-                UserConfigFile.SetValue("mpDwgBase", "SelectedItemPath", ((DwgBaseItem)LbItems.SelectedItem).Path, false);
-                UserConfigFile.SetValue("mpDwgBase", "SelectedItemName", ((DwgBaseItem)LbItems.SelectedItem).Name, false);
+                UserConfigFile.SetValue(LangItem, "SelectedItemPath", ((DwgBaseItem)LbItems.SelectedItem).Path, false);
+                UserConfigFile.SetValue(LangItem, "SelectedItemName", ((DwgBaseItem)LbItems.SelectedItem).Name, false);
             }
 
             UserConfigFile.SaveConfigFile();
@@ -223,8 +227,8 @@
             }
 
             // После заполнения пробуем открыть элемент, который был открыт последним при прошлом закрытии
-            var selectedItemPath = UserConfigFile.GetValue("mpDwgBase", "SelectedItemPath");
-            var selectedItemName = UserConfigFile.GetValue("mpDwgBase", "SelectedItemName");
+            var selectedItemPath = UserConfigFile.GetValue(LangItem, "SelectedItemPath");
+            var selectedItemName = UserConfigFile.GetValue(LangItem, "SelectedItemName");
             SearchLastSelectedItem(selectedItemPath, selectedItemName);
         }
 
@@ -347,7 +351,9 @@
 
                     // Сначала все очищаем
                     ClearControlsWithoutTreeView();
-                    LbItems.ItemsSource = _dwgBaseItems.Where<DwgBaseItem>(item => item.Path.Equals(path));
+                    LbItems.ItemsSource = ChkAlphabeticalSort.IsChecked == true ?
+                        _dwgBaseItems.OrderBy(i => i.Name).Where(item => item.Path.Equals(path)) :
+                        _dwgBaseItems.Where(item => item.Path.Equals(path));
                 }
             }
         }
@@ -357,11 +363,7 @@
         {
             try
             {
-                var ls = new List<string>();
-                foreach (var item in _dwgBaseItems)
-                {
-                    ls.Add(item.Path);
-                }
+                var ls = _dwgBaseItems.Select(item => item.Path).ToList();
 
                 return BuildTree(ls, null);
             }
@@ -384,6 +386,9 @@
                             Parent = parent,
                             Children = g.ToList()
                         }).ToList();
+
+            if (ChkAlphabeticalSort.IsChecked == true)
+                list.Sort((i1, i2) => string.Compare(i1.Name, i2.Name, StringComparison.CurrentCulture));
 
             list.ForEach(x =>
             {
