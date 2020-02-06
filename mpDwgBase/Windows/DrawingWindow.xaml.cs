@@ -497,18 +497,11 @@
                 }
                 else
                 {
-                    if (File.Exists(db.Filename))
-                    {
-                        if (db.LastSavedAsVersion != DwgVersion.AC1027)
-                        {
-                            ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg57"));
-                            ChkIsCurrentDwgFile.IsChecked = false;
-                        }
-                    }
-                    else
+                    if (!File.Exists(db.Filename))
                     {
                         ModPlusAPI.Windows.MessageBox.Show(ModPlusAPI.Language.GetItem(LangItem, "msg56") +
-                            Environment.NewLine + ModPlusAPI.Language.GetItem(LangItem, "msg44"));
+                                                           Environment.NewLine +
+                                                           ModPlusAPI.Language.GetItem(LangItem, "msg44"));
                         ChkIsCurrentDwgFile.IsChecked = false;
                     }
                 }

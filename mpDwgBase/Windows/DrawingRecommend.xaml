@@ -32,11 +32,6 @@
                 <List MarkerStyle="Box">
                     <ListItem>
                         <Paragraph>
-                            <Run Text="{Binding Source={StaticResource Lang}, XPath=r12}"></Run>
-                        </Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph>
                             <Run Text="{Binding Source={StaticResource Lang}, XPath=r13}"></Run>
                         </Paragraph>
                     </ListItem>

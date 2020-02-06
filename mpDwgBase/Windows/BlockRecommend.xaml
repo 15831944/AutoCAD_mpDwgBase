@@ -61,9 +61,6 @@
                         </Paragraph>
                     </ListItem>
                 </List>
-                <Paragraph>
-                    <Run Text="{Binding Source={StaticResource Lang}, XPath=r9}"></Run>
-                </Paragraph>
             </FlowDocument>
         </RichTextBox>
         <!--Button-->
